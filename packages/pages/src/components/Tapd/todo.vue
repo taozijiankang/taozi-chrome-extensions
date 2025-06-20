@@ -1,9 +1,9 @@
 <template>
   <div class="tapd-todo">
-    <ElTable class="bug-list" :data="showTodoList" v-if="showTodoList && showTodoList.length > 0">
+    <ElTable class="workitem-list" :data="showWorkitemList" v-if="showWorkitemList && showWorkitemList.length > 0">
       <ElTableColumn prop="title" label="标题">
-        <template #default="{ row }">
-          <div style="display: flex; align-items: center">
+        <template #default="{ row }: { row: TapdWorkitem }">
+          <div class="workitem-row">
             <ElTag
               style="margin-right: 6px"
               effect="dark"
@@ -12,7 +12,10 @@
             >
               {{ row.entity_type.toLocaleUpperCase() }}
             </ElTag>
-            <span class="title-span" @click="openTab(row.detail_url)">{{ row.title }}</span>
+            <div class="workitem-title">
+              <span class="workspace-name-span">{{ row.workspace_name }}</span>
+              <span class="name-span" @click="openTab(row.detail_url)">{{ row.name }}</span>
+            </div>
           </div>
         </template>
       </ElTableColumn>
@@ -26,6 +29,7 @@
         </template>
       </ElTableColumn>
       <ElTableColumn prop="priority_name" width="100" label="优先级" />
+      <ElTableColumn prop="status_alias" width="100" label="状态" />
       <ElTableColumn prop="short_id" width="100" label="短id">
         <template #default="{ row }">
           <span class="short-id-span" @click="copyShortId(row.short_id)">{{ row.short_id }}</span>
@@ -40,15 +44,15 @@
 import { computed } from "vue";
 import { ElTable, ElTableColumn, ElTag, ElLoading, ElEmpty, ElMessage, ElCheckbox } from "element-plus";
 import { useTapdInfo } from "../../hooks/useTapdInfo";
-import { tapdLocalStorage } from "@taozi-chrome-extensions/common/src/local/tapd";
+import { tapdLocalStorage, type TapdWorkitem } from "@taozi-chrome-extensions/common/src/local/tapd";
 
 const bugEntityTypeReg = /^bug$/i;
 
 const { tapdInfo } = useTapdInfo();
 
-const showTodoList = computed(() => {
+const showWorkitemList = computed(() => {
   return (
-    tapdInfo.value?.todoList?.sort((a, b) => {
+    tapdInfo.value?.workitemList?.sort((a, b) => {
       return bugEntityTypeReg.test(a.entity_type) && !bugEntityTypeReg.test(b.entity_type) ? -1 : 0;
     }) || []
   );
@@ -112,18 +116,32 @@ const copyShortId = async (shortId: string) => {
 .tapd-todo {
   display: flex;
   flex-direction: column;
-  .title-span {
-    cursor: pointer;
-    &:hover {
-      color: #409eff;
-      text-decoration: underline;
+  .workitem-list {
+    .workitem-row {
+      display: flex;
+      align-items: center;
+      .workitem-title {
+        display: flex;
+        flex-direction: column;
+        .workspace-name-span {
+          color: #999;
+          font-weight: bold;
+        }
+        .name-span {
+          cursor: pointer;
+          &:hover {
+            color: #409eff;
+            text-decoration: underline;
+          }
+        }
+      }
     }
-  }
-  .short-id-span {
-    cursor: pointer;
-    &:hover {
-      color: #409eff;
-      text-decoration: underline;
+    .short-id-span {
+      cursor: pointer;
+      &:hover {
+        color: #409eff;
+        text-decoration: underline;
+      }
     }
   }
 }

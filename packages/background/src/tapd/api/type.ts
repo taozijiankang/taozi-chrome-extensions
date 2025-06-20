@@ -20,6 +20,7 @@ export interface MyWorktableByPage {
     title: string;
     owner: string;
     project_name: string;
+    /** 状态 */
     status_alias: string;
     detail_url: string;
     /** 提出人 */
@@ -29,5 +30,7 @@ export interface MyWorktableByPage {
     entity_type: string;
     /** 短id */
     short_id: string;
+    /** 工作空间名称 */
+    workspace_name: string;
   }[];
 }

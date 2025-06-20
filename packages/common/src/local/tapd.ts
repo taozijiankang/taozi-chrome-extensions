@@ -1,5 +1,15 @@
 import { useLocalStorage } from ".";
 
+export interface TapdWorkitem {
+  name: string;
+  detail_url: string;
+  priority_name: string;
+  entity_type: string;
+  short_id: string;
+  workspace_name: string;
+  status_alias: string;
+}
+
 export interface TapdLocalStorage {
   loading?: boolean;
   workitemCount?: {
@@ -10,13 +20,7 @@ export interface TapdLocalStorage {
   viewConfig?: {
     current_tab: string;
   };
-  todoList?: {
-    title: string;
-    detail_url: string;
-    priority_name: string;
-    entity_type: string;
-    short_id: string;
-  }[];
+  workitemList?: TapdWorkitem[];
   toBeReleasedBugIds?: string[];
   dataUpdateTime?: number;
   errMsg?: string;
@@ -32,6 +36,6 @@ export const tapdLocalStorage = useLocalStorage<string, TapdLocalStorage>("tapd-
   viewConfig: {
     current_tab: ""
   },
-  todoList: [],
+  workitemList: [],
   toBeReleasedBugIds: []
 });
