@@ -2,10 +2,13 @@
   <div class="baidu-app-config">
     <ElForm :model="{}" :rules="{}" label-width="auto" label-suffix=":">
       <ElFormItem label="生成文本css样式时忽略字体样式">
-        <ElSwitch v-model="isIgnoreCssFontFamily" />
+        <ElSwitch v-model="ignoreCssFontFamily" />
       </ElFormItem>
       <ElFormItem label="在有padding属性时加入box-sizing: border-box">
-        <ElSwitch v-model="isBoxSizing" />
+        <ElSwitch v-model="boxSizing" />
+      </ElFormItem>
+      <ElFormItem label="reactCssModule名称">
+        <ElInput v-model="reactCssModuleName" />
       </ElFormItem>
     </ElForm>
   </div>
@@ -13,19 +16,21 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { ElForm, ElFormItem, ElSwitch } from "element-plus";
+import { ElForm, ElFormItem, ElSwitch, ElInput } from "element-plus";
 import { codesignLocalStorage } from "@taozi-chrome-extensions/common/src/local/codesign";
 
-const isIgnoreCssFontFamily = ref(false);
-const isBoxSizing = ref(false);
+const ignoreCssFontFamily = ref(false);
+const boxSizing = ref(false);
+const reactCssModuleName = ref("");
 
 watch(
-  [isIgnoreCssFontFamily, isBoxSizing],
+  [ignoreCssFontFamily, boxSizing, reactCssModuleName],
   () => {
     codesignLocalStorage.edit(v => {
       v.config = {
-        ignoreCssFontFamily: isIgnoreCssFontFamily.value,
-        boxSizing: isBoxSizing.value
+        ignoreCssFontFamily: ignoreCssFontFamily.value,
+        boxSizing: boxSizing.value,
+        reactCssModuleName: reactCssModuleName.value
       };
     });
   },
@@ -33,9 +38,17 @@ watch(
 );
 
 onMounted(async () => {
-  const { config: { ignoreCssFontFamily = false, boxSizing = false } = {} } = (await codesignLocalStorage.get()) || {};
-  isIgnoreCssFontFamily.value = ignoreCssFontFamily;
-  isBoxSizing.value = boxSizing;
+  const {
+    config: {
+      ignoreCssFontFamily: ignoreCssFontFamily_ = false,
+      boxSizing: boxSizing_ = false,
+      reactCssModuleName: reactCssModuleName_ = ""
+    } = {}
+  } = (await codesignLocalStorage.get()) || {};
+
+  ignoreCssFontFamily.value = ignoreCssFontFamily_;
+  boxSizing.value = boxSizing_;
+  reactCssModuleName.value = reactCssModuleName_;
 });
 </script>
 

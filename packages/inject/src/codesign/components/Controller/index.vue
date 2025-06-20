@@ -48,6 +48,16 @@
           />
         </div>
       </ElFormItem>
+      <ElFormItem label-position="top" label="react-template" v-if="reactTemplateList.length > 0">
+        <div class="form-item-content">
+          <Code
+            v-for="(item, index) in reactTemplateList"
+            :key="index"
+            :code="getAnnotation('template') + item"
+            :type="CodeType.React"
+          />
+        </div>
+      </ElFormItem>
       <ElFormItem label-position="top" label="js" v-if="jsList.length > 0">
         <div class="form-item-content">
           <ElInput v-if="elType === ElType.Icon" v-model="iconUrlInput" type="text">
@@ -94,7 +104,8 @@ const annotationInput = ref("");
 
 const config = ref<CodesignLocalStorage["config"]>({
   ignoreCssFontFamily: false,
-  boxSizing: false
+  boxSizing: false,
+  reactCssModuleName: ""
 });
 
 watch([classNameInput, translateInput, objectTypeInput, iconUrlInput, annotationInput], () => {
@@ -149,19 +160,19 @@ const getCssRules = () => {
   });
 };
 
-const getClassName = (type: ElType, index: number = 0) => {
+const getValidVariableName = (type: ElType, index: number = 0, isCamelCase: boolean = false) => {
   switch (type) {
     case ElType.Text: {
-      return camelToKebabCase(toValidVariableName(`${classNameInput.value}-text${index == 0 ? "" : `-${index}`}`));
+      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}-text${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
     case ElType.Img: {
-      return camelToKebabCase(toValidVariableName(`${classNameInput.value}-img${index == 0 ? "" : `-${index}`}`));
+      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}-img${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
     case ElType.Icon: {
-      return camelToKebabCase(toValidVariableName(`${classNameInput.value}-icon${index == 0 ? "" : `-${index}`}`));
+      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}-icon${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
     case ElType.Div: {
-      return camelToKebabCase(toValidVariableName(`${classNameInput.value}${index == 0 ? "" : `-${index}`}`));
+      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
   }
 };
@@ -190,7 +201,7 @@ const vueTemplateList = computed(() => {
     case ElType.Text: {
       return getCssRules()
         .map((item, i) => {
-          const className = getClassName(ElType.Text, i);
+          const className = camelToKebabCase(getValidVariableName(ElType.Text, i));
           const text = (item.query || "").trim();
           if (objectTypeInput.value === ObjectType.PC) {
             return [`<span class="${className}">${text}</span>`, `<span class="${className}"> {{ "${text}" }} </span>`];
@@ -211,7 +222,7 @@ const vueTemplateList = computed(() => {
             .find(item => item.name === name)?.value || "500"
         );
       };
-      const className = getClassName(ElType.Img);
+      const className = camelToKebabCase(getValidVariableName(ElType.Img));
       const imageSrc = `https://picsum.photos/${parseInt(getSize("width"))}/${parseInt(getSize("height"))}`;
       if (objectTypeInput.value === ObjectType.PC) {
         return ["img", "CustomImage"].map(elType => `<${elType} src="${imageSrc}" class="${className}" />`);
@@ -220,7 +231,7 @@ const vueTemplateList = computed(() => {
     }
     /** 切图 */
     case ElType.Icon: {
-      const className = getClassName(ElType.Icon);
+      const className = camelToKebabCase(getValidVariableName(ElType.Icon));
       const srcVarName = kebabToCamelCase(className, true);
       if (objectTypeInput.value === ObjectType.PC) {
         return [`<img :src="${srcVarName}" class="${className}" />`];
@@ -229,7 +240,7 @@ const vueTemplateList = computed(() => {
     }
     /** 盒子 */
     case ElType.Div: {
-      const className = getClassName(ElType.Div);
+      const className = camelToKebabCase(getValidVariableName(ElType.Div));
       if (objectTypeInput.value === ObjectType.PC) {
         return [`<div class="${className}"></div>`];
       }
@@ -238,10 +249,75 @@ const vueTemplateList = computed(() => {
   }
 });
 
+const reactTemplateList = computed(() => {
+  const reactCssModuleName = config.value?.reactCssModuleName;
+  const getClassNameCode = (className: string) => {
+    if (reactCssModuleName) {
+      return `className={${reactCssModuleName}.${kebabToCamelCase(className)}}`;
+    }
+    return `className="${className}"`;
+  };
+  switch (elType.value) {
+    /** 文本 */
+    case ElType.Text: {
+      return getCssRules()
+        .map((item, i) => {
+          const className = camelToKebabCase(getValidVariableName(ElType.Text, i));
+          const classNameCode = getClassNameCode(className);
+          const text = (item.query || "").trim();
+          if (objectTypeInput.value === ObjectType.PC) {
+            return [`<span ${classNameCode}>${text}</span>`, `<span ${classNameCode}> {"${text}"} </span>`];
+          }
+          return [`<text ${classNameCode}>${text}</text>`, `<text ${classNameCode}> {"${text}"} </text>`];
+        })
+        .flat();
+    }
+    /** 图片 */
+    case ElType.Img: {
+      const getSize = (name: string) => {
+        return (
+          getCssRules()
+            .reduce<CssProp[]>((a, b) => {
+              a.push(...b.props);
+              return a;
+            }, [])
+            .find(item => item.name === name)?.value || "500"
+        );
+      };
+      const className = camelToKebabCase(getValidVariableName(ElType.Img));
+      const classNameCode = getClassNameCode(className);
+      const imageSrc = `https://picsum.photos/${parseInt(getSize("width"))}/${parseInt(getSize("height"))}`;
+      if (objectTypeInput.value === ObjectType.PC) {
+        return ["img", "CustomImage"].map(elType => `<${elType} src={"${imageSrc}"} ${classNameCode} />`);
+      }
+      return ["img", "CustomImage"].map(elType => `<${elType} src={"${imageSrc}"} ${classNameCode} mode="aspectFill" />`);
+    }
+    /** 切图 */
+    case ElType.Icon: {
+      const className = camelToKebabCase(getValidVariableName(ElType.Icon));
+      const classNameCode = getClassNameCode(className);
+      const srcVarName = kebabToCamelCase(className, true);
+      if (objectTypeInput.value === ObjectType.PC) {
+        return [`<img src={${srcVarName}} ${classNameCode} />`];
+      }
+      return [`<image src={${srcVarName}} ${classNameCode} mode="scaleToFill" />`];
+    }
+    /** 盒子 */
+    case ElType.Div: {
+      const className = camelToKebabCase(getValidVariableName(ElType.Div));
+      const classNameCode = getClassNameCode(className);
+      if (objectTypeInput.value === ObjectType.PC) {
+        return [`<div ${classNameCode}></div>`];
+      }
+      return [`<view ${classNameCode}></view>`];
+    }
+  }
+});
+
 const jsList = computed(() => {
   switch (elType.value) {
     case ElType.Icon: {
-      return [`const ${kebabToCamelCase(getClassName(ElType.Icon), true)} = \`${iconUrlInput.value}\`;`];
+      return [`const ${kebabToCamelCase(getValidVariableName(ElType.Icon), true)} = \`${iconUrlInput.value}\`;`];
     }
   }
   return [];
@@ -251,25 +327,26 @@ const cssList = computed(() => {
   const getCssProps = (item: CssRule) => {
     return "\n" + item.props.map(prop => `  ${prop.name}: ${prop.value};`).join("\n") + "\n";
   };
+  const className = camelToKebabCase(getValidVariableName(elType.value));
   switch (elType.value) {
     case ElType.Text: {
       return getCssRules().map((item, i) => {
-        return `.${getClassName(ElType.Text, i)} {${getCssProps(item)}}`.trim();
+        return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Img: {
       return getCssRules().map(item => {
-        return `.${getClassName(ElType.Img)} {${getCssProps(item)}}`.trim();
+        return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Icon: {
       return getCssRules().map(item => {
-        return `.${getClassName(ElType.Icon)} {${getCssProps(item)}}`.trim();
+        return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Div: {
       return getCssRules().map(item => {
-        return `.${getClassName(ElType.Div)} {${getCssProps(item)}}`.trim();
+        return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
   }
@@ -336,7 +413,8 @@ onMounted(async () => {
     annotationInput.value = annotations[identification.value] || "";
     config.value = config2 || {
       ignoreCssFontFamily: false,
-      boxSizing: false
+      boxSizing: false,
+      cssModuleName: ""
     };
   } catch (e) {
     console.error("Error in onMounted:", e);

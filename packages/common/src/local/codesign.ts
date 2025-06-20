@@ -11,6 +11,8 @@ export interface CodesignLocalStorage {
     ignoreCssFontFamily?: boolean;
     /** 在有padding属性时是否加入box-sizing: border-box */
     boxSizing?: boolean;
+    /** react css模块名称 */
+    reactCssModuleName?: string;
   };
 }
 
