@@ -26,15 +26,15 @@
       <ElFormItem label-position="left" label="代码注释">
         <ElInput v-model="annotationInput" type="text" clearable />
       </ElFormItem>
-      <ElFormItem label-position="top" label="元素Class">
+      <ElFormItem label-position="top" label="元素名称">
         <div class="form-item-content">
-          <ElInput v-model="translateInput" type="text" clearable @keyup.enter="handleTranslate">
+          <ElInput v-model="nameTranslateInput" type="text" clearable @keyup.enter="handleNameTranslate">
             <template #append>
-              <ElButton @click="handleTranslate" :loading="translateLoading">快速生成</ElButton>
+              <ElButton @click="handleNameTranslate" :loading="nameTranslateLoading">快速生成</ElButton>
             </template>
           </ElInput>
-          <ElInput v-model="classNameInput" type="text" clearable>
-            <template #prepend> <ElButton>Class</ElButton> </template>
+          <ElInput v-model="nameInput" type="text" clearable>
+            <template #prepend> <ElButton>名字</ElButton> </template>
           </ElInput>
         </div>
       </ElFormItem>
@@ -95,9 +95,9 @@ const identification = ref("");
 const elType = ref<ElType>(ElType.Div);
 const textContent = ref("");
 const cssCode = ref("");
-const translateInput = ref("");
-const classNameInput = ref("");
-const translateLoading = ref(false);
+const nameTranslateInput = ref("");
+const nameInput = ref("");
+const nameTranslateLoading = ref(false);
 const iconUrlInput = ref("");
 const objectTypeInput = ref<ObjectType>(ObjectType.PC);
 const annotationInput = ref("");
@@ -108,13 +108,13 @@ const config = ref<CodesignLocalStorage["config"]>({
   reactCssModuleName: ""
 });
 
-watch([classNameInput, translateInput, objectTypeInput, iconUrlInput, annotationInput], () => {
+watch([nameInput, nameTranslateInput, objectTypeInput, iconUrlInput, annotationInput], () => {
   codesignLocalStorage.edit(v => {
     v.objectType = objectTypeInput.value;
-    if (!v.classNames) v.classNames = {};
-    v.classNames[identification.value] = classNameInput.value;
-    if (!v.translateInputs) v.translateInputs = {};
-    v.translateInputs[identification.value] = translateInput.value;
+    if (!v.names) v.names = {};
+    v.names[identification.value] = nameInput.value;
+    if (!v.nameTranslates) v.nameTranslates = {};
+    v.nameTranslates[identification.value] = nameTranslateInput.value;
     if (!v.iconUrls) v.iconUrls = {};
     v.iconUrls[identification.value] = iconUrlInput.value;
     if (!v.annotations) v.annotations = {};
@@ -122,17 +122,17 @@ watch([classNameInput, translateInput, objectTypeInput, iconUrlInput, annotation
   });
 });
 
-const handleTranslate = async () => {
-  if (!translateInput.value || translateLoading.value) return;
+const handleNameTranslate = async () => {
+  if (!nameTranslateInput.value || nameTranslateLoading.value) return;
 
-  translateLoading.value = true;
+  nameTranslateLoading.value = true;
   try {
     const res = await sendMessage<string>({
       type: MessageType.BaiduTranslate,
-      value: translateInput.value
+      value: nameTranslateInput.value
     });
     if (res) {
-      classNameInput.value = toValidVariableName(res);
+      nameInput.value = toValidVariableName(res);
     }
   } catch (err) {
     console.error(err);
@@ -141,7 +141,7 @@ const handleTranslate = async () => {
       type: "error"
     });
   } finally {
-    translateLoading.value = false;
+    nameTranslateLoading.value = false;
   }
 };
 
@@ -163,16 +163,16 @@ const getCssRules = () => {
 const getValidVariableName = (type: ElType, index: number = 0, isCamelCase: boolean = false) => {
   switch (type) {
     case ElType.Text: {
-      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}-text${index == 0 ? "" : `-${index}`}`), isCamelCase);
+      return kebabToCamelCase(toValidVariableName(`${nameInput.value}-text${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
     case ElType.Img: {
-      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}-img${index == 0 ? "" : `-${index}`}`), isCamelCase);
+      return kebabToCamelCase(toValidVariableName(`${nameInput.value}-img${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
     case ElType.Icon: {
-      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}-icon${index == 0 ? "" : `-${index}`}`), isCamelCase);
+      return kebabToCamelCase(toValidVariableName(`${nameInput.value}-icon${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
     case ElType.Div: {
-      return kebabToCamelCase(toValidVariableName(`${classNameInput.value}${index == 0 ? "" : `-${index}`}`), isCamelCase);
+      return kebabToCamelCase(toValidVariableName(`${nameInput.value}${index == 0 ? "" : `-${index}`}`), isCamelCase);
     }
   }
 };
@@ -400,14 +400,14 @@ onMounted(async () => {
     // Load saved state
     const {
       objectType = "",
-      translateInputs = {},
-      classNames = {},
+      nameTranslates = {},
+      names = {},
       iconUrls = {},
       annotations = {},
       config: config2 = {}
     } = (await codesignLocalStorage.get()) || {};
-    classNameInput.value = classNames[identification.value] || "item";
-    translateInput.value = translateInputs[identification.value] || textContent.value;
+    nameInput.value = names[identification.value] || "item";
+    nameTranslateInput.value = nameTranslates[identification.value] || textContent.value;
     objectTypeInput.value = (objectType as ObjectType) || "pc";
     iconUrlInput.value = iconUrls[identification.value] || "";
     annotationInput.value = annotations[identification.value] || "";

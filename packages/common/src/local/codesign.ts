@@ -3,8 +3,8 @@ import { useLocalStorage } from ".";
 export interface CodesignLocalStorage {
   objectType?: string;
   annotations?: Record<string, string>;
-  translateInputs?: Record<string, string>;
-  classNames?: Record<string, string>;
+  nameTranslates?: Record<string, string>;
+  names?: Record<string, string>;
   iconUrls?: Record<string, string>;
   config?: {
     /** 是否忽略css的字体 */
@@ -19,8 +19,8 @@ export interface CodesignLocalStorage {
 export const codesignLocalStorage = useLocalStorage<string, CodesignLocalStorage>("codesign-local-storage", {
   objectType: "",
   annotations: {},
-  translateInputs: {},
-  classNames: {},
+  nameTranslates: {},
+  names: {},
   iconUrls: {},
   config: {}
 });
