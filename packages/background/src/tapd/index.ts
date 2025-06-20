@@ -4,7 +4,7 @@ import { get_my_worktable_by_page } from "./api/get_my_worktable_by_page";
 import { setIcon } from "@/utils/setIcon";
 
 export async function tapdTask() {
-  if ((await tapdLocalStorage.get())?.loading) {
+  if ((await tapdLocalStorage.get())?.loading && Date.now() - ((await tapdLocalStorage.get())?.dataUpdateTime || 0) < 1000) {
     return;
   }
   await tapdLocalStorage.edit(v => {
