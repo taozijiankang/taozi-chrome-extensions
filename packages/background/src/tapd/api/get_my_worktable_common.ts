@@ -10,8 +10,10 @@ export const get_my_worktable_common = async () => {
   return request<MyWorktableCommonRes>("/api/my_worktable/my_worktable/get_my_worktable_common", {
     method: "post",
     body: JSON.stringify({
-      need_view_config: true,
-      need_setting: true,
+      exclude_workspace_ids: [],
+      select_object_types: ["story", "task", "bug"],
+      need_view_config: false,
+      need_setting: false,
       dsc_token
     })
   });

@@ -16,7 +16,7 @@ export async function tapdTask() {
     });
     const worktableCommon = await get_my_worktable_common();
     const worktableByPage = await get_my_worktable_by_page(
-      worktableCommon.group_list[0]?.group_id,
+      worktableCommon.select_workspace_ids,
       worktableCommon.select_workspace_ids
     );
     await tapdLocalStorage.edit(v => {
