@@ -3,7 +3,7 @@
     <span class="type" v-if="type">{{ type }}</span>
     <div class="button" @click="handleCopyCode(code)">copy</div>
     <pre>
-      <code v-for="(line, index) in lineCode" :key="index" @click="handleCopyCode(line)" v-html="line"></code>
+      <code v-for="(line, index) in lineCode" :key="index" @click="handleCopyCode(line.line)" v-html="line.htmlLine"></code>
     </pre>
   </div>
 </template>
