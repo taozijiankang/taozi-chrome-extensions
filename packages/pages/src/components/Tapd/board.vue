@@ -29,7 +29,7 @@
         >
           <template #title>
             <span>
-              {{ current_tab }}:
+              {{ current_tab }}
               <span
                 :style="{
                   color: item.color,
