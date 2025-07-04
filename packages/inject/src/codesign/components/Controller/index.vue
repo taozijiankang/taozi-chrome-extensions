@@ -38,7 +38,12 @@
           </ElInput>
         </div>
       </ElFormItem>
-      <ElFormItem label-position="top" label="vue-template" v-if="vueTemplateList.length > 0">
+      <ElFormItem label-position="top" v-if="vueTemplateList.length > 0">
+        <template #label>
+          <div class="form-item-label" style="background-color: #42b883">
+            <span style="color: #ffffff">vue-template</span>
+          </div>
+        </template>
         <div class="form-item-content">
           <Code
             v-for="(item, index) in vueTemplateList"
@@ -48,7 +53,12 @@
           />
         </div>
       </ElFormItem>
-      <ElFormItem label-position="top" label="react-template" v-if="reactTemplateList.length > 0">
+      <ElFormItem label-position="top" v-if="reactTemplateList.length > 0">
+        <template #label>
+          <div class="form-item-label" style="background-color: #087ea4">
+            <span style="color: #ffffff">react-template</span>
+          </div>
+        </template>
         <div class="form-item-content">
           <Code
             v-for="(item, index) in reactTemplateList"
@@ -58,7 +68,12 @@
           />
         </div>
       </ElFormItem>
-      <ElFormItem label-position="top" label="js" v-if="jsList.length > 0">
+      <ElFormItem label-position="top" v-if="jsList.length > 0">
+        <template #label>
+          <div class="form-item-label" style="background-color: #f7df1e">
+            <span style="color: #2f2e2d">js</span>
+          </div>
+        </template>
         <div class="form-item-content">
           <ElInput v-if="elType === ElType.Icon" v-model="iconUrlInput" type="text">
             <template #prepend> <span>iconUrl</span> </template>
@@ -66,7 +81,12 @@
           <Code v-for="(item, index) in jsList" :key="index" :code="getAnnotation('js') + item" :type="CodeType.Js" />
         </div>
       </ElFormItem>
-      <ElFormItem label-position="top" label="css" v-if="cssList.length > 0">
+      <ElFormItem label-position="top" v-if="cssList.length > 0">
+        <template #label>
+          <div class="form-item-label" style="background-color: #bd2d30">
+            <span style="color: #ffffff">css</span>
+          </div>
+        </template>
         <div class="form-item-content">
           <Code v-for="(item, index) in cssList" :key="index" :code="getAnnotation('css') + item" :type="CodeType.Css" />
         </div>
@@ -443,6 +463,17 @@ onMounted(async () => {
     flex-direction: column;
     gap: 6px;
     width: 100%;
+  }
+
+  .form-item-label {
+    display: flex;
+    align-items: center;
+    padding: 0 3px;
+    border-radius: 3px;
+    > span {
+      font-size: 14px;
+      font-weight: bold;
+    }
   }
 }
 </style>
