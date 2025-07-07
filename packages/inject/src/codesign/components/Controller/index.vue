@@ -347,25 +347,28 @@ const cssList = computed(() => {
   const getCssProps = (item: CssRule) => {
     return "\n" + item.props.map(prop => `  ${prop.name}: ${prop.value};`).join("\n") + "\n";
   };
-  const className = camelToKebabCase(getValidVariableName(elType.value));
   switch (elType.value) {
     case ElType.Text: {
       return getCssRules().map((item, i) => {
+        const className = camelToKebabCase(getValidVariableName(elType.value, i));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Img: {
       return getCssRules().map(item => {
+        const className = camelToKebabCase(getValidVariableName(elType.value));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Icon: {
       return getCssRules().map(item => {
+        const className = camelToKebabCase(getValidVariableName(elType.value));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Div: {
       return getCssRules().map(item => {
+        const className = camelToKebabCase(getValidVariableName(elType.value));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
