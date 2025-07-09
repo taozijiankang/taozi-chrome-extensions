@@ -1,10 +1,10 @@
 import type { CssProp } from "./parseCssRules";
 
 export enum ElType {
-  Img = "img",
-  Icon = "icon",
-  Text = "text",
-  Div = "div"
+  Img = "Img",
+  Icon = "Icon",
+  Text = "Text",
+  Div = "Div"
 }
 
 export const ElTypeDesc: Record<ElType, string> = {
@@ -15,18 +15,27 @@ export const ElTypeDesc: Record<ElType, string> = {
 } as const;
 
 export enum ObjectType {
-  PC = "pc",
-  MP = "mp",
-  H5 = "h5",
-  APP = "app"
+  Pc = "Pc",
+  UniMp = "UniMp",
+  UniH5 = "UniH5",
+  UniAPP = "UniAPP"
 }
 
-export const OBJECT_TYPE_OPTIONS: { value: ObjectType; label: string }[] = [
-  { value: ObjectType.PC, label: "PC" },
-  // 以下项目都是以 uniapp 开发为准
-  { value: ObjectType.MP, label: "MP" },
-  { value: ObjectType.H5, label: "H5" },
-  { value: ObjectType.APP, label: "APP" }
+export const ObjectTypeOptions: { value: ObjectType; label: string }[] = [
+  { value: ObjectType.Pc, label: "Pc" },
+  { value: ObjectType.UniMp, label: "UniMp" },
+  { value: ObjectType.UniH5, label: "UniH5" },
+  { value: ObjectType.UniAPP, label: "UniAPP" }
+];
+
+export enum FrameType {
+  Vue = "vue",
+  React = "react"
+}
+
+export const FrameTypeOptions: { value: FrameType; label: string }[] = [
+  { value: FrameType.Vue, label: "Vue" },
+  { value: FrameType.React, label: "React" }
 ];
 
 export const getCssPropConfig = (
@@ -75,7 +84,7 @@ export const getCssPropConfig = (
     ]
   };
   // APP 项目中不支持 gap 属性
-  if (objectType === ObjectType.APP) {
+  if (objectType === ObjectType.UniAPP) {
     includePropNames[ElType.Div] = includePropNames[ElType.Div].filter(item => item !== "gap");
   }
 

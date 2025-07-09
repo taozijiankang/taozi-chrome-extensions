@@ -17,7 +17,7 @@
     </ElTabs>
     <ElEmpty v-if="codeTemplates.length === 0" description="暂无模板" />
     <ElDivider />
-    <ElDescriptions title="模板可用字段" :column="2" size="small" border>
+    <ElDescriptions title="模板可用字段" :column="2" border>
       <ElDescriptionsItem v-for="key of Object.keys(ApifoxTemFieldsDocs)" :label="key">{{
         ApifoxTemFieldsDocs[key as ApifoxTemFields]
       }}</ElDescriptionsItem>

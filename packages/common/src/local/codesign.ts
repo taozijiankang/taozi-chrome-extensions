@@ -2,6 +2,7 @@ import { useLocalStorage } from ".";
 
 export interface CodesignLocalStorage {
   objectType?: string;
+  frameType?: string;
   annotations?: Record<string, string>;
   nameTranslates?: Record<string, string>;
   names?: Record<string, string>;
@@ -18,6 +19,7 @@ export interface CodesignLocalStorage {
 
 export const codesignLocalStorage = useLocalStorage<string, CodesignLocalStorage>("codesign-local-storage", {
   objectType: "",
+  frameType: "",
   annotations: {},
   nameTranslates: {},
   names: {},

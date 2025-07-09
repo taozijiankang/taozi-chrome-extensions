@@ -2,9 +2,14 @@
   <div class="controller">
     <ElForm :model="{}" :rules="{}" label-width="auto" :show-message="false" label-suffix=":">
       <ElFormItem label-position="left" label="项目类型">
-        <ElRadioGroup v-model="objectTypeInput" size="small">
-          <ElRadioButton v-for="item in OBJECT_TYPE_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
-        </ElRadioGroup>
+        <ElSelect v-model="objectTypeInput">
+          <ElOption v-for="item in ObjectTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </ElSelect>
+      </ElFormItem>
+      <ElFormItem label-position="left" label="框架类型">
+        <ElSelect v-model="frameTypeInput">
+          <ElOption v-for="item in FrameTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </ElSelect>
       </ElFormItem>
       <ElFormItem label-position="left" label="元素类型">
         <ElTag class="type-item" effect="dark" round>
@@ -24,21 +29,19 @@
         </ElTag>
       </ElFormItem>
       <ElFormItem label-position="left" label="代码注释">
-        <ElInput v-model="annotationInput" type="text" clearable />
+        <ElInput v-model="annotationInput" type="text" clearable placeholder="请输入" />
       </ElFormItem>
-      <ElFormItem label-position="top" label="元素名称">
+      <ElFormItem label-position="left" label="元素名称">
         <div class="form-item-content">
-          <ElInput v-model="nameTranslateInput" type="text" clearable @keyup.enter="handleNameTranslate">
+          <ElInput v-model="nameTranslateInput" type="text" clearable @keyup.enter="handleNameTranslate" placeholder="请输入">
             <template #append>
-              <ElButton @click="handleNameTranslate" :loading="nameTranslateLoading">快速生成</ElButton>
+              <ElButton @click="handleNameTranslate" :loading="nameTranslateLoading">生成</ElButton>
             </template>
           </ElInput>
-          <ElInput v-model="nameInput" type="text" clearable>
-            <template #prepend> <ElButton>名字</ElButton> </template>
-          </ElInput>
+          <ElInput v-model="nameInput" type="text" clearable placeholder="请输入" />
         </div>
       </ElFormItem>
-      <ElFormItem label-position="top" v-if="vueTemplateList.length > 0">
+      <ElFormItem label-position="top" v-if="frameTypeInput === FrameType.Vue && vueTemplateList.length > 0">
         <template #label>
           <div class="form-item-label" style="background-color: #42b883">
             <span style="color: #ffffff">vue-template</span>
@@ -53,7 +56,7 @@
           />
         </div>
       </ElFormItem>
-      <ElFormItem label-position="top" v-if="reactTemplateList.length > 0">
+      <ElFormItem label-position="top" v-if="frameTypeInput === FrameType.React && reactTemplateList.length > 0">
         <template #label>
           <div class="form-item-label" style="background-color: #087ea4">
             <span style="color: #ffffff">react-template</span>
@@ -100,13 +103,13 @@ import { computed, onMounted, ref, watch } from "vue";
 import { md5 } from "@taozi-chrome-extensions/common/src/utils/md5";
 import { sendMessage } from "@taozi-chrome-extensions/common/src/messageServer";
 import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
-import { ElForm, ElFormItem, ElButton, ElInput, ElRadioGroup, ElRadioButton, ElMessage, ElIcon, ElTag } from "element-plus";
+import { ElForm, ElFormItem, ElButton, ElInput, ElSelect, ElOption, ElMessage, ElIcon, ElTag } from "element-plus";
 import { Box, Picture, PictureRounded, Document } from "@element-plus/icons-vue";
 import { kebabToCamelCase, camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 import { getAllSectionNodeBox } from "../../getAllSectionNodeBox";
 import Code from "../../../components/Code/index.vue";
 import { codesignLocalStorage, type CodesignLocalStorage } from "@taozi-chrome-extensions/common/src/local/codesign";
-import { getCssPropConfig, ElType, ObjectType, OBJECT_TYPE_OPTIONS, ElTypeDesc } from "./index";
+import { getCssPropConfig, ElType, ObjectType, ObjectTypeOptions, ElTypeDesc, FrameTypeOptions, FrameType } from "./index";
 import { parseCssRules, type CssProp, type CssRule } from "./parseCssRules";
 import { CodeType } from "@/components/Code";
 
@@ -119,7 +122,8 @@ const nameTranslateInput = ref("");
 const nameInput = ref("");
 const nameTranslateLoading = ref(false);
 const iconUrlInput = ref("");
-const objectTypeInput = ref<ObjectType>(ObjectType.PC);
+const objectTypeInput = ref<ObjectType>(ObjectType.Pc);
+const frameTypeInput = ref<FrameType>(FrameType.Vue);
 const annotationInput = ref("");
 
 const config = ref<CodesignLocalStorage["config"]>({
@@ -128,9 +132,10 @@ const config = ref<CodesignLocalStorage["config"]>({
   reactCssModuleName: ""
 });
 
-watch([nameInput, nameTranslateInput, objectTypeInput, iconUrlInput, annotationInput], () => {
+watch([nameInput, nameTranslateInput, objectTypeInput, frameTypeInput, iconUrlInput, annotationInput], () => {
   codesignLocalStorage.edit(v => {
     v.objectType = objectTypeInput.value;
+    v.frameType = frameTypeInput.value;
     if (!v.names) v.names = {};
     v.names[identification.value] = nameInput.value;
     if (!v.nameTranslates) v.nameTranslates = {};
@@ -223,7 +228,7 @@ const vueTemplateList = computed(() => {
         .map((item, i) => {
           const className = camelToKebabCase(getValidVariableName(ElType.Text, i));
           const text = (item.query || "").trim();
-          if (objectTypeInput.value === ObjectType.PC) {
+          if (objectTypeInput.value === ObjectType.Pc) {
             return [`<span class="${className}">${text}</span>`, `<span class="${className}"> {{ "${text}" }} </span>`];
           }
           return [`<text class="${className}">${text}</text>`, `<text class="${className}"> {{ "${text}" }} </text>`];
@@ -244,7 +249,7 @@ const vueTemplateList = computed(() => {
       };
       const className = camelToKebabCase(getValidVariableName(ElType.Img));
       const imageSrc = `https://picsum.photos/${parseInt(getSize("width"))}/${parseInt(getSize("height"))}`;
-      if (objectTypeInput.value === ObjectType.PC) {
+      if (objectTypeInput.value === ObjectType.Pc) {
         return ["img", "CustomImage"].map(elType => `<${elType} src="${imageSrc}" class="${className}" />`);
       }
       return ["img", "CustomImage"].map(elType => `<${elType} src="${imageSrc}" class="${className}" mode="aspectFill" />`);
@@ -253,7 +258,7 @@ const vueTemplateList = computed(() => {
     case ElType.Icon: {
       const className = camelToKebabCase(getValidVariableName(ElType.Icon));
       const srcVarName = kebabToCamelCase(className, true);
-      if (objectTypeInput.value === ObjectType.PC) {
+      if (objectTypeInput.value === ObjectType.Pc) {
         return [`<img :src="${srcVarName}" class="${className}" />`];
       }
       return [`<image :src="${srcVarName}" class="${className}" mode="scaleToFill" />`];
@@ -261,7 +266,7 @@ const vueTemplateList = computed(() => {
     /** 盒子 */
     case ElType.Div: {
       const className = camelToKebabCase(getValidVariableName(ElType.Div));
-      if (objectTypeInput.value === ObjectType.PC) {
+      if (objectTypeInput.value === ObjectType.Pc) {
         return [`<div class="${className}"></div>`];
       }
       return [`<view class="${className}"></view>`];
@@ -285,7 +290,7 @@ const reactTemplateList = computed(() => {
           const className = camelToKebabCase(getValidVariableName(ElType.Text, i));
           const classNameCode = getClassNameCode(className);
           const text = (item.query || "").trim();
-          if (objectTypeInput.value === ObjectType.PC) {
+          if (objectTypeInput.value === ObjectType.Pc) {
             return [`<span ${classNameCode}>${text}</span>`, `<span ${classNameCode}> {"${text}"} </span>`];
           }
           return [`<text ${classNameCode}>${text}</text>`, `<text ${classNameCode}> {"${text}"} </text>`];
@@ -307,7 +312,7 @@ const reactTemplateList = computed(() => {
       const className = camelToKebabCase(getValidVariableName(ElType.Img));
       const classNameCode = getClassNameCode(className);
       const imageSrc = `https://picsum.photos/${parseInt(getSize("width"))}/${parseInt(getSize("height"))}`;
-      if (objectTypeInput.value === ObjectType.PC) {
+      if (objectTypeInput.value === ObjectType.Pc) {
         return ["img", "CustomImage"].map(elType => `<${elType} src={"${imageSrc}"} ${classNameCode} />`);
       }
       return ["img", "CustomImage"].map(elType => `<${elType} src={"${imageSrc}"} ${classNameCode} mode="aspectFill" />`);
@@ -317,7 +322,7 @@ const reactTemplateList = computed(() => {
       const className = camelToKebabCase(getValidVariableName(ElType.Icon));
       const classNameCode = getClassNameCode(className);
       const srcVarName = kebabToCamelCase(className, true);
-      if (objectTypeInput.value === ObjectType.PC) {
+      if (objectTypeInput.value === ObjectType.Pc) {
         return [`<img src={${srcVarName}} ${classNameCode} />`];
       }
       return [`<image src={${srcVarName}} ${classNameCode} mode="scaleToFill" />`];
@@ -326,7 +331,7 @@ const reactTemplateList = computed(() => {
     case ElType.Div: {
       const className = camelToKebabCase(getValidVariableName(ElType.Div));
       const classNameCode = getClassNameCode(className);
-      if (objectTypeInput.value === ObjectType.PC) {
+      if (objectTypeInput.value === ObjectType.Pc) {
         return [`<div ${classNameCode}></div>`];
       }
       return [`<view ${classNameCode}></view>`];
@@ -423,6 +428,7 @@ onMounted(async () => {
     // Load saved state
     const {
       objectType = "",
+      frameType = "",
       nameTranslates = {},
       names = {},
       iconUrls = {},
@@ -431,7 +437,8 @@ onMounted(async () => {
     } = (await codesignLocalStorage.get()) || {};
     nameInput.value = names[identification.value] || "item";
     nameTranslateInput.value = nameTranslates[identification.value] || textContent.value;
-    objectTypeInput.value = (objectType as ObjectType) || "pc";
+    objectTypeInput.value = (objectType as ObjectType) || ObjectType.Pc;
+    frameTypeInput.value = (frameType as FrameType) || FrameType.Vue;
     iconUrlInput.value = iconUrls[identification.value] || "";
     annotationInput.value = annotations[identification.value] || "";
     config.value = config2 || {
@@ -471,7 +478,7 @@ onMounted(async () => {
   .form-item-label {
     display: flex;
     align-items: center;
-    padding: 0 3px;
+    padding: 0 5px;
     border-radius: 3px;
     > span {
       font-size: 14px;
