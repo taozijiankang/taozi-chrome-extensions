@@ -1,10 +1,12 @@
 <template>
   <div class="code">
-    <span class="type" v-if="type">{{ type }}</span>
-    <div class="button" @click="handleCopyCode(code)">copy</div>
-    <pre>
+    <pre class="code-pre">
       <code v-for="(line, index) in lineCode" :key="index" @click="handleCopyCode(line.line)" v-html="line.htmlLine"></code>
     </pre>
+    <div class="con">
+      <div class="type" v-if="type">{{ type }}</div>
+      <div class="button" @click="handleCopyCode(code)">复制</div>
+    </div>
   </div>
 </template>
 
@@ -42,58 +44,53 @@ const handleCopyCode = (code: string) => {
 
 <style lang="scss" scoped>
 .code {
-  border-radius: 4px;
-  position: relative;
+  border-radius: 6px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.04);
-  border-radius: 4px;
   cursor: text;
-  padding: 5px 12px;
+  padding: 6px;
   box-sizing: border-box;
   width: 100%;
+  gap: 6px;
+  display: flex;
+  align-items: flex-start;
 
-  &:hover {
-    > .type {
-      display: none !important;
-    }
-    > .button {
-      display: flex !important;
-    }
-  }
-  > .type,
-  > .button {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    background-color: white;
-    border-radius: 3px;
-    box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.03);
-  }
-  > .type {
-    line-height: 1;
-    padding: 2px 3px;
-  }
-  > .button {
-    display: none;
-    line-height: 1;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 3px 5px;
-  }
-  > pre {
+  .code-pre {
     line-height: 1.5;
     font-size: 12px;
     margin: 0;
     display: flex;
     flex-direction: column;
-    > code {
+    flex: 1;
+    min-width: 0;
+    code {
       white-space: pre-wrap;
       word-break: break-all;
       font-family: Consolas;
 
       &:hover {
         background-color: rgba(0, 0, 0, 0.08);
+      }
+    }
+  }
+  .con {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    .button,
+    .type {
+      line-height: 1;
+      white-space: nowrap;
+      writing-mode: vertical-rl;
+      font-family: emoji;
+    }
+    .button {
+      padding: 3px;
+      background-color: white;
+      border-radius: 3px;
+      cursor: pointer;
+      &:hover {
+        color: #0064ff;
       }
     }
   }

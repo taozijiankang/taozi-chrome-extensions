@@ -480,7 +480,7 @@ onMounted(async () => {
     align-items: center;
     padding: 0 5px;
     border-radius: 3px;
-    > span {
+    span {
       font-size: 14px;
       font-weight: bold;
     }
