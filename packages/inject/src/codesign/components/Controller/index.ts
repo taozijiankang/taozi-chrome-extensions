@@ -23,9 +23,9 @@ export enum ObjectType {
 
 export const ObjectTypeOptions: { value: ObjectType; label: string }[] = [
   { value: ObjectType.Pc, label: "Pc" },
-  { value: ObjectType.UniMp, label: "UniMp" },
-  { value: ObjectType.UniH5, label: "UniH5" },
-  { value: ObjectType.UniAPP, label: "UniAPP" }
+  { value: ObjectType.UniMp, label: "Uni-Mp" },
+  { value: ObjectType.UniH5, label: "Uni-H5" },
+  { value: ObjectType.UniAPP, label: "Uni-APP" }
 ];
 
 export enum FrameType {
