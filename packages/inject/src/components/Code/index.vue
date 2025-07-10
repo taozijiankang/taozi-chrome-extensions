@@ -5,7 +5,7 @@
         <span
           class="code-index"
           :style="{
-            width: lineCode.length.toString().length * 7 + 'px'
+            width: lineCode.length.toString().length * 8 + 'px'
           }"
         >
           {{ index }}
@@ -80,7 +80,7 @@ const handleCopyCode = (code: string) => {
         display: inline-block;
         color: #00000080;
         flex-shrink: 0;
-        padding-right: 6px;
+        margin-right: 6px;
       }
       .code-content {
         white-space: pre-wrap;
