@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "taozi科技的谷歌浏览器扩展工具",
   "scripts": {
-    "build-package": "turbo run build package"
+    "build-package": "turbo run build package",
+    "bp": "turbo run build package"
   },
   "keywords": [],
   "author": "",

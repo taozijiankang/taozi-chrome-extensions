@@ -1,4 +1,4 @@
-import { useLocalStorage } from ".";
+import { useLocalStorage } from "./index";
 
 export interface ApifoxLocalStorage {
   /** 当前的代码模板id */

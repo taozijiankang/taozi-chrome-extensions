@@ -1,8 +1,18 @@
 <template>
-  <div class="code">
-    <pre class="code-pre">
-      <code v-for="(line, index) in lineCode" :key="index" @click="handleCopyCode(line.line)" v-html="line.htmlLine"></code>
-    </pre>
+  <div class="code-component">
+    <div class="code-list">
+      <div class="code-container" v-for="(line, index) in lineCode" :key="index">
+        <span
+          class="code-index"
+          :style="{
+            width: lineCode.length.toString().length * 7 + 'px'
+          }"
+        >
+          {{ index }}
+        </span>
+        <code class="code-content" v-html="line.htmlLine" @click="handleCopyCode(line.line)"></code>
+      </div>
+    </div>
     <div class="con">
       <div class="type" v-if="type">{{ type }}</div>
       <div class="button" @click="handleCopyCode(code)">复制</div>
@@ -13,7 +23,7 @@
 <script lang="ts" setup>
 import { ElMessage } from "element-plus";
 import { computed } from "vue";
-import { parseCode, type CodeType } from ".";
+import { parseCode, type CodeType } from "./index";
 
 const props = defineProps<{
   code: string;
@@ -43,7 +53,7 @@ const handleCopyCode = (code: string) => {
 </script>
 
 <style lang="scss" scoped>
-.code {
+.code-component {
   border-radius: 6px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.04);
@@ -55,7 +65,7 @@ const handleCopyCode = (code: string) => {
   display: flex;
   align-items: flex-start;
 
-  .code-pre {
+  .code-list {
     line-height: 1.5;
     font-size: 12px;
     margin: 0;
@@ -63,13 +73,24 @@ const handleCopyCode = (code: string) => {
     flex-direction: column;
     flex: 1;
     min-width: 0;
-    code {
-      white-space: pre-wrap;
-      word-break: break-all;
-      font-family: Consolas;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.08);
+    .code-container {
+      display: flex;
+      align-items: start;
+      .code-index {
+        display: inline-block;
+        color: #00000080;
+        flex-shrink: 0;
+        padding-right: 6px;
+      }
+      .code-content {
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-family: Consolas;
+        min-height: 0;
+        flex: 1;
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.08);
+        }
       }
     }
   }

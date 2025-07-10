@@ -1,4 +1,4 @@
-import { useLocalStorage } from ".";
+import { useLocalStorage } from "./index";
 
 export interface ConfigLocalStorage {
   baiduAppId?: string;
