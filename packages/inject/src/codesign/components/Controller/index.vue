@@ -48,12 +48,10 @@
           </div>
         </template>
         <div class="form-item-content">
-          <Code
-            v-for="(item, index) in vueTemplateList"
-            :key="index"
-            :code="getAnnotation('template') + item"
-            :type="CodeType.Vue"
-          />
+          <template v-for="(item, index) in vueTemplateList" :key="index">
+            <span class="form-item-content-title" v-if="typeof item === 'object' && item.title">{{ item.title }}</span>
+            <Code :code="getAnnotation('template') + (typeof item === 'string' ? item : item.code)" :type="CodeType.Vue" />
+          </template>
         </div>
       </ElFormItem>
       <ElFormItem label-position="top" v-if="frameTypeInput === FrameType.React && reactTemplateList.length > 0">
@@ -63,12 +61,10 @@
           </div>
         </template>
         <div class="form-item-content">
-          <Code
-            v-for="(item, index) in reactTemplateList"
-            :key="index"
-            :code="getAnnotation('template') + item"
-            :type="CodeType.React"
-          />
+          <template v-for="(item, index) in reactTemplateList" :key="index">
+            <span class="form-item-content-title" v-if="typeof item === 'object' && item.title">{{ item.title }}</span>
+            <Code :code="getAnnotation('template') + (typeof item === 'string' ? item : item.code)" :type="CodeType.React" />
+          </template>
         </div>
       </ElFormItem>
       <ElFormItem label-position="top" v-if="jsList.length > 0">
@@ -229,9 +225,27 @@ const vueTemplateList = computed(() => {
           const className = camelToKebabCase(getValidVariableName(ElType.Text, i));
           const text = (item.query || "").trim();
           if (objectTypeInput.value === ObjectType.Pc) {
-            return [`<span class="${className}">${text}</span>`, `<span class="${className}"> {{ "${text}" }} </span>`];
+            return [
+              {
+                title: `文本形式${i ? `-${i}` : ""}`,
+                code: `<span class="${className}">${text}</span>`
+              },
+              {
+                title: `变量形式${i ? `-${i}` : ""}`,
+                code: `<span class="${className}"> {{ "${text}" }} </span>`
+              }
+            ];
           }
-          return [`<text class="${className}">${text}</text>`, `<text class="${className}"> {{ "${text}" }} </text>`];
+          return [
+            {
+              title: `文本形式${i ? `-${i}` : ""}`,
+              code: `<text class="${className}">${text}</text>`
+            },
+            {
+              title: `变量形式${i ? `-${i}` : ""}`,
+              code: `<text class="${className}"> {{ "${text}" }} </text>`
+            }
+          ];
         })
         .flat();
     }
@@ -291,9 +305,27 @@ const reactTemplateList = computed(() => {
           const classNameCode = getClassNameCode(className);
           const text = (item.query || "").trim();
           if (objectTypeInput.value === ObjectType.Pc) {
-            return [`<span ${classNameCode}>${text}</span>`, `<span ${classNameCode}> {"${text}"} </span>`];
+            return [
+              {
+                title: `文本形式${i ? `-${i}` : ""}`,
+                code: `<span ${classNameCode}>${text}</span>`
+              },
+              {
+                title: `变量形式${i ? `-${i}` : ""}`,
+                code: `<span ${classNameCode}> {"${text}"} </span>`
+              }
+            ];
           }
-          return [`<text ${classNameCode}>${text}</text>`, `<text ${classNameCode}> {"${text}"} </text>`];
+          return [
+            {
+              title: `文本形式${i ? `-${i}` : ""}`,
+              code: `<text ${classNameCode}>${text}</text>`
+            },
+            {
+              title: `变量形式${i ? `-${i}` : ""}`,
+              code: `<text ${classNameCode}> {"${text}"} </text>`
+            }
+          ];
         })
         .flat();
     }
@@ -473,6 +505,11 @@ onMounted(async () => {
     flex-direction: column;
     gap: 6px;
     width: 100%;
+
+    .form-item-content-title {
+      line-height: 1;
+      color: #7a7a7a;
+    }
   }
 
   .form-item-label {
