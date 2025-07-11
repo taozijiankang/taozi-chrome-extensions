@@ -81,6 +81,7 @@ const handleCopyCode = (code: string) => {
         color: #00000080;
         flex-shrink: 0;
         margin-right: 6px;
+        user-select: none;
       }
       .code-content {
         white-space: pre-wrap;
