@@ -1,6 +1,6 @@
 {
   "name": "taozi-chrome-extensions",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "taozi科技的谷歌浏览器扩展工具",
   "type": "module",
   "scripts": {
