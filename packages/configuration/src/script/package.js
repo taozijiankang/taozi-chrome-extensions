@@ -1,8 +1,6 @@
 import { getExtensionsDir } from "taozi-chrome-extensions/src/pathManage.js";
-import { MANIFEST } from "../manifest";
+import { MANIFEST } from "../manifest.js";
 import fs from "fs";
 import path from "path";
 
-const extensionsDir = getExtensionsDir();
-
-fs.writeFileSync(path.join(extensionsDir, "manifest.json"), JSON.stringify(MANIFEST, undefined, 4));
+fs.writeFileSync(path.join(getExtensionsDir(), "./manifest.json"), JSON.stringify(MANIFEST, undefined, 4));

@@ -4,3 +4,5 @@ inject/*
 !inject/README.md
 background/*
 !background/README.md
+
+manifest.json

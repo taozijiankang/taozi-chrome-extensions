@@ -1,4 +1,4 @@
-import { packageJson } from "taozi-chrome-extensions/src/packageJson";
+import { packageJson } from "taozi-chrome-extensions/src/packageJson.js";
 
 export const MANIFEST = {
   name: packageJson.name,
