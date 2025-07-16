@@ -3,8 +3,12 @@ import { get_my_worktable_common } from "./api/get_my_worktable_common";
 import { get_my_worktable_by_page } from "./api/get_my_worktable_by_page";
 import { setIcon } from "@/utils/setIcon";
 
-export async function tapdTask() {
-  if ((await tapdLocalStorage.get())?.loading && Date.now() - ((await tapdLocalStorage.get())?.dataUpdateTime || 0) < 1000 * 10) {
+export async function tapdTask(init = false) {
+  if (
+    !init &&
+    (await tapdLocalStorage.get())?.loading &&
+    Date.now() - ((await tapdLocalStorage.get())?.dataUpdateTime || 0) < 1000 * 10
+  ) {
     return;
   }
   await tapdLocalStorage.edit(v => {
