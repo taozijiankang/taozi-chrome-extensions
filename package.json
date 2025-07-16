@@ -2,6 +2,7 @@
   "name": "taozi-chrome-extensions",
   "version": "1.0.0",
   "description": "taozi科技的谷歌浏览器扩展工具",
+  "type": "module",
   "scripts": {
     "build-package": "turbo run build package",
     "bp": "turbo run build package"
@@ -12,5 +13,8 @@
   "packageManager": "pnpm@9.11.0",
   "devDependencies": {
     "turbo": "^2.5.0"
+  },
+  "dependencies": {
+    "@types/node": "^22.14.0"
   }
 }

@@ -1,8 +1,12 @@
 import { copyDirectorySync } from "../copyDirectorySync.js";
-import { getExtensionsDir } from "../getExtensionsDir.js";
+import { getExtensionsDir } from "taozi-chrome-extensions/src/pathManage.js"
 import path from "path";
 import fs from "fs";
 
+/**
+ * @param {string} distDir
+ * @param {string} target
+ */
 export function packageF(distDir, target) {
   const targetDir = path.resolve(getExtensionsDir(), target);
 
@@ -17,4 +21,7 @@ export function packageF(distDir, target) {
   copyDirectorySync(distDir, targetDir);
 }
 
-packageF(...process.argv.slice(2));
+const param = process.argv.slice(2);
+if (param.length === 2) {
+  packageF(param[0], param[1]);
+}

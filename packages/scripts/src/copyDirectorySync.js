@@ -1,6 +1,10 @@
 import fs from "fs";
 import path from "path";
 
+/**
+ * @param {string} src
+ * @param {string} dest
+ */
 export function copyDirectorySync(src, dest) {
   try {
     // 检查源目录是否存在
@@ -23,7 +27,7 @@ export function copyDirectorySync(src, dest) {
       if (stats.isDirectory()) {
         copyDirectorySync(srcPath, destPath);
       } else {
-        console.log('copyFile', srcPath, destPath);
+        console.log("copyFile", srcPath, destPath);
         fs.copyFileSync(srcPath, destPath);
       }
     });

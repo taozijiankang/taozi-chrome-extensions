@@ -12,13 +12,15 @@ import CodesignRecentViewed from "./components/Codesign/recentViewed.vue";
 import CodesignConfig from "./components/Codesign/config.vue";
 import TapdTodo from "./components/Tapd/todo.vue";
 import ProxyServerConfig from "./components/ProxyServerConfig/index.vue";
+import Commit from "./components/Version/commit.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
   Tapd = "Tapd",
   Codesign = "Codesign",
   Apifox = "Apifox",
-  Config = "Config"
+  Config = "Config",
+  Version = "Version"
 }
 const tabs = ref<
   {
@@ -45,6 +47,10 @@ const tabs = ref<
   {
     label: "项目配置",
     value: TabType.Config
+  },
+  {
+    label: "版本信息",
+    value: TabType.Version
   }
 ]);
 const activeTab = ref(TabType.GenVarName);
@@ -136,6 +142,15 @@ onMounted(async () => {
         </div>
         <div class="content">
           <BaiDuAppConfig />
+        </div>
+      </template>
+      <template v-else-if="activeTab === TabType.Version">
+        <div class="title">
+          <div class="left"></div>
+          <span>代码提交</span>
+        </div>
+        <div class="content">
+          <Commit />
         </div>
       </template>
     </div>

@@ -4,9 +4,15 @@
   "description": "",
   "type": "module",
   "bin": {
-    "package": "./bin/package.js"
+    "package": "./src/bin/package.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.14.0"
+  },
+  "dependencies": {
+    "taozi-chrome-extensions": "workspace:^"
+  }
 }

@@ -1,0 +1,21 @@
+{
+  "name": "@taozi-chrome-extensions/configuration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "module": "module",
+  "scripts": {
+    "package": "node ./src/script/package.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chrome-types": "^0.1.347"
+  },
+  "dependencies": {
+    "@taozi-chrome-extensions/scripts": "workspace:^",
+    "@types/node": "^22.14.0",
+    "taozi-chrome-extensions": "workspace:^"
+  }
+}

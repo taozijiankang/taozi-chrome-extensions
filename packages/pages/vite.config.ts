@@ -1,9 +1,9 @@
 import { fileURLToPath, URL } from "node:url";
-
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
-import { dirname, resolve } from "node:path";
+import path, { dirname, resolve } from "node:path";
+import { exec } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -23,5 +23,35 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))
     }
+  },
+  define: {
+    "process.env": {},
+    __COMMIT_INFO__: {
+      hash: await getGitInfo("%h"),
+      author: await getGitInfo("%an"),
+      date: await getGitInfo("%cd"),
+      title: await getGitInfo("%s"),
+      message: await getGitInfo("%b"),
+      messageFull: await getGitInfo("%B")
+    }
   }
 });
+
+/**
+ * 获取git信息
+ */
+function getGitInfo(format: string) {
+  return new Promise<string>((resolve, reject) => {
+    exec(
+      `git log -1 HEAD --pretty=format:"${format}"`,
+      {
+        cwd: process.cwd()
+      },
+      (error, stdout) => {
+        error ? reject(stdout) : resolve(stdout);
+      }
+    );
+  }).catch(() => {
+    return "";
+  });
+}
