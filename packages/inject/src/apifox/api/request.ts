@@ -13,7 +13,10 @@ export function request<T>(url: string, op: RequestInit, projectId: string): Pro
     "x-project-id": projectId
   });
   url = `${apifoxOrigin}${url}`;
-  return fetch(url, op)
+  return fetch(url, {
+    ...op,
+    credentials: "include"
+  })
     .then(res => res.json())
     .then((res: any) => {
       if (res.success) {
