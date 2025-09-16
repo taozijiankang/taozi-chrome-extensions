@@ -7,7 +7,7 @@ import { TRIGGER_RETRY_COUNT, TRIGGER_RETRY_DELAY } from "@/constant";
 import { insertMountEl } from "../utils/insertMountEl";
 
 /**
- * 代码设计注入
+ * codesign代码注入
  */
 export function codesignInject() {
   document.addEventListener(
@@ -17,16 +17,16 @@ export function codesignInject() {
       if (e.target instanceof Node && document.querySelector(".screen-inspector.inspector.expanded")?.contains(e.target)) {
         return;
       }
-      trigger().catch(err => {
+      trigger().catch((err) => {
         console.error(err);
         ElMessage({
           message: err + "",
-          type: "error"
+          type: "error",
         });
       });
     }, 100),
     {
-      capture: true
+      capture: true,
     }
   );
 }
@@ -39,7 +39,7 @@ async function trigger() {
       continue;
     }
     const sectionNodeBoxs = getAllSectionNodeBox(screenInspectorEl);
-    const codeSectionNode = sectionNodeBoxs.find(item => item.title === "代码");
+    const codeSectionNode = sectionNodeBoxs.find((item) => item.title === "代码");
     if (!codeSectionNode) {
       continue;
     }
@@ -51,7 +51,7 @@ async function trigger() {
     if (mountEl) {
       await createAppEl({
         mountEl,
-        com: Controller
+        com: Controller,
       });
       break;
     }

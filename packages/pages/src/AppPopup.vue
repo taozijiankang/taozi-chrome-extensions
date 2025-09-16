@@ -4,23 +4,17 @@ import BaiDuAppConfig from "./components/BaiDuAppConfig/index.vue";
 import GenVarName from "./components/GenVarName/index.vue";
 import Head from "./components/Head/index.vue";
 import Tabs from "./components/Tabs/index.vue";
-import ApifoxConfig from "./components/Apifox/config.vue";
-import ApifoxTem from "./components/Apifox/tem.vue";
-import TapdBoard from "./components/Tapd/board.vue";
 import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
 import CodesignRecentViewed from "./components/Codesign/recentViewed.vue";
 import CodesignConfig from "./components/Codesign/config.vue";
-import TapdTodo from "./components/Tapd/todo.vue";
 import ProxyServerConfig from "./components/ProxyServerConfig/index.vue";
 import Commit from "./components/Version/commit.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
-  Tapd = "Tapd",
   Codesign = "Codesign",
-  Apifox = "Apifox",
   Config = "Config",
-  Version = "Version"
+  Version = "Version",
 }
 const tabs = ref<
   {
@@ -30,33 +24,25 @@ const tabs = ref<
 >([
   {
     label: "生成变量名",
-    value: TabType.GenVarName
-  },
-  {
-    label: "Tapd",
-    value: TabType.Tapd
+    value: TabType.GenVarName,
   },
   {
     label: "Codesign",
-    value: TabType.Codesign
-  },
-  {
-    label: "Apifox",
-    value: TabType.Apifox
+    value: TabType.Codesign,
   },
   {
     label: "项目配置",
-    value: TabType.Config
+    value: TabType.Config,
   },
   {
     label: "版本信息",
-    value: TabType.Version
-  }
+    value: TabType.Version,
+  },
 ]);
 const activeTab = ref(TabType.GenVarName);
 
 watch(activeTab, () => {
-  configLocalStorage.edit(v => {
+  configLocalStorage.edit((v) => {
     v.popupActiveTab = activeTab.value;
   });
 });
@@ -71,29 +57,11 @@ onMounted(async () => {
     <div class="head">
       <Head />
     </div>
-    <div class="tapd">
-      <TapdBoard
-        @click="
-          () => {
-            activeTab = TabType.Tapd;
-          }
-        "
-      />
-    </div>
     <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <div class="content-container">
       <template v-if="activeTab === TabType.GenVarName">
         <div class="content">
           <GenVarName />
-        </div>
-      </template>
-      <template v-if="activeTab === TabType.Tapd">
-        <div class="title">
-          <div class="left"></div>
-          <span>待办</span>
-        </div>
-        <div class="content">
-          <TapdTodo />
         </div>
       </template>
       <template v-else-if="activeTab === TabType.Codesign">
@@ -110,22 +78,6 @@ onMounted(async () => {
         </div>
         <div class="content">
           <CodesignConfig />
-        </div>
-      </template>
-      <template v-else-if="activeTab === TabType.Apifox">
-        <div class="title">
-          <div class="left"></div>
-          <span>Apifox配置</span>
-        </div>
-        <div class="content">
-          <ApifoxConfig />
-        </div>
-        <div class="title">
-          <div class="left"></div>
-          <span>模板配置</span>
-        </div>
-        <div class="content">
-          <ApifoxTem />
         </div>
       </template>
       <template v-else-if="activeTab === TabType.Config">

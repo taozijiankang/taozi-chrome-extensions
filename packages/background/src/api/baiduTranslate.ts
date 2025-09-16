@@ -22,8 +22,8 @@ export async function requestBaiduTranslate(str: string): Promise<string> {
       baiduAppId + str + salt + baiduKey
     ).toString()}`
   )
-    .then(res => res.json())
-    .then(json => {
+    .then((res) => res.json())
+    .then((json) => {
       if (json["error_code"]) {
         throw new Error(json["error_msg"]);
       } else {

@@ -1,5 +1,4 @@
 import { startServer } from "./startServer";
-import { tapdTask } from "./tapd";
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("安装扩展");
@@ -13,12 +12,6 @@ start();
 
 function start() {
   startServer();
-
-  setInterval(() => {
-    tapdTask();
-  }, 1000 * 10);
-
-  tapdTask(true);
 }
 
 function registerContentScripts() {
