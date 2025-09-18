@@ -22,7 +22,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9.11.0
-      - name: 使用 Nnode.js ${{ matrix.node-version }}
+      - name: 使用 Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
