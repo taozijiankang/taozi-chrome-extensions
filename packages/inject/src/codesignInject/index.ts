@@ -1,10 +1,11 @@
 import Controller from "./components/Controller/index.vue";
-import { createAppEl } from "../utils/createAppEl";
 import { getAllSectionNodeBox } from "./getAllSectionNodeBox";
 import { debounce, wait } from "@taozi-chrome-extensions/common/src/utils/global";
 import { ElMessage } from "element-plus";
 import { TRIGGER_RETRY_COUNT, TRIGGER_RETRY_DELAY } from "@/constant";
 import { insertMountEl } from "../utils/insertMountEl";
+import { renderComponentToEl } from "@/utils/renderComponentToEl";
+import { h } from "vue";
 
 /**
  * codesign代码注入
@@ -49,9 +50,9 @@ async function trigger() {
       "taozi-chrome-extensions-codesign-custom-el-class"
     );
     if (mountEl) {
-      await createAppEl({
+      await renderComponentToEl({
         mountEl,
-        com: Controller,
+        render: () => h(Controller),
       });
       break;
     }

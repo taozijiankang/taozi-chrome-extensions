@@ -1,15 +1,7 @@
 import "element-plus/dist/index.css";
-import { createApp, h, type DefineSetupFnComponent } from "vue";
+import { createApp, type VNode } from "vue";
 
-export async function createAppEl<T extends DefineSetupFnComponent<any>>({
-  mountEl,
-  com,
-  props
-}: {
-  mountEl: HTMLElement;
-  com: T;
-  props?: T extends DefineSetupFnComponent<infer P> ? P : never;
-}) {
+export async function renderComponentToEl({ mountEl, render }: { mountEl: HTMLElement; render: () => VNode }) {
   if (!document.body.contains(mountEl)) {
     throw new Error("mountEl is not in the body");
   }
@@ -27,15 +19,13 @@ export async function createAppEl<T extends DefineSetupFnComponent<any>>({
   const link = document.createElement("link");
   link.rel = "stylesheet";
   link.href = chrome.runtime.getURL("inject/index.css");
-  await new Promise<void>(resolve => {
+  await new Promise<void>((resolve) => {
     link.addEventListener("load", () => resolve());
     head.appendChild(link);
   });
   const vueMountEl = document.createElement("div");
   body.appendChild(vueMountEl);
   createApp({
-    render() {
-      return h(com, props);
-    }
+    render,
   }).mount(vueMountEl);
 }
