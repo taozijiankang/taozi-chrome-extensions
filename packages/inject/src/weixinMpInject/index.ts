@@ -44,7 +44,7 @@ async function trigger() {
             item.show(false);
           });
           filter(value, accountItemList, {
-            extract: (item) => item.data.name || "",
+            extract: (item) => `${item.data.name}-${item.data.originalId}`,
           })
             .map((item) => item.original)
             .forEach((item) => {
