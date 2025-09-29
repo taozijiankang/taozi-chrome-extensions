@@ -1,7 +1,6 @@
 import Controller from "./components/Controller/index.vue";
 import { getAllSectionNodeBox, getCssCode, getScreenInspectorEl, getTextContent, getIconSrc, isImgFill } from "./elController";
-import { debounce, wait, retry } from "@taozi-chrome-extensions/common/src/utils/global";
-import { ElMessage } from "element-plus";
+import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
 import { TRIGGER_RETRY_COUNT, TRIGGER_RETRY_DELAY } from "@/constant";
 import { insertMountEl } from "../utils/insertMountEl";
 import { renderComponentToEl } from "@/utils/renderComponentToEl";
@@ -22,10 +21,6 @@ export function codesignInject() {
       }
       retry(trigger, TRIGGER_RETRY_DELAY, TRIGGER_RETRY_COUNT).catch((err) => {
         console.error(err);
-        ElMessage({
-          message: "代码注入失败",
-          type: "error",
-        });
       });
     }, 100),
     {

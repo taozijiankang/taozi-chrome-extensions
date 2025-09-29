@@ -6,7 +6,6 @@ import { getAccountItemList, getAccountList, getSwitchAccountPanel } from "./elC
 import { filter } from "@taozi-chrome-extensions/common/src/utils/fuzzy";
 import { TRIGGER_RETRY_COUNT, TRIGGER_RETRY_DELAY } from "@/constant";
 import { retry } from "@taozi-chrome-extensions/common/src/utils/global";
-import { ElMessage } from "element-plus";
 
 /**
  * 微信小程序注入
@@ -14,10 +13,6 @@ import { ElMessage } from "element-plus";
 export async function weixinMpInject() {
   retry(trigger, TRIGGER_RETRY_DELAY, TRIGGER_RETRY_COUNT).catch((err) => {
     console.error(err);
-    ElMessage({
-      message: "代码注入失败",
-      type: "error",
-    });
   });
 }
 
