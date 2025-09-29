@@ -17,5 +17,8 @@ export function getAccountItemList() {
         name: item.querySelector<HTMLDivElement>(".account_name")?.textContent,
         originalId: item.querySelector<HTMLDivElement>(".account_email")?.textContent,
       },
+      show: (value: boolean) => {
+        item.style.display = value ? "flex" : "none";
+      },
     }));
 }

@@ -2,41 +2,60 @@ import { insertMountEl } from "@/utils/insertMountEl";
 import SwitchAccountSearch from "./components/SwitchAccountSearch/index.vue";
 import { h } from "vue";
 import { renderComponentToEl } from "@/utils/renderComponentToEl";
-import { getAccountItemList, getSwitchAccountPanel } from "./selector";
+import { getAccountItemList, getAccountList, getSwitchAccountPanel } from "./elController";
 import { filter } from "@taozi-chrome-extensions/common/src/utils/fuzzy";
+import { TRIGGER_RETRY_COUNT, TRIGGER_RETRY_DELAY } from "@/constant";
+import { retry } from "@taozi-chrome-extensions/common/src/utils/global";
+import { ElMessage } from "element-plus";
 
+/**
+ * 微信小程序注入
+ */
 export async function weixinMpInject() {
+  retry(trigger, TRIGGER_RETRY_DELAY, TRIGGER_RETRY_COUNT).catch((err) => {
+    console.error(err);
+    ElMessage({
+      message: "代码注入失败",
+      type: "error",
+    });
+  });
+}
+
+async function trigger() {
   const switchAccountPanel = getSwitchAccountPanel();
   if (!switchAccountPanel) {
-    return;
+    console.error("切换账号面板不存在");
+    throw new Error();
   }
+
   const mountEl = await insertMountEl(
     switchAccountPanel,
-    () =>
-      switchAccountPanel.querySelector<HTMLDivElement>(".account_list") ||
-      switchAccountPanel.querySelector<HTMLDivElement>(".search_list")!,
+    () => getAccountList()!,
     "taozi-chrome-extensions-weixin-mp-switch-account-search-custom-el-class"
   );
-
-  if (mountEl) {
-    await renderComponentToEl({
-      mountEl,
-      render: () =>
-        h(SwitchAccountSearch, {
-          onSearch: (value: string) => {
-            const accountItemList = getAccountItemList();
-            accountItemList.forEach((item) => {
-              item.el.style.display = "none";
-            });
-            filter(value, accountItemList, {
-              extract: (item) => item.data.name || "",
-            })
-              .map((item) => item.original)
-              .forEach((item) => {
-                item.el.style.display = "flex";
-              });
-          },
-        }),
-    });
+  if (!mountEl) {
+    console.error("挂载节点不存在");
+    throw new Error();
   }
+
+  // 渲染组件
+  await renderComponentToEl({
+    mountEl,
+    render: () =>
+      h(SwitchAccountSearch, {
+        onSearch: (value: string) => {
+          const accountItemList = getAccountItemList();
+          accountItemList.forEach((item) => {
+            item.show(false);
+          });
+          filter(value, accountItemList, {
+            extract: (item) => item.data.name || "",
+          })
+            .map((item) => item.original)
+            .forEach((item) => {
+              item.show(true);
+            });
+        },
+      }),
+  });
 }

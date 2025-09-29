@@ -96,24 +96,25 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { md5 } from "@taozi-chrome-extensions/common/src/utils/md5";
 import { sendMessage } from "@taozi-chrome-extensions/common/src/messageServer";
 import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
 import { ElForm, ElFormItem, ElButton, ElInput, ElSelect, ElOption, ElMessage, ElIcon, ElTag } from "element-plus";
 import { Box, Picture, PictureRounded, Document } from "@element-plus/icons-vue";
 import { kebabToCamelCase, camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
-import { getAllSectionNodeBox } from "../../getAllSectionNodeBox";
 import Code from "../../../components/Code/index.vue";
 import { codesignLocalStorage, type CodesignLocalStorage } from "@taozi-chrome-extensions/common/src/local/codesign";
 import { getCssPropConfig, ElType, ObjectType, ObjectTypeOptions, ElTypeDesc, FrameTypeOptions, FrameType } from "./index";
 import { parseCssRules, type CssProp, type CssRule } from "./parseCssRules";
 import { CodeType } from "@/components/Code";
 
+const props = defineProps<{
+  identification: string;
+  elType: ElType;
+  textContent: string;
+  cssCode: string;
+}>();
+
 // State
-const identification = ref("");
-const elType = ref<ElType>(ElType.Div);
-const textContent = ref("");
-const cssCode = ref("");
 const nameTranslateInput = ref("");
 const nameInput = ref("");
 const nameTranslateLoading = ref(false);
@@ -133,13 +134,13 @@ watch([nameInput, nameTranslateInput, objectTypeInput, frameTypeInput, iconUrlIn
     v.objectType = objectTypeInput.value;
     v.frameType = frameTypeInput.value;
     if (!v.names) v.names = {};
-    v.names[identification.value] = nameInput.value;
+    v.names[props.identification] = nameInput.value;
     if (!v.nameTranslates) v.nameTranslates = {};
-    v.nameTranslates[identification.value] = nameTranslateInput.value;
+    v.nameTranslates[props.identification] = nameTranslateInput.value;
     if (!v.iconUrls) v.iconUrls = {};
-    v.iconUrls[identification.value] = iconUrlInput.value;
+    v.iconUrls[props.identification] = iconUrlInput.value;
     if (!v.annotations) v.annotations = {};
-    v.annotations[identification.value] = annotationInput.value;
+    v.annotations[props.identification] = annotationInput.value;
   });
 });
 
@@ -171,10 +172,10 @@ const getCssRules = () => {
     ignoreCssFontFamily: config.value?.ignoreCssFontFamily,
   });
   return parseCssRules({
-    cssCode: cssCode.value,
-    includePropNames: cssPropConfig.includePropNames[elType.value],
-    excludeProps: cssPropConfig.excludeProps[elType.value],
-    supplementProps: cssPropConfig.supplementProps[elType.value],
+    cssCode: props.cssCode,
+    includePropNames: cssPropConfig.includePropNames[props.elType],
+    excludeProps: cssPropConfig.excludeProps[props.elType],
+    supplementProps: cssPropConfig.supplementProps[props.elType],
     options: {
       boxSizing: config.value?.boxSizing,
     },
@@ -217,7 +218,7 @@ const getAnnotation = (type: "template" | "js" | "css") => {
 };
 
 const vueTemplateList = computed(() => {
-  switch (elType.value) {
+  switch (props.elType) {
     /** 文本 */
     case ElType.Text: {
       return getCssRules()
@@ -296,7 +297,7 @@ const reactTemplateList = computed(() => {
     }
     return `className="${className}"`;
   };
-  switch (elType.value) {
+  switch (props.elType) {
     /** 文本 */
     case ElType.Text: {
       return getCssRules()
@@ -372,7 +373,7 @@ const reactTemplateList = computed(() => {
 });
 
 const jsList = computed(() => {
-  switch (elType.value) {
+  switch (props.elType) {
     case ElType.Icon: {
       return [`const ${kebabToCamelCase(getValidVariableName(ElType.Icon), true)} = \`${iconUrlInput.value}\`;`];
     }
@@ -384,28 +385,28 @@ const cssList = computed(() => {
   const getCssProps = (item: CssRule) => {
     return "\n" + item.props.map((prop) => `  ${prop.name}: ${prop.value};`).join("\n") + "\n";
   };
-  switch (elType.value) {
+  switch (props.elType) {
     case ElType.Text: {
       return getCssRules().map((item, i) => {
-        const className = camelToKebabCase(getValidVariableName(elType.value, i));
+        const className = camelToKebabCase(getValidVariableName(props.elType, i));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Img: {
       return getCssRules().map((item) => {
-        const className = camelToKebabCase(getValidVariableName(elType.value));
+        const className = camelToKebabCase(getValidVariableName(props.elType));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Icon: {
       return getCssRules().map((item) => {
-        const className = camelToKebabCase(getValidVariableName(elType.value));
+        const className = camelToKebabCase(getValidVariableName(props.elType));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Div: {
       return getCssRules().map((item) => {
-        const className = camelToKebabCase(getValidVariableName(elType.value));
+        const className = camelToKebabCase(getValidVariableName(props.elType));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
@@ -413,74 +414,26 @@ const cssList = computed(() => {
 });
 
 onMounted(async () => {
-  try {
-    const screenInspectorEl = document.querySelector<HTMLDivElement>(".screen-inspector.inspector.expanded");
-    if (!screenInspectorEl) return;
-
-    const sectionNodeBoxs = getAllSectionNodeBox(screenInspectorEl);
-    const codeSectionNode = sectionNodeBoxs.find((item) => item.title === "代码");
-    if (!codeSectionNode) return;
-
-    cssCode.value = codeSectionNode.contentEl.querySelectorAll(".css-node__code--item")[0]?.textContent || "";
-    const topTitle = sectionNodeBoxs[0].title;
-
-    // Determine element type and set identification
-    if (sectionNodeBoxs.some((item) => item.title === "文本")) {
-      elType.value = ElType.Text;
-      textContent.value =
-        sectionNodeBoxs
-          .find((item) => item.title === "内容")
-          ?.contentEl.querySelector<HTMLImageElement>(".textarea__node.node-item__input span")?.textContent || "";
-    } else if (sectionNodeBoxs.some((item) => item.title === "切图")) {
-      elType.value = ElType.Icon;
-      const iconSrc =
-        sectionNodeBoxs.find((item) => item.title === "切图")?.contentEl.querySelector<HTMLImageElement>(".thumb img")?.src || "";
-      identification.value = md5(iconSrc + cssCode.value).toString();
-    } else if (
-      sectionNodeBoxs.some(
-        (item) =>
-          item.title === "填充" &&
-          [...item.contentEl.querySelectorAll("span.node-item__text")].some((item2) => item2.textContent?.trim() === "图片填充")
-      )
-    ) {
-      elType.value = ElType.Img;
-    } else {
-      elType.value = ElType.Div;
-    }
-
-    if (elType.value === ElType.Text) {
-      identification.value = md5(textContent.value + cssCode.value).toString();
-    } else {
-      identification.value = md5(topTitle + cssCode.value).toString();
-    }
-
-    // 缩短一下identification
-    identification.value = identification.value.slice(0, 10);
-
-    // Load saved state
-    const {
-      objectType = "",
-      frameType = "",
-      nameTranslates = {},
-      names = {},
-      iconUrls = {},
-      annotations = {},
-      config: config2 = {},
-    } = (await codesignLocalStorage.get()) || {};
-    nameInput.value = names[identification.value] || "item";
-    nameTranslateInput.value = nameTranslates[identification.value] || textContent.value;
-    objectTypeInput.value = (objectType as ObjectType) || ObjectType.Pc;
-    frameTypeInput.value = (frameType as FrameType) || FrameType.Vue;
-    iconUrlInput.value = iconUrls[identification.value] || "";
-    annotationInput.value = annotations[identification.value] || "";
-    config.value = config2 || {
-      ignoreCssFontFamily: false,
-      boxSizing: false,
-      cssModuleName: "",
-    };
-  } catch (e) {
-    console.error("Error in onMounted:", e);
-  }
+  const {
+    objectType = "",
+    frameType = "",
+    nameTranslates = {},
+    names = {},
+    iconUrls = {},
+    annotations = {},
+    config: config2 = {},
+  } = (await codesignLocalStorage.get()) || {};
+  nameInput.value = names[props.identification] || "item";
+  nameTranslateInput.value = nameTranslates[props.identification] || props.textContent;
+  objectTypeInput.value = (objectType as ObjectType) || ObjectType.Pc;
+  frameTypeInput.value = (frameType as FrameType) || FrameType.Vue;
+  iconUrlInput.value = iconUrls[props.identification] || "";
+  annotationInput.value = annotations[props.identification] || "";
+  config.value = config2 || {
+    ignoreCssFontFamily: false,
+    boxSizing: false,
+    cssModuleName: "",
+  };
 });
 </script>
 
