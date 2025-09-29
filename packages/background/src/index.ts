@@ -18,10 +18,10 @@ function registerContentScripts() {
   chrome.scripting.registerContentScripts([
     {
       id: "default",
-      matches: ["*://codesign.qq.com/*", "*://app.apifox.com/*", "*://www.tapd.cn/*"],
+      matches: ["*://codesign.qq.com/*", "*://mp.weixin.qq.com/*"],
       js: ["inject/index.iife.js"],
       css: ["inject/index.css"],
-      runAt: "document_idle"
-    }
+      runAt: "document_idle",
+    },
   ]);
 }
