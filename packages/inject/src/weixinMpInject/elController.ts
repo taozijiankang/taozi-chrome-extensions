@@ -1,3 +1,9 @@
+import type { WXMPItem } from "./api/type";
+
+export function getMenuBoxAccountInfo() {
+  return document.querySelector<HTMLDivElement>(".menu_box_account_info");
+}
+
 export function getSwitchAccountPanel() {
   return document.querySelector<HTMLDivElement>(".switch_account_dialog>.switch_account_panel");
 }
@@ -19,6 +25,12 @@ export function getAccountItemList() {
       },
       show: (value: boolean) => {
         item.style.display = value ? "flex" : "none";
+      },
+      setInfo: (wxItem: WXMPItem) => {
+        const emailEl = item.querySelector<HTMLDivElement>(".account_email");
+        if (emailEl) {
+          emailEl.innerHTML = `${wxItem.appid} (${wxItem.username})`;
+        }
       },
     }));
 }

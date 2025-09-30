@@ -89,16 +89,16 @@ export function wait(ms: number): Promise<void> {
  * @param count - 重试次数
  * @returns 重试后的函数
  */
-export function retry(fn: () => void | Promise<void>, delay: number, count: number) {
+export function retry(fn: () => void | Promise<void>, delay: number, count: number, errors: Error[] = []) {
   return new Promise((resolve, reject) => {
     if (count <= 0) {
-      throw new Error("重试次数不足");
+      throw errors;
     }
     Promise.resolve(fn())
       .then(resolve)
-      .catch(() => {
+      .catch((error) => {
         wait(delay).then(() => {
-          retry(fn, delay, count - 1).then(resolve, reject);
+          retry(fn, delay, count - 1, [...errors, error]).then(resolve, reject);
         });
       });
   });

@@ -1,18 +1,26 @@
 <template>
   <div class="switch-account-search">
-    <ElInput v-model="searchInput" placeholder="搜索" @input="handleSearch" clearable>
-      <template #append>
-        <elButton :icon="Search" @click="handleSearch" />
-      </template>
-    </ElInput>
+    <div class="search">
+      <ElText size="small" class="search-text" type="info">共有 {{ props.wxaList.length }} 个小程序</ElText>
+      <ElInput v-model="searchInput" placeholder="输入小程序名称,原始id,appid搜索" @input="handleSearch" clearable>
+        <template #append>
+          <ElButton :icon="Search" @click="handleSearch" />
+        </template>
+      </ElInput>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { ElInput, ElButton } from "element-plus";
+import { ElInput, ElButton, ElText } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import { weixinMpLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixinMp";
+import type { WXMPItem } from "../../api/type";
+
+const props = defineProps<{
+  wxaList: WXMPItem[];
+}>();
 
 const emit = defineEmits<{
   (e: "search", value: string): void;

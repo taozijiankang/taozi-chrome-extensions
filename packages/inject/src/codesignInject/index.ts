@@ -1,7 +1,6 @@
 import Controller from "./components/Controller/index.vue";
 import { getAllSectionNodeBox, getCssCode, getScreenInspectorEl, getTextContent, getIconSrc, isImgFill } from "./elController";
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
-import { TRIGGER_RETRY_COUNT, TRIGGER_RETRY_DELAY } from "@/constant";
 import { insertMountEl } from "../utils/insertMountEl";
 import { renderComponentToEl } from "@/utils/renderComponentToEl";
 import { h } from "vue";
@@ -19,8 +18,9 @@ export function codesignInject() {
       if (e.target instanceof Node && getScreenInspectorEl()?.contains(e.target)) {
         return;
       }
-      retry(trigger, TRIGGER_RETRY_DELAY, TRIGGER_RETRY_COUNT).catch((err) => {
-        console.error(err);
+      console.log("触发代码设计");
+      retry(triggerCodesign, 10, 100).catch((err) => {
+        console.error("代码注入失败", err);
       });
     }, 100),
     {
@@ -29,12 +29,11 @@ export function codesignInject() {
   );
 }
 
-async function trigger() {
+async function triggerCodesign() {
   const sectionNodeBoxs = getAllSectionNodeBox();
   const codeSectionNode = sectionNodeBoxs.find((item) => item.title === "代码");
   if (!codeSectionNode) {
-    console.error("代码节点不存在");
-    throw new Error();
+    throw new Error("代码节点不存在");
   }
 
   const mountEl = await insertMountEl(
@@ -43,8 +42,7 @@ async function trigger() {
     "taozi-chrome-extensions-codesign-custom-el-class"
   );
   if (!mountEl) {
-    console.error("挂载节点不存在");
-    throw new Error();
+    throw new Error("挂载节点不存在");
   }
 
   const topTitle = sectionNodeBoxs[0].title;
