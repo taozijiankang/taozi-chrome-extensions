@@ -27,12 +27,9 @@ export function getAccountItemList() {
         item.style.display = value ? "flex" : "none";
       },
       planRelease: (value: boolean) => {
+        item.querySelector<HTMLDivElement>(".plan_release")?.remove();
         if (value) {
-          let planReleaseEl = item.querySelector<HTMLDivElement>(".plan_release");
-          if (planReleaseEl) {
-            return;
-          }
-          planReleaseEl = document.createElement("div");
+          const planReleaseEl = document.createElement("div");
           planReleaseEl.innerHTML = `
             <span style="color: #07C160;font-size: 12px;">已添加到发版计划</span>
           `;
@@ -40,15 +37,16 @@ export function getAccountItemList() {
           item
             .querySelector<HTMLDivElement>(".account_item_detail")
             ?.insertBefore(planReleaseEl, item.querySelector<HTMLDivElement>(".account_name_detail")?.nextSibling!);
-        } else {
-          item.querySelector<HTMLDivElement>(".plan_release")?.remove();
         }
       },
       setInfo: (wxItem: WXMPItem) => {
-        const emailEl = item.querySelector<HTMLDivElement>(".account_email");
-        if (emailEl) {
-          emailEl.innerHTML = `${wxItem.appid} (${wxItem.username})`;
-        }
+        // item.querySelector<HTMLDivElement>(".account_username")?.remove();
+        // const usernameEl = document.createElement("div");
+        // usernameEl.innerHTML = `
+        //   <span>${wxItem.username}</span>
+        // `;
+        // usernameEl.classList.add("account_username");
+        // item.querySelector<HTMLDivElement>(".account_item_detail")?.insertBefore(usernameEl, null);
       },
     }));
 }
