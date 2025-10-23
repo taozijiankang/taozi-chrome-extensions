@@ -7,6 +7,7 @@ import { filter } from "@taozi-chrome-extensions/common/src/utils/fuzzy";
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
 import { getWxaList } from "./api";
 import type { WXMPItem } from "./api/type";
+import { mpReleasePlanLocalStorage } from "@taozi-chrome-extensions/common/src/local/mpReleasePlan";
 
 /**
  * 微信小程序注入
@@ -56,6 +57,22 @@ async function triggerSwitchAccount() {
 
   if (wxaList.length === 0) {
     wxaList.push(...(await getWxaList()));
+    /**
+     * 获取小程序列表
+     * 并更新本地存储
+     */
+    mpReleasePlanLocalStorage.edit((v) => {
+      v.mpList?.forEach((item) => {
+        const wxItem = wxaList.find((wxa) => wxa.appid === (item.appId || ""));
+        if (wxItem) {
+          item.name = wxItem.app_name;
+          item.headimg = wxItem.app_headimg;
+          item.username = wxItem.username;
+          item.email = wxItem.email;
+          item.type = wxItem.type;
+        }
+      });
+    });
   }
 
   accountItemList.forEach((item) => {
@@ -71,10 +88,17 @@ async function triggerSwitchAccount() {
     render: () =>
       h(SwitchAccountSearch, {
         wxaList,
-        onSearch: (value: string) => {
+        onSearch: async (value: string) => {
+          const { mpList: mpReleasePlanList = [] } = (await mpReleasePlanLocalStorage.get()) || {};
+
           value = value.trim();
           accountItemList.forEach((item) => {
             item.show(false);
+            item.planRelease(
+              mpReleasePlanList.some(
+                (mp) => mp.appId === wxaList.find((wxa) => wxa.username === (item.data.originalId || ""))?.appid
+              )
+            );
           });
           filter(value, accountItemList, {
             extract: (item) =>

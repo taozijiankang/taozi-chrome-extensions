@@ -26,6 +26,24 @@ export function getAccountItemList() {
       show: (value: boolean) => {
         item.style.display = value ? "flex" : "none";
       },
+      planRelease: (value: boolean) => {
+        if (value) {
+          let planReleaseEl = item.querySelector<HTMLDivElement>(".plan_release");
+          if (planReleaseEl) {
+            return;
+          }
+          planReleaseEl = document.createElement("div");
+          planReleaseEl.innerHTML = `
+            <span style="color: #07C160;font-size: 12px;">已添加到发版计划</span>
+          `;
+          planReleaseEl.classList.add("plan_release");
+          item
+            .querySelector<HTMLDivElement>(".account_item_detail")
+            ?.insertBefore(planReleaseEl, item.querySelector<HTMLDivElement>(".account_name_detail")?.nextSibling!);
+        } else {
+          item.querySelector<HTMLDivElement>(".plan_release")?.remove();
+        }
+      },
       setInfo: (wxItem: WXMPItem) => {
         const emailEl = item.querySelector<HTMLDivElement>(".account_email");
         if (emailEl) {

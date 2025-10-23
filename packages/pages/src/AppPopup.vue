@@ -9,9 +9,11 @@ import CodesignRecentViewed from "./components/Codesign/recentViewed.vue";
 import CodesignConfig from "./components/Codesign/config.vue";
 import ProxyServerConfig from "./components/ProxyServerConfig/index.vue";
 import Commit from "./components/Version/commit.vue";
+import MpReleasePlan from "./components/MpReleasePlan/index.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
+  MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
   Config = "Config",
   Version = "Version",
@@ -25,6 +27,10 @@ const tabs = ref<
   {
     label: "生成变量名",
     value: TabType.GenVarName,
+  },
+  {
+    label: "小程序发版计划",
+    value: TabType.MpReleasePlan,
   },
   {
     label: "Codesign",
@@ -62,6 +68,11 @@ onMounted(async () => {
       <template v-if="activeTab === TabType.GenVarName">
         <div class="content">
           <GenVarName />
+        </div>
+      </template>
+      <template v-else-if="activeTab === TabType.MpReleasePlan">
+        <div class="content">
+          <MpReleasePlan />
         </div>
       </template>
       <template v-else-if="activeTab === TabType.Codesign">
