@@ -45,21 +45,20 @@ watch(
 
 const handleAddMp = () => {
   if (!mpAppIdInput.value) return;
-  mpList.value.unshift(
-    ...mpAppIdInput.value
-      .trim()
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .map((item) => ({
-        appId: item,
-        name: "",
-        headimg: "",
-        username: "",
-        email: "",
-        type: "",
-      }))
-  );
+  const addMpList = mpAppIdInput.value
+    .trim()
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((item) => ({
+      appId: item,
+      name: "",
+      headimg: "",
+      username: "",
+      email: "",
+      type: "",
+    }));
+  mpList.value.unshift(...addMpList.filter((item) => !mpList.value.some((v) => v.appId === item.appId)));
   mpAppIdInput.value = "";
 };
 
