@@ -29,6 +29,10 @@ jobs:
           cache: "pnpm"
       - name: 安装依赖
         run: pnpm install
+
+      - name: 迭代版本号
+        run: node .node/iteration-version.js --new-version ${{ github.ref }}
+
       - name: build-package
         run: pnpm run build-package
 
