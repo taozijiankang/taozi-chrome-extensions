@@ -4,6 +4,8 @@ import { fileURLToPath } from "url";
 import { program } from "commander";
 import dayjs from "dayjs";
 
+process.env.TZ = "Asia/Shanghai";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
