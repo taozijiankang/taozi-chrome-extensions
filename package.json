@@ -12,9 +12,11 @@
   "license": "ISC",
   "packageManager": "pnpm@9.11.0",
   "devDependencies": {
-    "turbo": "^2.5.0",
     "@types/node": "^22.14.0",
-    "commander": "^14.0.2"
+    "commander": "^14.0.2",
+    "turbo": "^2.5.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "dayjs": "^1.11.13"
+  }
 }

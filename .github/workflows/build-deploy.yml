@@ -5,8 +5,8 @@ name: build-deploy
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - master
 
 jobs:
   build-deploy:
@@ -31,7 +31,7 @@ jobs:
         run: pnpm install
 
       - name: 迭代版本号
-        run: node .node/iteration-version.js --new-version ${{ github.ref }}
+        run: node .node/iteration-version.js
 
       - name: build-package
         run: pnpm run build-package
@@ -39,14 +39,20 @@ jobs:
       - name: Package extensions
         run: zip -r taozi-chrome-extensions.zip ./extensions
 
+      - name: Read version from package.json
+        id: read_version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: v${{ steps.read_version.outputs.VERSION }}
+          release_name: Release v${{ steps.read_version.outputs.VERSION }}
           draft: false
           prerelease: false
 
@@ -58,5 +64,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: ./taozi-chrome-extensions.zip
-          asset_name: taozi-chrome-extensions-${{ github.ref }}.zip
+          asset_name: taozi-chrome-extensions-v${{ steps.read_version.outputs.VERSION }}.zip
           asset_content_type: application/zip
