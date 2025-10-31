@@ -1,5 +1,3 @@
-import type { WXMPItem } from "./api/type";
-
 export function getMenuBoxAccountInfo() {
   return document.querySelector<HTMLDivElement>(".menu_box_account_info");
 }
@@ -15,38 +13,46 @@ export function getAccountList() {
 export function getAccountItemList() {
   return [...(getAccountList()?.querySelectorAll<HTMLDivElement>(".account_item.account_item_gap") || [])]
     .filter(Boolean)
-    .map((item) => ({
-      el: item,
-      on: item.querySelector<HTMLDivElement>(".current_login"),
-      data: {
-        logo: item.querySelector<HTMLImageElement>(".account_item_logo")?.src,
-        name: item.querySelector<HTMLDivElement>(".account_name")?.textContent,
-        originalId: item.querySelector<HTMLDivElement>(".account_email")?.textContent,
-      },
-      show: (value: boolean) => {
-        item.style.display = value ? "flex" : "none";
-      },
-      planRelease: (value: boolean) => {
-        item.querySelector<HTMLDivElement>(".plan_release")?.remove();
-        if (value) {
-          const planReleaseEl = document.createElement("div");
-          planReleaseEl.innerHTML = `
-            <span style="color: #07C160;font-size: 12px;">已添加到发版计划</span>
+    .map((item) => {
+      item.style.height = "auto";
+      item.style.padding = "6px 8px";
+      item.style.position = "relative";
+
+      return {
+        on: item.querySelector<HTMLDivElement>(".current_login"),
+        data: {
+          originalId: item.querySelector<HTMLDivElement>(".account_email")?.textContent,
+        },
+        show: (value: boolean) => {
+          item.style.display = value ? "flex" : "none";
+        },
+        setContent: (op: { planRelease: boolean; appId: string }) => {
+          const injectElClass = "taozi-chrome-extensions-weixin-mp-switch-account-search-custom-el-class";
+          let injectEl = item.querySelector<HTMLDivElement>(`.${injectElClass}`);
+          if (injectEl) {
+            injectEl.remove();
+          }
+          injectEl = document.createElement("div");
+          injectEl.classList.add(injectElClass);
+          injectEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 4px;">
+              ${op.appId ? `<span style="color: #7E8081;font-size: 15px;">AppId: ${op.appId}</span>` : ""}
+              ${
+                op.planRelease
+                  ? `<span style="
+                  color: white;
+                  font-size: 12px;
+                  background-color: #f08a5d;
+                  padding: 0 3px;
+                  border-radius: 5px;
+                ">待发版</span>`
+                  : ""
+              }
+            </div>
           `;
-          planReleaseEl.classList.add("plan_release");
-          item
-            .querySelector<HTMLDivElement>(".account_item_detail")
-            ?.insertBefore(planReleaseEl, item.querySelector<HTMLDivElement>(".account_name_detail")?.nextSibling!);
-        }
-      },
-      setInfo: (wxItem: WXMPItem) => {
-        // item.querySelector<HTMLDivElement>(".account_username")?.remove();
-        // const usernameEl = document.createElement("div");
-        // usernameEl.innerHTML = `
-        //   <span>${wxItem.username}</span>
-        // `;
-        // usernameEl.classList.add("account_username");
-        // item.querySelector<HTMLDivElement>(".account_item_detail")?.insertBefore(usernameEl, null);
-      },
-    }));
+          item.querySelector<HTMLDivElement>(".account_item_detail")?.appendChild(injectEl);
+          item.style.position = "relative";
+        },
+      };
+    });
 }
