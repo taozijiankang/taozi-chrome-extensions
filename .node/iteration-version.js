@@ -8,6 +8,10 @@ import semver from "semver";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const packageJsonPath = path.join(__dirname, "../package.json");
+
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
+
 /**
  * @typedef {Object} IterationVersionOptions
  * @property {string} [major] 主版本号
@@ -33,28 +37,31 @@ program
  * @param {IterationVersionOptions} options
  */
 async function iterationVersion(options) {
-  const { major = "1", minor = "0" } = options;
+  let { major = "1", minor = "0" } = options;
 
-  const packageJsonPath = path.join(__dirname, "../package.json");
+  major = parseInt(major.trim()).toString();
+  minor = parseInt(minor.trim()).toString();
 
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
+  const remoteVersions = await getRemoteVersions();
 
-  const maxSatisfyingVersion = await getMaxSatisfyingVersion(major, minor);
+  const remoteMaxVersion = semver.maxSatisfying(remoteVersions, `*`) || "1.0.0";
 
-  const newVersion = semver.inc(maxSatisfyingVersion, "patch");
+  console.log("remoteMaxVersion:", remoteMaxVersion);
 
-  console.log(`版本号迭代为 ${newVersion}`);
+  if (semver.lt(`${major}.${Number(minor) + 1}.0`, remoteMaxVersion)) {
+    throw new Error(`主版本号 ${major} 和次版本号 ${minor} 落后于远程最高版本号 ${remoteMaxVersion}`);
+  }
+
+  const newVersion = semver.inc(semver.maxSatisfying([remoteMaxVersion, `${major}.${minor}.0`], `*`) || "1.0.0", "patch");
+
+  console.log(`版本号迭代为: ${newVersion}`);
 
   packageJson.version = newVersion;
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 }
 
-/**
- * @param {string} major
- * @param {string} minor
- */
-async function getMaxSatisfyingVersion(major, minor) {
+async function getRemoteVersions() {
   /** @type {{name: string}[]} */
   const tagList = await new Promise((resolve, reject) => {
     https.get(
@@ -80,12 +87,12 @@ async function getMaxSatisfyingVersion(major, minor) {
     );
   });
 
-  const targetMaxVersion = `${major}.${minor}.0`;
-
-  return (
-    semver.maxSatisfying(
-      [...tagList.map((tag) => tag.name).filter((v) => /^v/i.test(v)), targetMaxVersion].filter((v) => !!semver.valid(v)),
-      `${major}.${minor}.*`
-    ) || targetMaxVersion
-  );
+  return [
+    "1.0.0",
+    ...tagList
+      .map((tag) => tag.name)
+      .filter((v) => /^v/i.test(v))
+      .map((v) => v.replace(/^v/, ""))
+      .filter((v) => !!semver.valid(v)),
+  ];
 }
