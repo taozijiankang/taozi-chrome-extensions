@@ -30,5 +30,18 @@
   "[less]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["apifox", "boxs", "codesign", "dlalog", "headimg", "tabpane", "taozi", "tapd", "tems", "weixin", "workitem"]
+  "cSpell.words": [
+    "apifox",
+    "boxs",
+    "codesign",
+    "dlalog",
+    "headimg",
+    "tabpane",
+    "taozi",
+    "tapd",
+    "tems",
+    "weixin",
+    "workitem",
+    "WXMP"
+  ]
 }

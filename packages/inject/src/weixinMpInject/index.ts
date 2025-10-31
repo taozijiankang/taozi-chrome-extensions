@@ -5,20 +5,26 @@ import { renderComponentToEl } from "@/utils/renderComponentToEl";
 import { getAccountItemList, getAccountList, getMenuBoxAccountInfo, getSwitchAccountPanel } from "./elController";
 import { filter } from "@taozi-chrome-extensions/common/src/utils/fuzzy";
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
-import { getWxaList } from "./api";
-import type { WXMPItem } from "./api/type";
+import { getWxList } from "./middleware/getWxList";
 import { mpReleasePlanLocalStorage } from "@taozi-chrome-extensions/common/src/local/mpReleasePlan";
 
 /**
  * 微信小程序注入
  */
 export async function weixinMpInject() {
+  if (document.readyState === "interactive" || document.readyState === "complete") {
+    getWxList();
+  } else {
+    document.addEventListener("load", () => {
+      getWxList();
+    });
+  }
+
   document.addEventListener(
     "click",
     debounce((e: MouseEvent) => {
       const target = e.target as HTMLDivElement;
       if (target instanceof HTMLDivElement && getMenuBoxAccountInfo()?.contains(target) && target.textContent === "切换账号") {
-        console.log("触发切换账号");
         /**
          * 因为中间会调用接口所以重试总时长要设置长一点
          */
@@ -33,8 +39,10 @@ export async function weixinMpInject() {
   );
 }
 
-const wxaList: WXMPItem[] = [];
-
+/**
+ * 触发切换账号
+ * 触发时机：点击切换账号按钮
+ */
 async function triggerSwitchAccount() {
   const switchAccountPanel = getSwitchAccountPanel();
   if (!switchAccountPanel) {
@@ -55,32 +63,7 @@ async function triggerSwitchAccount() {
     throw new Error("挂载节点不存在");
   }
 
-  if (wxaList.length === 0) {
-    wxaList.push(...(await getWxaList()));
-    /**
-     * 获取小程序列表
-     * 并更新本地存储
-     */
-    mpReleasePlanLocalStorage.edit((v) => {
-      v.mpList?.forEach((item) => {
-        const wxItem = wxaList.find((wxa) => wxa.appid === (item.appId || ""));
-        if (wxItem) {
-          item.name = wxItem.app_name;
-          item.headimg = wxItem.app_headimg;
-          item.username = wxItem.username;
-          item.email = wxItem.email;
-          item.type = wxItem.type;
-        }
-      });
-    });
-  }
-
-  accountItemList.forEach((item) => {
-    const wxItem = wxaList.find((wxa) => wxa.username === (item.data.originalId || ""));
-    if (wxItem) {
-      item.setInfo(wxItem);
-    }
-  });
+  const wxaList = await getWxList();
 
   // 渲染组件
   await renderComponentToEl({
@@ -94,21 +77,22 @@ async function triggerSwitchAccount() {
           value = value.trim();
           accountItemList.forEach((item) => {
             item.show(false);
-            item.planRelease(
-              mpReleasePlanList.some(
-                (mp) => mp.appId === wxaList.find((wxa) => wxa.username === (item.data.originalId || ""))?.appid
-              )
-            );
           });
           filter(value, accountItemList, {
-            extract: (item) =>
-              `${item.data.name}-${wxaList.find((wxa) => wxa.username === (item.data.originalId || ""))?.appid || ""}-${
-                item.data.originalId
-              }`,
+            extract: (item) => {
+              const wxItem = wxaList.find((wxa) => wxa.username === (item.data.originalId || ""));
+              return `${wxItem?.app_name || ""}-${wxItem?.appid || ""}-${wxItem?.username || ""}`;
+            },
           })
             .map((item) => item.original)
             .forEach((item) => {
               item.show(true);
+
+              const wxItem = wxaList.find((wxa) => wxa.username === (item.data.originalId || ""));
+              item.setContent({
+                planRelease: mpReleasePlanList.some((mp) => mp.appId === wxItem?.appid),
+                appId: wxItem?.appid || "",
+              });
             });
         },
       }),

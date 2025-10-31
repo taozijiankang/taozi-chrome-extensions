@@ -13,7 +13,7 @@
             <span>{{ item.appId }} {{ item.username ? `(${item.username})` : "" }}</span>
           </div>
         </div>
-        <ElButton type="primary" @click="handleFinishMp(index)">完成</ElButton>
+        <ElButton type="primary" @click="handleFinishMp(index)">已发版</ElButton>
       </div>
     </div>
   </div>
