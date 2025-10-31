@@ -2,9 +2,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { program } from "commander";
-import dayjs from "dayjs";
-
-process.env.TZ = "Asia/Shanghai";
+import https from "https";
+import semver from "semver";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,11 +39,53 @@ async function iterationVersion(options) {
 
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
 
-  const newVersion = `${major}.${minor}.${dayjs().format("YYYYMMDDHHmmss")}`;
+  const maxSatisfyingVersion = await getMaxSatisfyingVersion(major, minor);
 
-  console.log(`${packageJson.name} 的版本号迭代为 ${newVersion}`);
+  const newVersion = semver.inc(maxSatisfyingVersion, "patch");
+
+  console.log(`版本号迭代为 ${newVersion}`);
 
   packageJson.version = newVersion;
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
+}
+
+/**
+ * @param {string} major
+ * @param {string} minor
+ */
+async function getMaxSatisfyingVersion(major, minor) {
+  /** @type {{name: string}[]} */
+  const tagList = await new Promise((resolve, reject) => {
+    https.get(
+      "https://api.github.com/repos/taozijiankang/taozi-chrome-extensions/tags",
+      {
+        headers: {
+          "User-Agent": "nodejs",
+        },
+      },
+      (res) => {
+        /** @type {Buffer[]} */
+        let data = [];
+        res.on("data", (chunk) => {
+          data.push(chunk);
+        });
+        res.on("end", () => {
+          resolve(JSON.parse(Buffer.concat(data).toString()));
+        });
+        res.on("error", (err) => {
+          reject(err);
+        });
+      }
+    );
+  });
+
+  const targetMaxVersion = `${major}.${minor}.0`;
+
+  return (
+    semver.maxSatisfying(
+      [...tagList.map((tag) => tag.name).filter((v) => /^v/i.test(v)), targetMaxVersion].filter((v) => !!semver.valid(v)),
+      `${major}.${minor}.*`
+    ) || targetMaxVersion
+  );
 }
