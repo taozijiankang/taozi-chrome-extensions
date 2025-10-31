@@ -13,10 +13,11 @@
   "packageManager": "pnpm@9.11.0",
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/semver": "^7.7.1",
     "commander": "^14.0.2",
     "turbo": "^2.5.0"
   },
   "dependencies": {
-    "dayjs": "^1.11.13"
+    "semver": "^7.7.3"
   }
 }

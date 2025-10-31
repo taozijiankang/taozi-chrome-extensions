@@ -8,13 +8,16 @@ importers:
 
   .:
     dependencies:
-      dayjs:
-        specifier: ^1.11.13
-        version: 1.11.13
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
         version: 22.14.1
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       commander:
         specifier: ^14.0.2
         version: 14.0.2
@@ -965,6 +968,9 @@ packages:
   '@types/node@22.14.1':
     resolution: {integrity: sha512-u0HuPQwe/dHrItgHHpmw3N2fYCR6x4ivMNbPHRkBVP4CvN+kiRrKHWk3i8tXiO/joPwXLMYvF9TTF0eqgHIuOw==}
 
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+
   '@types/web-bluetooth@0.0.16':
     resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
 
@@ -1673,6 +1679,11 @@ packages:
 
   semver@7.7.1:
     resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.7.3:
+    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -2544,6 +2555,8 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/semver@7.7.1': {}
+
   '@types/web-bluetooth@0.0.16': {}
 
   '@vitejs/plugin-vue@5.2.3(vite@6.2.6(@types/node@22.14.1)(sass-embedded@1.86.3))(vue@3.5.13(typescript@5.8.3))':
@@ -3284,6 +3297,8 @@ snapshots:
 
   semver@7.7.1:
     optional: true
+
+  semver@7.7.3: {}
 
   sharp@0.33.5:
     dependencies:
