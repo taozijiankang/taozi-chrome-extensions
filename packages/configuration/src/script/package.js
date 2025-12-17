@@ -1,4 +1,4 @@
-import { getExtensionsDir } from "taozi-chrome-extensions/src/pathManage.js";
+import { getExtensionsDir } from "@taozi-chrome-extensions/scripts/src/pathManage.js";
 import { MANIFEST } from "../manifest.js";
 import fs from "fs";
 import path from "path";

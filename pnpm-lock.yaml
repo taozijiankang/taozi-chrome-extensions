@@ -95,9 +95,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.14.1
-      taozi-chrome-extensions:
-        specifier: workspace:^
-        version: link:../..
     devDependencies:
       chrome-types:
         specifier: ^0.1.347
@@ -217,10 +214,6 @@ importers:
         version: 2.2.8(typescript@5.8.3)
 
   packages/scripts:
-    dependencies:
-      taozi-chrome-extensions:
-        specifier: workspace:^
-        version: link:../..
     devDependencies:
       '@types/node':
         specifier: ^22.14.0

@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@taozi-chrome-extensions/scripts": "workspace:^",
-    "@types/node": "^22.14.0",
-    "taozi-chrome-extensions": "workspace:^"
+    "@types/node": "^22.14.0"
   }
 }
