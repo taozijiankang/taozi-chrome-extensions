@@ -6,7 +6,6 @@
           <Input v-model:value="componentName" />
         </ElFormItem>
       </ElForm>
-
       <ElTabs v-model="activeTableType" class="demo-tabs">
         <ElTabPane label="Code" :name="TableType.Code">
           <div class="codes">
@@ -38,7 +37,7 @@
             <div class="controller">
               <ElButton type="primary" @click="handleUploadAllAssets">全部上传</ElButton>
             </div>
-            <div v-for="value in showAssets.filter((item) => item.assets.length > 0)" :key="value.type" class="assets-container">
+            <div v-for="value in showAssets.filter(item => item.assets.length > 0)" :key="value.type" class="assets-container">
               <div class="title">
                 <div class="left"></div>
                 <span>{{ value.type }}</span>
@@ -59,7 +58,7 @@
                     >
                   </div>
                   <div v-if="asset.ossUrl" class="js-code">
-                    <Code :code="getAssetsJsCode({ name: asset.cuName, ossUrl: asset.ossUrl || '' })" :type="CodeType.Js" />
+                    <Code :code="getAssetsJsCode({ name: asset.cuName, url: asset.ossUrl || asset.src })" :type="CodeType.Js" />
                   </div>
                 </div>
               </div>
@@ -85,7 +84,7 @@ import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messag
 
 enum TableType {
   Code = "code",
-  Assets = "assets",
+  Assets = "assets"
 }
 
 const activeTableType = ref(TableType.Code);
@@ -98,53 +97,71 @@ const codes = ref<BaseCode[]>([]);
 
 const assets = ref<(Asset & { cuName: string; ossUrl: string })[]>([]);
 
-const showBaseCode = computed(() => {
-  return handleBaseCode(componentName.value, codes.value);
+const showBaseCode = ref<{
+  html: string;
+  css: string;
+}>({
+  html: "",
+  css: ""
 });
 
 const showJsCode = computed(() => {
   return assets.value
-    .filter((item) => item.ossUrl)
-    .map((item) => {
-      return getAssetsJsCode({ name: item.cuName, ossUrl: item.ossUrl || "" });
+    .map(item => {
+      return getAssetsJsCode({ name: item.cuName, url: item.ossUrl || item.src });
     })
     .join("\n");
 });
 
 const imageAssets = computed(() => {
-  return assets.value.filter((item) => item.type === "image");
+  return assets.value.filter(item => item.type === "image");
 });
 
 const iconAssets = computed(() => {
-  return assets.value.filter((item) => item.type === "icon");
+  return assets.value.filter(item => item.type === "icon");
 });
 
 const showAssets = computed(() => {
   return [
     {
       type: "images",
-      assets: imageAssets.value,
+      assets: imageAssets.value
     },
     {
       type: "icons",
-      assets: iconAssets.value,
-    },
+      assets: iconAssets.value
+    }
   ];
 });
 
+watch([componentName], () => {
+  generateShowCode();
+});
+
 watch([componentName, assets], () => {
-  figmaLocalStorage.edit((v) => {
+  figmaLocalStorage.edit(v => {
     v.componentName = componentName.value;
 
-    v.assets = assets.value.map((item) => {
+    v.assets = assets.value.map(item => {
       return {
         name: item.cuName,
         figmaDownloadUrl: item.src,
-        ossUrl: item.ossUrl,
+        ossUrl: item.ossUrl
       };
     });
   });
 });
+
+const generateShowCode = async () => {
+  const { html, css } = await handleBaseCode(componentName.value, codes.value);
+
+  const uniVueCode = html.replace(/(?<=<\/?)div/g, "view");
+
+  showBaseCode.value = {
+    html: uniVueCode,
+    css
+  };
+};
 
 const handleShowCodesDialog = async (codesData: BaseCode[], assetsData: Asset[]) => {
   const { componentName: componentName_ = "com", assets: assets_ = [] } = (await figmaLocalStorage.get()) || {};
@@ -153,16 +170,18 @@ const handleShowCodesDialog = async (codesData: BaseCode[], assetsData: Asset[])
   codes.value = codesData;
 
   assets.value = assetsData.map((item, index) => {
-    const asset = assets_.find((asset) => asset.figmaDownloadUrl === item.src);
+    const asset = assets_.find(asset => asset.figmaDownloadUrl === item.src);
 
     return {
       ...item,
       cuName: asset?.name || `${item.type}-${index}`,
-      ossUrl: asset?.ossUrl || "",
+      ossUrl: asset?.ossUrl || ""
     };
   });
 
   componentName.value = componentName_;
+
+  generateShowCode();
 };
 
 const uploadAssetLoading = ref(false);
@@ -175,11 +194,11 @@ const handleUploadAsset = async (asset: Asset) => {
         src: asset.src,
         isCompressed: false,
         width: asset.width,
-        height: asset.height,
-      },
+        height: asset.height
+      }
     });
     if (res) {
-      const on = assets.value.find((item) => item.src === asset.src);
+      const on = assets.value.find(item => item.src === asset.src);
       if (on) {
         on.ossUrl = res;
       }
@@ -202,7 +221,7 @@ const handleUploadAllAssets = async () => {
 };
 
 defineExpose({
-  handleShowCodesDialog,
+  handleShowCodesDialog
 });
 </script>
 

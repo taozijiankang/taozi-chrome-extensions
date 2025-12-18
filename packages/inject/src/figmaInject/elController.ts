@@ -33,13 +33,13 @@ export async function getBaseCodes() {
   const inspectionPanelEl = getCodePanelInspectionPanelEl();
 
   if (!inspectionPanelEl) {
-    throw new Error("检查面板元素不存在");
+    throw new Error("检查面板不存在");
   }
 
   const codeLanguageDropdownButtonEl = inspectionPanelEl.querySelector(`button[data-testid="code_language_dropdown"]`);
 
   if (!codeLanguageDropdownButtonEl) {
-    throw new Error("代码语言下拉按钮元素不存在");
+    throw new Error("代码语言下拉按钮不存在");
   }
 
   const pluginIconAlt = codeLanguageDropdownButtonEl.querySelector("img")?.alt || "";
@@ -54,17 +54,17 @@ export async function getBaseCodes() {
     `[class*="code_extension_section--sections--"]`
   );
   if (!codeExtensionSectionsEl) {
-    throw new Error("代码扩展sections元素不存在");
+    throw new Error("代码扩展部分不存在");
   }
 
   const codeContainerEls = [
     ...codeExtensionSectionsEl.querySelectorAll<HTMLDivElement>(
       `:scope > div[class*="code_extension_section--sectionsContainer--"]`
-    ),
+    )
   ];
 
   // 先展开code全部内容
-  codeContainerEls.forEach((codeContainerEl) => {
+  codeContainerEls.forEach(codeContainerEl => {
     const showMoreButton = codeContainerEl.querySelector<HTMLButtonElement>('button[data-testid="show-more-button"]');
     if (showMoreButton) {
       showMoreButton.click();
@@ -74,7 +74,7 @@ export async function getBaseCodes() {
   await wait(100);
 
   // 获取内容
-  return codeContainerEls.map<BaseCode>((codeContainerEl) => {
+  return codeContainerEls.map<BaseCode>(codeContainerEl => {
     const title =
       codeContainerEl.querySelector<HTMLHeadElement>('h3[data-testid="devHandoffFocusPanelTitle"]')?.textContent || "";
     const codeEl = codeContainerEl.querySelector<HTMLElement>('code[class*="code_panel--generatedCode--"]');
@@ -83,7 +83,7 @@ export async function getBaseCodes() {
     return {
       title,
       lang,
-      content,
+      content
     };
   });
 }
@@ -91,7 +91,7 @@ export async function getBaseCodes() {
 export async function getAssets() {
   const assetsInspectorPanelEl = getAssetsInspectorPanelEl();
   if (!assetsInspectorPanelEl) {
-    throw new Error("资产检查面板节点不存在");
+    return [];
   }
 
   const iconsInspectionPanelEl = document.querySelector<HTMLDivElement>("#icons-inspection-panel");
@@ -114,10 +114,10 @@ export async function getAssets() {
     await wait(100);
 
     const assetsContainers = [
-      ...assetsContentsEl.querySelectorAll<HTMLDivElement>('div[class*="asset_panel--assetContainer--"]'),
+      ...assetsContentsEl.querySelectorAll<HTMLDivElement>('div[class*="asset_panel--assetContainer--"]')
     ];
 
-    return assetsContainers.map<Asset>((assetsContainerEl) => {
+    return assetsContainers.map<Asset>(assetsContainerEl => {
       const src = assetsContainerEl.querySelector<HTMLImageElement>("img")?.src || "";
       const detailsEl = assetsContainerEl.querySelector<HTMLDivElement>('div[class*="asset_panel--assetDetails--"]');
 
@@ -131,7 +131,7 @@ export async function getAssets() {
         src,
         name,
         width,
-        height,
+        height
       };
     });
   };
@@ -139,7 +139,7 @@ export async function getAssets() {
   const result = [...(await getResult(iconsInspectionPanelEl, "icon")), ...(await getResult(imagesInspectionPanelEl, "image"))];
 
   // 如果存在没有src的资产，则重新获取
-  if (result.some((item) => !item.src)) {
+  if (result.some(item => !item.src)) {
     return await getAssets();
   }
   return result;

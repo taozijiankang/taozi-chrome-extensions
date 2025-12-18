@@ -19,9 +19,14 @@ function registerContentScripts() {
     {
       id: "default",
       matches: ["*://codesign.qq.com/*", "*://mp.weixin.qq.com/*", "*://www.figma.com/*"],
-      js: ["inject/index.iife.js"],
+      js: [
+        "inject/index.iife.js",
+        "assets/prettier@3.3.3/standalone.js",
+        "assets/prettier@3.3.3/plugins/html.js",
+        "assets/prettier@3.3.3/plugins/postcss.js"
+      ],
       css: ["inject/index.css"],
-      runAt: "document_idle",
-    },
+      runAt: "document_idle"
+    }
   ]);
 }

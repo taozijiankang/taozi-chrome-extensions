@@ -1,11 +1,18 @@
 import type { BaseCode } from "@/figmaInject/types";
 import { camelToKebabCase, kebabToCamelCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 
-export function handleBaseCode(componentName: string, codes: BaseCode[]) {
-  const htmlCode = codes.find((code) => code.title === "index.html")?.content || "";
-  const cssCode = codes.find((code) => code.title === "index.css")?.content || "";
+export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
+  const htmlCode = codes.find(code => code.title === "index.html")?.content || "";
+  const cssCode = codes.find(code => code.title === "index.css")?.content || "";
 
-  const body = (htmlCode.match(/<body>([\s\S]*?)<\/body>/)?.[1] || "").trim();
+  if (!htmlCode || !cssCode) {
+    return {
+      html: "",
+      css: ""
+    };
+  }
+
+  const body = (htmlCode.match(/<body>([\s\S]*?)<\/body>/)?.[1] || "").trim().replace(/\t/g, " ");
 
   const rootNodeClassName = body.match(/^\s*<[\w]+\s*class="(.*?)"/)?.[1] || "";
 
@@ -27,21 +34,33 @@ export function handleBaseCode(componentName: string, codes: BaseCode[]) {
   const rootNodeCss = cssRootNodeExec[0]!.trim();
 
   return {
-    html: body.replace(/class="([\w-]+?)"/g, (_, className) => {
-      return `class="${transformClassName(className)}"`;
-    }),
-    css: rootNodeCss.replace(/}$/, () => {
-      return `
+    html: await prettier.format(
+      body.replace(/class="([\w-]+?)"/g, (_, className) => {
+        return `class="${transformClassName(className)}"`;
+      }),
+      {
+        parser: "html",
+        plugins: prettierPlugins
+      }
+    ),
+    css: await prettier.format(
+      rootNodeCss.replace(/}$/, () => {
+        return `
           ${css.slice(0, cssRootNodeExec.index)}
           ${css.slice(cssRootNodeExec.index + cssRootNodeExec[0].length)}
       }`.trim();
-    }),
+      }),
+      {
+        parser: "scss",
+        plugins: prettierPlugins
+      }
+    )
   };
 }
 
-export function getAssetsJsCode(option: { name: string; ossUrl: string }) {
-  const { name, ossUrl } = option;
+export function getAssetsJsCode(option: { name: string; url: string }) {
+  const { name, url } = option;
   return `
-    const ${kebabToCamelCase(toValidVariableName(name), true)} = \`${ossUrl}\`;
+    const ${kebabToCamelCase(toValidVariableName(name), true)} = \`${url}\`;
   `.trim();
 }
