@@ -1,4 +1,4 @@
-import type { BaseCode } from "@/figmaInject/types";
+import type { BaseCode } from "./types";
 import { camelToKebabCase, kebabToCamelCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 
 export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
