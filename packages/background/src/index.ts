@@ -18,7 +18,7 @@ function registerContentScripts() {
   chrome.scripting.registerContentScripts([
     {
       id: "default",
-      matches: ["*://codesign.qq.com/*", "*://mp.weixin.qq.com/*"],
+      matches: ["*://codesign.qq.com/*", "*://mp.weixin.qq.com/*", "*://www.figma.com/*"],
       js: ["inject/index.iife.js"],
       css: ["inject/index.css"],
       runAt: "document_idle",
