@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ElButton, ElMessage } from "element-plus";
 import { ref } from "vue";
-import { getBaseCodes } from "../../elController";
+import { getBaseCodes, getAssets } from "../../elController";
 import Dialog from "./components/Dialog/index.vue";
 
 const generateCodeLoading = ref(false);
@@ -25,17 +25,11 @@ const handleGenerateCode = async () => {
   try {
     const codesData = await getBaseCodes();
 
-    if (codesData.length <= 0) {
-      ElMessage({
-        message: "暂无代码",
-        type: "warning",
-      });
-      return;
-    }
+    const assetsData = await getAssets();
 
     getBaseCodesErrorStr.value = "";
 
-    await dialogRef.value?.handleShowCodesDialog(codesData);
+    await dialogRef.value?.handleShowCodesDialog(codesData, assetsData);
   } catch (error) {
     console.error("生成代码失败", error);
     getBaseCodesErrorStr.value = String(error);

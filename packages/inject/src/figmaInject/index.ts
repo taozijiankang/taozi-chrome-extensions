@@ -1,5 +1,5 @@
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
-import { getCodeExtensionSectionsEl, getViewCanvasEl } from "./elController";
+import { getCodePanelInspectionPanelEl, getViewCanvasEl } from "./elController";
 import { insertMountEl } from "@/utils/insertMountEl";
 import { renderComponentToEl } from "@/utils/renderComponentToEl";
 import { h } from "vue";
@@ -15,7 +15,7 @@ export function figmaInject() {
       // 点击画布的地方
       if (e.target instanceof Node && getViewCanvasEl()?.contains(e.target)) {
         console.log("触发生成代码");
-        retry(triggerFigma, 10, 100).catch((err) => {
+        retry(triggerFigmaGenerateCode, 10, 100).catch((err) => {
           console.error("代码注入失败", err);
         });
       }
@@ -26,18 +26,19 @@ export function figmaInject() {
   );
 }
 
-async function triggerFigma() {
-  const codeExtensionSectionsEl = getCodeExtensionSectionsEl();
+async function triggerFigmaGenerateCode() {
+  const codePanelInspectionPanelEl = getCodePanelInspectionPanelEl();
 
-  if (!codeExtensionSectionsEl) {
-    throw new Error("代码扩展sections节点不存在");
+  if (!codePanelInspectionPanelEl) {
+    throw new Error("代码检查面板节点不存在");
   }
 
   const mountEl = await insertMountEl(
-    codeExtensionSectionsEl.parentNode as Element,
-    () => codeExtensionSectionsEl,
+    codePanelInspectionPanelEl.parentNode as Element,
+    () => codePanelInspectionPanelEl,
     "taozi-chrome-extensions-figma-custom-el-class"
   );
+
   if (!mountEl) {
     throw new Error("挂载节点不存在");
   }

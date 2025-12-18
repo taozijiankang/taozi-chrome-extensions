@@ -1,37 +1,47 @@
-import { camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
+import type { BaseCode } from "@/figmaInject/types";
+import { camelToKebabCase, kebabToCamelCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 
-const ROOT_CLASS_NAME = "frame-parent";
+export function handleBaseCode(componentName: string, codes: BaseCode[]) {
+  const htmlCode = codes.find((code) => code.title === "index.html")?.content || "";
+  const cssCode = codes.find((code) => code.title === "index.css")?.content || "";
 
-export function handleHtmlCode(componentName: string, html: string) {
-  if (!html) return "";
-  const body = html.match(/<body>([\s\S]*?)<\/body>/)?.[1] || "";
+  const body = (htmlCode.match(/<body>([\s\S]*?)<\/body>/)?.[1] || "").trim();
+
+  const rootNodeClassName = body.match(/^\s*<[\w]+\s*class="(.*?)"/)?.[1] || "";
+
   const componentVariableName = camelToKebabCase(toValidVariableName(`ai-${componentName}`));
-  return body.replace(/class="([\w-]+?)"/g, (_, className) => {
-    if (className === ROOT_CLASS_NAME) {
-      return `class="${componentVariableName}"`;
+
+  const transformClassName = (className: string) => {
+    if (className === rootNodeClassName) {
+      return componentVariableName;
     }
-    return `class="${camelToKebabCase(toValidVariableName(`ai-${className}`))}"`;
+    return camelToKebabCase(toValidVariableName(`ai-${className}`));
+  };
+
+  const css = cssCode.replace(/\.([\w-]+?)(?=\s*{)/g, (_, className) => {
+    return `.${transformClassName(className)}`;
   });
+  const cssRootNodeRegexp = new RegExp(`\\.${componentVariableName}\\s*{[\\s\\S]*?}`);
+  const cssRootNodeExec = cssRootNodeRegexp.exec(css)!;
+
+  const rootNodeCss = cssRootNodeExec[0]!.trim();
+
+  return {
+    html: body.replace(/class="([\w-]+?)"/g, (_, className) => {
+      return `class="${transformClassName(className)}"`;
+    }),
+    css: rootNodeCss.replace(/}$/, () => {
+      return `
+          ${css.slice(0, cssRootNodeExec.index)}
+          ${css.slice(cssRootNodeExec.index + cssRootNodeExec[0].length)}
+      }`.trim();
+    }),
+  };
 }
 
-export function handleCssCode(componentName: string, css: string) {
-  if (!css) return "";
-  const componentVariableName = camelToKebabCase(toValidVariableName(`ai-${componentName}`));
-  css = css.replace(/\.([\w-]+?)(?=\s*{)/g, (_, className) => {
-    if (className === ROOT_CLASS_NAME) {
-      return `.${componentVariableName}`;
-    }
-    return `.${camelToKebabCase(toValidVariableName(`ai-${className}`))}`;
-  });
-  const rootNodeRegexp = new RegExp(`\\.${componentVariableName}\\s*{[\\s\\S]*?}`);
-  const rootNodeExec = rootNodeRegexp.exec(css)!;
-
-  const rootNodeCss = rootNodeExec[0]!.trim();
-
-  return rootNodeCss.replace(/}$/, () => {
-    return `
-        ${css.slice(0, rootNodeExec.index)}
-        ${css.slice(rootNodeExec.index + rootNodeExec[0].length)}
-    }`.trim();
-  });
+export function getAssetsJsCode(option: { name: string; ossUrl: string }) {
+  const { name, ossUrl } = option;
+  return `
+    const ${kebabToCamelCase(toValidVariableName(name), true)} = \`${ossUrl}\`;
+  `.trim();
 }
