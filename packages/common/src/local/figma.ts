@@ -7,9 +7,11 @@ export interface FigmaLocalStorage {
     figmaDownloadUrl: string;
     ossUrl: string;
   }[];
+  activeTab?: string;
 }
 
 export const figmaLocalStorage = useLocalStorage<string, FigmaLocalStorage>("figma-local-storage", {
   componentName: "",
-  assets: []
+  assets: [],
+  activeTab: ""
 });

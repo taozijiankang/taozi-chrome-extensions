@@ -1,12 +1,11 @@
 <template>
   <div class="dialog-content">
     <ElButton type="primary" @click="getFigmaAssets">获取figma资源</ElButton>
-    <ElForm :model="{}" :rules="{}" label-width="auto" :show-message="false" label-suffix=":">
-      <ElFormItem label-position="left" label="组件名称">
-        <Input v-model:value="componentName" />
-      </ElFormItem>
-    </ElForm>
-    <ElTabs v-model="activeTableType" class="demo-tabs">
+    <div class="com-name">
+      <span>组件名称:</span>
+      <Input v-model:value="componentName" />
+    </div>
+    <ElTabs type="card" v-model="activeTableType" class="demo-tabs">
       <ElTabPane label="HTML" :name="TableType.Html">
         <div class="codes">
           <div v-if="showBaseCode.html" class="html">
@@ -16,8 +15,8 @@
       </ElTabPane>
       <ElTabPane label="CSS" :name="TableType.Css">
         <div class="codes">
-          <div v-if="showBaseCode.css" class="css">
-            <Code :code="showBaseCode.css.trim()" :type="CodeType.Css" />
+          <div v-if="showBaseCode.scss" class="scss">
+            <Code :code="showBaseCode.scss.trim()" :type="CodeType.Css" />
           </div>
         </div>
       </ElTabPane>
@@ -54,7 +53,10 @@
                   <ElButton v-else type="primary" @click="handleUploadAsset(asset)" :loading="uploadAssetLoading">上传</ElButton>
                 </div>
                 <div v-if="asset.ossUrl" class="js-code">
-                  <Code :code="getAssetsJsCode({ name: asset.cuName, url: asset.ossUrl || asset.src })" :type="CodeType.Js" />
+                  <Code
+                    :code="getAssetsJsCode({ name: asset.cuName, url: asset.ossUrl || asset.src, type: asset.type })"
+                    :type="CodeType.Js"
+                  />
                 </div>
               </div>
             </div>
@@ -71,7 +73,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { CodeType } from "../../Code/index";
 import Code from "../../Code/index.vue";
 import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local/figma";
-import { getAssetsJsCode, handleBaseCode } from "./index";
+import { getAssetsJsCode, handleBaseCode, toUniappCode } from "./index";
 import type { Asset, BaseCode } from "./types";
 import Input from "./components/input/index.vue";
 import { uploadAssetToOssMessage } from "@taozi-chrome-extensions/common/src/message";
@@ -96,16 +98,16 @@ const assets = ref<(Asset & { cuName: string; ossUrl: string })[]>([]);
 
 const showBaseCode = ref<{
   html: string;
-  css: string;
+  scss: string;
 }>({
   html: "",
-  css: ""
+  scss: ""
 });
 
 const showJsCode = computed(() => {
   return assets.value
     .map(item => {
-      return getAssetsJsCode({ name: item.cuName, url: item.ossUrl || item.src });
+      return getAssetsJsCode({ name: item.cuName, url: item.ossUrl || item.src, type: item.type });
     })
     .join("\n");
 });
@@ -135,10 +137,10 @@ watch([componentName], () => {
   generateShowCode();
 });
 
-watch([componentName, assets], () => {
+watch([componentName, assets, activeTableType], () => {
   figmaLocalStorage.edit(v => {
     v.componentName = componentName.value;
-
+    v.activeTab = activeTableType.value;
     v.assets = assets.value.map(item => {
       return {
         name: item.cuName,
@@ -150,13 +152,13 @@ watch([componentName, assets], () => {
 });
 
 const generateShowCode = async () => {
-  const { html, css } = await handleBaseCode(componentName.value, codes.value);
+  let { html, scss } = await handleBaseCode(componentName.value, codes.value);
 
-  const uniVueCode = html.replace(/(?<=<\/?)div/g, "view");
+  ({ html, scss } = toUniappCode({ html, scss }));
 
   showBaseCode.value = {
-    html: uniVueCode,
-    css
+    html,
+    scss
   };
 };
 
@@ -239,9 +241,11 @@ const getFigmaAssets = async () => {
 };
 
 onMounted(async () => {
-  const { componentName: componentName_ = "com" } = (await figmaLocalStorage.get()) || {};
+  const { componentName: componentName_ = "com", activeTab: activeTab_ = TableType.Html } = (await figmaLocalStorage.get()) || {};
 
   componentName.value = componentName_;
+
+  activeTableType.value = activeTab_ as TableType;
 
   getFigmaAssets();
 });
