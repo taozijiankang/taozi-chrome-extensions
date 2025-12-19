@@ -1,4 +1,4 @@
-import { useLocalStorage } from "./index";
+import { useLocalStorage } from "./useLocalStorage";
 
 export interface FigmaLocalStorage {
   componentName?: string;
@@ -11,5 +11,5 @@ export interface FigmaLocalStorage {
 
 export const figmaLocalStorage = useLocalStorage<string, FigmaLocalStorage>("figma-local-storage", {
   componentName: "",
-  assets: [],
+  assets: []
 });

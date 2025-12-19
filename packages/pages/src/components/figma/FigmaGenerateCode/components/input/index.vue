@@ -1,47 +1,34 @@
 <template>
   <div class="input-container">
-    <span class="value">{{ input || "--" }}</span>
-    <ElButton @click="handlePasteComponentName" :loading="pasteComponentNameLoading">粘贴</ElButton>
-    <ElButton @click="handleTranslateComponentName" :loading="translateComponentNameLoading">翻译</ElButton>
+    <ElInput v-model="input">
+      <template #append>
+        <ElButton @click="handleTranslateComponentName" :loading="translateComponentNameLoading">翻译</ElButton>
+      </template>
+    </ElInput>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ElButton, ElMessage } from "element-plus";
+import { ElButton, ElInput, ElMessage } from "element-plus";
 import { ref } from "vue";
-import { sendMessage } from "@taozi-chrome-extensions/common/src/messageServer";
-import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
 import { toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
+import { baiduTranslateMessage } from "@taozi-chrome-extensions/common/src/message";
 
 const input = defineModel<string>("value");
-
-const pasteComponentNameLoading = ref(false);
-const handlePasteComponentName = async () => {
-  try {
-    pasteComponentNameLoading.value = true;
-    const text = await navigator.clipboard.readText();
-    input.value = text;
-  } finally {
-    pasteComponentNameLoading.value = false;
-  }
-};
 
 const translateComponentNameLoading = ref(false);
 const handleTranslateComponentName = async () => {
   translateComponentNameLoading.value = true;
   try {
-    const res = await sendMessage<string>({
-      type: MessageType.BaiduTranslate,
-      value: input.value,
-    });
-    if (res) {
-      input.value = toValidVariableName(res);
+    const res = await baiduTranslateMessage.sendMessage(input.value || "");
+    if (res.succeed) {
+      input.value = toValidVariableName(res.data || "");
     }
   } catch (error) {
     console.error("翻译组件名称失败", error);
     ElMessage({
       message: String(error),
-      type: "error",
+      type: "error"
     });
   } finally {
     translateComponentNameLoading.value = false;

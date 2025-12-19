@@ -15,8 +15,8 @@
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElButton, ElText } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
-import { weixinMpLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixinMp";
 import type { WXMPItem } from "../../api/type";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
 
 const props = defineProps<{
   wxaList: WXMPItem[];
@@ -33,14 +33,14 @@ const handleSearch = () => {
 };
 
 onMounted(async () => {
-  const { searchInput: searchInput_ = "" } = (await weixinMpLocalStorage.get()) || {};
+  const { searchInput: searchInput_ = "" } = (await weixinLocalStorage.get()) || {};
   searchInput.value = searchInput_;
 
   handleSearch();
 });
 
 watch(searchInput, () => {
-  weixinMpLocalStorage.edit((v) => {
+  weixinLocalStorage.edit(v => {
     v.searchInput = searchInput.value;
   });
 });

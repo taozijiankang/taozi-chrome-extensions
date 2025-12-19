@@ -1,42 +1,37 @@
 <template>
   <div class="dialog-content">
-    <ElButton @click="getFigmaAssets">获取figma资源</ElButton>
-
+    <ElButton type="primary" @click="getFigmaAssets">获取figma资源</ElButton>
     <ElForm :model="{}" :rules="{}" label-width="auto" :show-message="false" label-suffix=":">
       <ElFormItem label-position="left" label="组件名称">
         <Input v-model:value="componentName" />
       </ElFormItem>
     </ElForm>
     <ElTabs v-model="activeTableType" class="demo-tabs">
-      <ElTabPane label="Code" :name="TableType.Code">
+      <ElTabPane label="HTML" :name="TableType.Html">
         <div class="codes">
-          <div class="title">
-            <div class="left"></div>
-            <span>HTML</span>
-          </div>
           <div v-if="showBaseCode.html" class="html">
-            <Code :code="showBaseCode.html" :type="CodeType.Vue" />
+            <Code :code="showBaseCode.html.trim()" :type="CodeType.Vue" />
           </div>
-          <div class="title">
-            <div class="left"></div>
-            <span>CSS</span>
-          </div>
+        </div>
+      </ElTabPane>
+      <ElTabPane label="CSS" :name="TableType.Css">
+        <div class="codes">
           <div v-if="showBaseCode.css" class="css">
-            <Code :code="showBaseCode.css" :type="CodeType.Css" />
+            <Code :code="showBaseCode.css.trim()" :type="CodeType.Css" />
           </div>
-          <div class="title">
-            <div class="left"></div>
-            <span>JS</span>
-          </div>
+        </div>
+      </ElTabPane>
+      <ElTabPane label="JS" :name="TableType.Js">
+        <div class="codes">
           <div v-if="showJsCode" class="js">
-            <Code :code="showJsCode" :type="CodeType.Js" />
+            <Code :code="showJsCode.trim()" :type="CodeType.Js" />
           </div>
         </div>
       </ElTabPane>
       <ElTabPane label="Assets" :name="TableType.Assets">
         <div class="assets">
           <div class="controller">
-            <ElButton type="primary" @click="handleUploadAllAssets">全部上传</ElButton>
+            <ElButton class="button" type="primary" @click="handleUploadAllAssets">全部上传</ElButton>
           </div>
           <div v-for="value in showAssets.filter(item => item.assets.length > 0)" :key="value.type" class="assets-container">
             <div class="title">
@@ -44,7 +39,9 @@
               <span>{{ value.type }}</span>
             </div>
             <div class="asset-item" v-for="asset in value.assets" :key="asset.src">
-              <img class="image" :src="asset.src" alt="asset" />
+              <div class="image-container">
+                <img class="image" :src="asset.src" alt="asset" />
+              </div>
               <div class="details">
                 <div class="cu-name">
                   <span>名字：</span>
@@ -77,15 +74,17 @@ import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local/fig
 import { getAssetsJsCode, handleBaseCode } from "./index";
 import type { Asset, BaseCode } from "./types";
 import Input from "./components/input/index.vue";
-import { sendMessage } from "@taozi-chrome-extensions/common/src/messageServer";
-import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
+import { uploadAssetToOssMessage } from "@taozi-chrome-extensions/common/src/message";
+import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/figmaMessage";
 
 enum TableType {
-  Code = "code",
+  Html = "html",
+  Css = "css",
+  Js = "js",
   Assets = "assets"
 }
 
-const activeTableType = ref(TableType.Code);
+const activeTableType = ref(TableType.Html);
 
 const showCodesDialog = ref(false);
 
@@ -165,19 +164,16 @@ const uploadAssetLoading = ref(false);
 const handleUploadAsset = async (asset: Asset) => {
   uploadAssetLoading.value = true;
   try {
-    const res = await sendMessage<string>({
-      type: MessageType.UploadAsset,
-      value: {
-        src: asset.src,
-        isCompressed: false,
-        width: asset.width,
-        height: asset.height
-      }
+    const res = await uploadAssetToOssMessage.sendMessage({
+      src: asset.src,
+      isCompressed: false,
+      width: asset.width,
+      height: asset.height
     });
-    if (res) {
+    if (res.succeed) {
       const on = assets.value.find(item => item.src === asset.src);
       if (on) {
-        on.ossUrl = res;
+        on.ossUrl = res.data || "";
       }
     }
   } catch (error) {
@@ -212,10 +208,14 @@ const getFigmaAssets = async () => {
 
   try {
     getFigmaAssetsLoading.value = true;
-    const { codes: codesData, assets: assetsData } = (await sendMessage<{ codes: BaseCode[]; assets: Asset[] }>({
-      type: MessageType.GetFigmaAssets
-    })) || { codes: [], assets: [] };
-    const { componentName: componentName_ = "com", assets: assets_ = [] } = (await figmaLocalStorage.get()) || {};
+    const res = await figmaAssetsMessage.sendTabMessage(tab.id || 0);
+    if (!res.succeed) {
+      ElMessage.error(res.msg || "获取figma资源失败");
+      return;
+    }
+    const { codes: codesData, assets: assetsData } = res.data || { codes: [], assets: [] };
+
+    const { assets: assets_ = [] } = (await figmaLocalStorage.get()) || {};
 
     showCodesDialog.value = true;
     codes.value = codesData;
@@ -230,8 +230,6 @@ const getFigmaAssets = async () => {
       };
     });
 
-    componentName.value = componentName_;
-
     generateShowCode();
   } catch (error) {
     console.error("获取figma资源失败", error);
@@ -239,6 +237,14 @@ const getFigmaAssets = async () => {
     getFigmaAssetsLoading.value = false;
   }
 };
+
+onMounted(async () => {
+  const { componentName: componentName_ = "com" } = (await figmaLocalStorage.get()) || {};
+
+  componentName.value = componentName_;
+
+  getFigmaAssets();
+});
 </script>
 
 <style lang="scss" scoped>

@@ -89,6 +89,9 @@ importers:
 
   packages/configuration:
     dependencies:
+      '@taozi-chrome-extensions/common':
+        specifier: workspace:^
+        version: link:../common
       '@taozi-chrome-extensions/scripts':
         specifier: workspace:^
         version: link:../scripts

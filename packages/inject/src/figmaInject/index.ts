@@ -1,13 +1,17 @@
-import { addMessageServer, type MessageReq } from "@taozi-chrome-extensions/common/src/messageServer";
-import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
 import { getAssets, getBaseCodes } from "./elController";
+import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/figmaMessage";
 
 /**
  * figma 代码注入
  */
 export function figmaInject() {
-  addMessageServer(MessageType.GetFigmaAssets, (req: MessageReq<void>, sender, sendResponse) => {
-    sendResponse(getFigmaAssets());
+  figmaAssetsMessage.addListener(async () => {
+    console.log("收到figma资产消息");
+    const { codes, assets } = await getFigmaAssets();
+    return {
+      succeed: true,
+      data: { codes, assets }
+    };
   });
 }
 
