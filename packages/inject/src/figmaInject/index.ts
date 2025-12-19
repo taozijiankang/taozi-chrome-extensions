@@ -1,5 +1,5 @@
 import { getAssets, getBaseCodes } from "./elController";
-import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/figmaMessage";
+import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/FigmaMessage";
 
 /**
  * figma 代码注入
