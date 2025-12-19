@@ -96,8 +96,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { sendMessage } from "@taozi-chrome-extensions/common/src/messageServer";
-import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
 import { ElForm, ElFormItem, ElButton, ElInput, ElSelect, ElOption, ElMessage, ElIcon, ElTag } from "element-plus";
 import { Box, Picture, PictureRounded, Document } from "@element-plus/icons-vue";
 import { kebabToCamelCase, camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
@@ -106,6 +104,7 @@ import { codesignLocalStorage, type CodesignLocalStorage } from "@taozi-chrome-e
 import { getCssPropConfig, ElType, ObjectType, ObjectTypeOptions, ElTypeDesc, FrameTypeOptions, FrameType } from "./index";
 import { parseCssRules, type CssProp, type CssRule } from "./parseCssRules";
 import { CodeType } from "@/components/Code";
+import { baiduTranslateMessage } from "@taozi-chrome-extensions/common/src/message";
 
 const props = defineProps<{
   identification: string;
@@ -126,11 +125,11 @@ const annotationInput = ref("");
 const config = ref<CodesignLocalStorage["config"]>({
   ignoreCssFontFamily: false,
   boxSizing: false,
-  reactCssModuleName: "",
+  reactCssModuleName: ""
 });
 
 watch([nameInput, nameTranslateInput, objectTypeInput, frameTypeInput, iconUrlInput, annotationInput], () => {
-  codesignLocalStorage.edit((v) => {
+  codesignLocalStorage.edit(v => {
     v.objectType = objectTypeInput.value;
     v.frameType = frameTypeInput.value;
     if (!v.names) v.names = {};
@@ -149,18 +148,15 @@ const handleNameTranslate = async () => {
 
   nameTranslateLoading.value = true;
   try {
-    const res = await sendMessage<string>({
-      type: MessageType.BaiduTranslate,
-      value: nameTranslateInput.value,
-    });
-    if (res) {
-      nameInput.value = toValidVariableName(res);
+    const res = await baiduTranslateMessage.sendMessage(nameTranslateInput.value);
+    if (res.succeed) {
+      nameInput.value = toValidVariableName(res.data || "");
     }
   } catch (err) {
     console.error(err);
     ElMessage({
       message: String(err),
-      type: "error",
+      type: "error"
     });
   } finally {
     nameTranslateLoading.value = false;
@@ -169,7 +165,7 @@ const handleNameTranslate = async () => {
 
 const getCssRules = () => {
   const cssPropConfig = getCssPropConfig(objectTypeInput.value, {
-    ignoreCssFontFamily: config.value?.ignoreCssFontFamily,
+    ignoreCssFontFamily: config.value?.ignoreCssFontFamily
   });
   return parseCssRules({
     cssCode: props.cssCode,
@@ -177,8 +173,8 @@ const getCssRules = () => {
     excludeProps: cssPropConfig.excludeProps[props.elType],
     supplementProps: cssPropConfig.supplementProps[props.elType],
     options: {
-      boxSizing: config.value?.boxSizing,
-    },
+      boxSizing: config.value?.boxSizing
+    }
   });
 };
 
@@ -229,23 +225,23 @@ const vueTemplateList = computed(() => {
             return [
               {
                 title: `文本形式${i ? `-${i}` : ""}`,
-                code: `<span class="${className}">${text}</span>`,
+                code: `<span class="${className}">${text}</span>`
               },
               {
                 title: `变量形式${i ? `-${i}` : ""}`,
-                code: `<span class="${className}"> {{ "${text}" }} </span>`,
-              },
+                code: `<span class="${className}"> {{ "${text}" }} </span>`
+              }
             ];
           }
           return [
             {
               title: `文本形式${i ? `-${i}` : ""}`,
-              code: `<text class="${className}">${text}</text>`,
+              code: `<text class="${className}">${text}</text>`
             },
             {
               title: `变量形式${i ? `-${i}` : ""}`,
-              code: `<text class="${className}"> {{ "${text}" }} </text>`,
-            },
+              code: `<text class="${className}"> {{ "${text}" }} </text>`
+            }
           ];
         })
         .flat();
@@ -259,15 +255,15 @@ const vueTemplateList = computed(() => {
               a.push(...b.props);
               return a;
             }, [])
-            .find((item) => item.name === name)?.value || "500"
+            .find(item => item.name === name)?.value || "500"
         );
       };
       const className = camelToKebabCase(getValidVariableName(ElType.Img));
       const imageSrc = `https://picsum.photos/${parseInt(getSize("width"))}/${parseInt(getSize("height"))}`;
       if (objectTypeInput.value === ObjectType.Pc) {
-        return ["img", "CustomImage"].map((elType) => `<${elType} src="${imageSrc}" class="${className}" />`);
+        return ["img", "CustomImage"].map(elType => `<${elType} src="${imageSrc}" class="${className}" />`);
       }
-      return ["img", "CustomImage"].map((elType) => `<${elType} src="${imageSrc}" class="${className}" mode="aspectFill" />`);
+      return ["img", "CustomImage"].map(elType => `<${elType} src="${imageSrc}" class="${className}" mode="aspectFill" />`);
     }
     /** 切图 */
     case ElType.Icon: {
@@ -309,23 +305,23 @@ const reactTemplateList = computed(() => {
             return [
               {
                 title: `文本形式${i ? `-${i}` : ""}`,
-                code: `<span ${classNameCode}>${text}</span>`,
+                code: `<span ${classNameCode}>${text}</span>`
               },
               {
                 title: `变量形式${i ? `-${i}` : ""}`,
-                code: `<span ${classNameCode}> {"${text}"} </span>`,
-              },
+                code: `<span ${classNameCode}> {"${text}"} </span>`
+              }
             ];
           }
           return [
             {
               title: `文本形式${i ? `-${i}` : ""}`,
-              code: `<text ${classNameCode}>${text}</text>`,
+              code: `<text ${classNameCode}>${text}</text>`
             },
             {
               title: `变量形式${i ? `-${i}` : ""}`,
-              code: `<text ${classNameCode}> {"${text}"} </text>`,
-            },
+              code: `<text ${classNameCode}> {"${text}"} </text>`
+            }
           ];
         })
         .flat();
@@ -339,16 +335,16 @@ const reactTemplateList = computed(() => {
               a.push(...b.props);
               return a;
             }, [])
-            .find((item) => item.name === name)?.value || "500"
+            .find(item => item.name === name)?.value || "500"
         );
       };
       const className = camelToKebabCase(getValidVariableName(ElType.Img));
       const classNameCode = getClassNameCode(className);
       const imageSrc = `https://picsum.photos/${parseInt(getSize("width"))}/${parseInt(getSize("height"))}`;
       if (objectTypeInput.value === ObjectType.Pc) {
-        return ["img", "CustomImage"].map((elType) => `<${elType} src={"${imageSrc}"} ${classNameCode} />`);
+        return ["img", "CustomImage"].map(elType => `<${elType} src={"${imageSrc}"} ${classNameCode} />`);
       }
-      return ["img", "CustomImage"].map((elType) => `<${elType} src={"${imageSrc}"} ${classNameCode} mode="aspectFill" />`);
+      return ["img", "CustomImage"].map(elType => `<${elType} src={"${imageSrc}"} ${classNameCode} mode="aspectFill" />`);
     }
     /** 切图 */
     case ElType.Icon: {
@@ -383,7 +379,7 @@ const jsList = computed(() => {
 
 const cssList = computed(() => {
   const getCssProps = (item: CssRule) => {
-    return "\n" + item.props.map((prop) => `  ${prop.name}: ${prop.value};`).join("\n") + "\n";
+    return "\n" + item.props.map(prop => `  ${prop.name}: ${prop.value};`).join("\n") + "\n";
   };
   switch (props.elType) {
     case ElType.Text: {
@@ -393,19 +389,19 @@ const cssList = computed(() => {
       });
     }
     case ElType.Img: {
-      return getCssRules().map((item) => {
+      return getCssRules().map(item => {
         const className = camelToKebabCase(getValidVariableName(props.elType));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Icon: {
-      return getCssRules().map((item) => {
+      return getCssRules().map(item => {
         const className = camelToKebabCase(getValidVariableName(props.elType));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
     }
     case ElType.Div: {
-      return getCssRules().map((item) => {
+      return getCssRules().map(item => {
         const className = camelToKebabCase(getValidVariableName(props.elType));
         return `.${className} {${getCssProps(item)}}`.trim();
       });
@@ -421,7 +417,7 @@ onMounted(async () => {
     names = {},
     iconUrls = {},
     annotations = {},
-    config: config2 = {},
+    config: config2 = {}
   } = (await codesignLocalStorage.get()) || {};
   nameInput.value = names[props.identification] || "item";
   nameTranslateInput.value = nameTranslates[props.identification] || props.textContent;
@@ -432,7 +428,7 @@ onMounted(async () => {
   config.value = config2 || {
     ignoreCssFontFamily: false,
     boxSizing: false,
-    cssModuleName: "",
+    cssModuleName: ""
   };
 });
 </script>

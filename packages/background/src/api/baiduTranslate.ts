@@ -1,11 +1,6 @@
 import { md5 } from "@taozi-chrome-extensions/common/src/utils/md5";
 import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
 
-/**
- * 请求百度翻译api
- * @param str
- * @returns
- */
 export async function requestBaiduTranslate(str: string): Promise<string> {
   if (!str) {
     throw new Error("没有需要翻译的内容");
@@ -22,8 +17,8 @@ export async function requestBaiduTranslate(str: string): Promise<string> {
       baiduAppId + str + salt + baiduKey
     ).toString()}`
   )
-    .then((res) => res.json())
-    .then((json) => {
+    .then(res => res.json())
+    .then(json => {
       if (json["error_code"]) {
         throw new Error(json["error_msg"]);
       } else {

@@ -21,25 +21,23 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import {
-  mpReleasePlanLocalStorage,
-  type MpReleasePlanLocalStorage,
-} from "@taozi-chrome-extensions/common/src/local/mpReleasePlan";
 import { ElInput, ElButton, ElImage } from "element-plus";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
+import type { WeixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
 
-const mpList = ref<Required<MpReleasePlanLocalStorage>["mpList"]>([]);
+const mpList = ref<Required<WeixinLocalStorage>["mpReleasePlanList"]>([]);
 const mpAppIdInput = ref("");
 
 watch(
   mpList,
   () => {
     console.log("watch", mpList.value);
-    mpReleasePlanLocalStorage.edit((v) => {
-      v.mpList = [...mpList.value];
+    weixinLocalStorage.edit(v => {
+      v.mpReleasePlanList = [...mpList.value];
     });
   },
   {
-    deep: true,
+    deep: true
   }
 );
 
@@ -48,17 +46,17 @@ const handleAddMp = () => {
   const addMpList = mpAppIdInput.value
     .trim()
     .split(",")
-    .map((item) => item.trim())
+    .map(item => item.trim())
     .filter(Boolean)
-    .map((item) => ({
+    .map(item => ({
       appId: item,
       name: "",
       headimg: "",
       username: "",
       email: "",
-      type: "",
+      type: ""
     }));
-  mpList.value.unshift(...addMpList.filter((item) => !mpList.value.some((v) => v.appId === item.appId)));
+  mpList.value.unshift(...addMpList.filter(item => !mpList.value.some(v => v.appId === item.appId)));
   mpAppIdInput.value = "";
 };
 
@@ -67,8 +65,8 @@ const handleFinishMp = (index: number) => {
 };
 
 onMounted(async () => {
-  const { mpList: mpList_ = [] } = (await mpReleasePlanLocalStorage.get()) || {};
-  mpList.value = mpList_;
+  const { mpReleasePlanList = [] } = (await weixinLocalStorage.get()) || {};
+  mpList.value = mpReleasePlanList;
 });
 </script>
 

@@ -1,4 +1,4 @@
-import { useLocalStorage } from "./index";
+import { useLocalStorage } from "./useLocalStorage";
 
 export interface CodesignLocalStorage {
   objectType?: string;

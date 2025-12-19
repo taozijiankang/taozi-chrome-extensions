@@ -9,26 +9,26 @@ export const MANIFEST = {
     default_popup: "pages/popup.html",
     default_icon: {
       64: "images/icon-64.png",
-      128: "images/icon-128.png",
-    },
+      128: "images/icon-128.png"
+    }
   },
   icons: {
     64: "images/icon-64.png",
-    128: "images/icon-128.png",
+    128: "images/icon-128.png"
   },
   background: {
     service_worker: "background/index.iife.js",
-    type: "module",
+    type: "module"
   },
   permissions: ["tabs", "scripting", "activeTab", "storage", "cookies"],
   host_permissions: ["<all_urls>"],
   sandbox: {
-    pages: ["sandbox/index.html"],
+    pages: ["sandbox/index.html"]
   },
   web_accessible_resources: [
     {
       resources: ["inject/index.css", "sandbox/index.html"],
-      matches: ["*://*/*"],
-    },
-  ],
+      matches: ["*://*/*"]
+    }
+  ]
 };
