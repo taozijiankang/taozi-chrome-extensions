@@ -1,6 +1,6 @@
 import type { WXMPItem } from "../api/type";
 import { requestWxaList } from "../api";
-import { mpReleasePlanLocalStorage } from "@taozi-chrome-extensions/common/src/local/mpReleasePlan";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
 
 const wxaListCache: WXMPItem[] = [];
 
@@ -12,9 +12,9 @@ export const getWxList = async () => {
      * 获取小程序列表
      * 并更新本地存储
      */
-    mpReleasePlanLocalStorage.edit((v) => {
-      v.mpList?.forEach((item) => {
-        const wxItem = wxaListCache.find((wxa) => wxa.appid === (item.appId || ""));
+    weixinLocalStorage.edit(v => {
+      v.mpReleasePlanList?.forEach(item => {
+        const wxItem = wxaListCache.find(wxa => wxa.appid === (item.appId || ""));
         if (wxItem) {
           item.name = wxItem.app_name;
           item.headimg = wxItem.app_headimg;

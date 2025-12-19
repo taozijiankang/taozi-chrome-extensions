@@ -22,10 +22,9 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElButton, ElMessage, ElEmpty, ElSkeleton } from "element-plus";
-import { sendMessage } from "@taozi-chrome-extensions/common/src/messageServer";
-import { MessageType } from "@taozi-chrome-extensions/common/src/constant/messageType";
 import { kebabToCamelCase, camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 import { genVarNameLocalStorage } from "@taozi-chrome-extensions/common/src/local/genVarName";
+import { baiduTranslateMessage } from "@taozi-chrome-extensions/common/src/message";
 
 // Types
 type ResultType = {
@@ -52,13 +51,9 @@ const handleClick = async () => {
   results.value = [];
   loading.value = true;
   try {
-    const res = await sendMessage<string>({
-      type: MessageType.BaiduTranslate,
-      value: input.value
-    });
-
-    if (res) {
-      const validName = toValidVariableName(res);
+    const res = await baiduTranslateMessage.sendMessage(input.value || "");
+    if (res.succeed) {
+      const validName = toValidVariableName(res.data || "");
       results.value = [
         {
           camelCase: kebabToCamelCase(validName),

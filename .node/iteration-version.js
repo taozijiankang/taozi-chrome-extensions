@@ -10,8 +10,6 @@ const __dirname = path.dirname(__filename);
 
 const packageJsonPath = path.join(__dirname, "../package.json");
 
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
-
 /**
  * @typedef {Object} IterationVersionOptions
  * @property {string} [major] 主版本号
@@ -41,6 +39,8 @@ async function iterationVersion(options) {
 
   major = parseInt(major.trim()).toString();
   minor = parseInt(minor.trim()).toString();
+
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
 
   const remoteVersions = await getRemoteVersions();
 

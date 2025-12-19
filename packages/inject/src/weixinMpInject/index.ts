@@ -6,7 +6,7 @@ import { getAccountItemList, getAccountList, getMenuBoxAccountInfo, getSwitchAcc
 import { filter } from "@taozi-chrome-extensions/common/src/utils/fuzzy";
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
 import { getWxList } from "./middleware/getWxList";
-import { mpReleasePlanLocalStorage } from "@taozi-chrome-extensions/common/src/local/mpReleasePlan";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
 
 /**
  * 微信小程序注入
@@ -28,13 +28,13 @@ export async function weixinMpInject() {
         /**
          * 因为中间会调用接口所以重试总时长要设置长一点
          */
-        retry(triggerSwitchAccount, 10, 1000).catch((err) => {
+        retry(triggerSwitchAccount, 10, 1000).catch(err => {
           console.error("切换账号注入失败", err);
         });
       }
     }, 100),
     {
-      capture: true,
+      capture: true
     }
   );
 }
@@ -72,29 +72,29 @@ async function triggerSwitchAccount() {
       h(SwitchAccountSearch, {
         wxaList,
         onSearch: async (value: string) => {
-          const { mpList: mpReleasePlanList = [] } = (await mpReleasePlanLocalStorage.get()) || {};
+          const { mpReleasePlanList = [] } = (await weixinLocalStorage.get()) || {};
 
           value = value.trim();
-          accountItemList.forEach((item) => {
+          accountItemList.forEach(item => {
             item.show(false);
           });
           filter(value, accountItemList, {
-            extract: (item) => {
-              const wxItem = wxaList.find((wxa) => wxa.username === (item.data.originalId || ""));
+            extract: item => {
+              const wxItem = wxaList.find(wxa => wxa.username === (item.data.originalId || ""));
               return `${wxItem?.app_name || ""}-${wxItem?.appid || ""}-${wxItem?.username || ""}`;
-            },
+            }
           })
-            .map((item) => item.original)
-            .forEach((item) => {
+            .map(item => item.original)
+            .forEach(item => {
               item.show(true);
 
-              const wxItem = wxaList.find((wxa) => wxa.username === (item.data.originalId || ""));
+              const wxItem = wxaList.find(wxa => wxa.username === (item.data.originalId || ""));
               item.setContent({
-                planRelease: mpReleasePlanList.some((mp) => mp.appId === wxItem?.appid),
-                appId: wxItem?.appid || "",
+                planRelease: mpReleasePlanList.some(mp => mp.appId === wxItem?.appid),
+                appId: wxItem?.appid || ""
               });
             });
-        },
-      }),
+        }
+      })
   });
 }

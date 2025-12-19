@@ -1,5 +1,5 @@
 import { copyDirectorySync } from "../copyDirectorySync.js";
-import { getExtensionsDir } from "taozi-chrome-extensions/src/pathManage.js"
+import { getExtensionsDir } from "../pathManage.js";
 import path from "path";
 import fs from "fs";
 
@@ -10,10 +10,10 @@ import fs from "fs";
 export function packageF(distDir, target) {
   const targetDir = path.resolve(getExtensionsDir(), target);
 
-  fs.readdirSync(targetDir).forEach(item => {
+  fs.readdirSync(targetDir).forEach((item) => {
     if (!/^readme\.md$/i.test(item)) {
       fs.rmSync(path.resolve(targetDir, item), {
-        recursive: true
+        recursive: true,
       });
     }
   });
