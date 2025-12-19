@@ -16,13 +16,13 @@ export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
 
   const rootNodeClassName = body.match(/^\s*<[\w]+\s*class="(.*?)"/)?.[1] || "";
 
-  const componentVariableName = camelToKebabCase(toValidVariableName(`ai-${componentName}`));
+  const componentVariableName = camelToKebabCase(toValidVariableName(componentName));
 
   const transformClassName = (className: string) => {
     if (className === rootNodeClassName) {
       return componentVariableName;
     }
-    return camelToKebabCase(toValidVariableName(`ai-${className}`));
+    return camelToKebabCase(toValidVariableName(`figma-${className}`));
   };
 
   const css = cssCode.replace(/\.([\w-]+?)(?=\s*{)/g, (_, className) => {
