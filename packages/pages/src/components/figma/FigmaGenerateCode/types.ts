@@ -4,10 +4,28 @@ export interface BaseCode {
   content: string;
 }
 
-export interface Asset {
-  type: "icon" | "image";
-  src: string;
+export interface FigmaNodeInfo {
+  id: string;
+  children: FigmaNodeInfo[];
   name: string;
-  width: number;
-  height: number;
+  type: "FRAME" | "TEXT" | "RECTANGLE";
+  characters?: string;
+  exportSettings?: {
+    format: "PNG";
+  }[];
+  fills: {
+    type: "IMAGE";
+  }[];
+  absoluteBoundingBox: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  absoluteRenderBounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }

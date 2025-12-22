@@ -3,8 +3,9 @@ import { BaseMessage } from "../BaseMessage";
 class FigmaAssetsMessage extends BaseMessage<
   void,
   {
+    fileKey: string;
+    nodeId: string;
     codes: any[];
-    assets: any[];
   }
 > {
   constructor() {

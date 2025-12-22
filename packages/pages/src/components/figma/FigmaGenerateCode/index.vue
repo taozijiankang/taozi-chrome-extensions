@@ -84,7 +84,7 @@ import { CodeType } from "../../Code/index";
 import Code from "../../Code/index.vue";
 import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local/figma";
 import { getAssetsJsCode, handleBaseCode, toUniappCode } from "./index";
-import type { Asset, BaseCode } from "./types";
+import type { BaseCode, FigmaNodeInfo } from "./types";
 import Input from "./components/input/index.vue";
 import { uploadAssetToOssMessage } from "@taozi-chrome-extensions/common/src/message";
 import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/FigmaMessage";
@@ -102,9 +102,9 @@ const getFigmaAssetsErrorAlert = ref("");
 
 const componentName = ref("");
 
+const fileKey = ref("");
+const nodeId = ref("");
 const codes = ref<BaseCode[]>([]);
-
-const assets = ref<(Asset & { cuName: string; ossUrl: string })[]>([]);
 
 const showBaseCode = ref<{
   html: string;
@@ -115,19 +115,15 @@ const showBaseCode = ref<{
 });
 
 const showJsCode = computed(() => {
-  return assets.value
-    .map(item => {
-      return getAssetsJsCode({ name: item.cuName, url: item.ossUrl || item.src, type: item.type });
-    })
-    .join("\n");
+  return "";
 });
 
 const imageAssets = computed(() => {
-  return assets.value.filter(item => item.type === "image");
+  return [];
 });
 
 const iconAssets = computed(() => {
-  return assets.value.filter(item => item.type === "icon");
+  return [];
 });
 
 const showAssets = computed(() => {
@@ -147,17 +143,9 @@ watch([componentName], () => {
   generateShowCode();
 });
 
-watch([componentName, assets, activeTableType], () => {
+watch([componentName, activeTableType], () => {
   figmaLocalStorage.edit(v => {
-    v.componentName = componentName.value;
     v.activeTab = activeTableType.value;
-    v.assets = assets.value.map(item => {
-      return {
-        name: item.cuName,
-        figmaDownloadUrl: item.src,
-        ossUrl: item.ossUrl
-      };
-    });
   });
 });
 
@@ -173,19 +161,28 @@ const generateShowCode = async () => {
 };
 
 const uploadAssetLoading = ref(false);
-const handleUploadAsset = async (asset: Asset) => {
+const handleUploadAsset = async (nodeInfo: FigmaNodeInfo) => {
   uploadAssetLoading.value = true;
   try {
     const res = await uploadAssetToOssMessage.sendMessage({
-      src: asset.src,
+      fileKey: fileKey.value,
+      nodeId: nodeInfo.id,
       isCompressed: false,
-      width: asset.width,
-      height: asset.height
+      width: nodeInfo.absoluteBoundingBox.width,
+      height: nodeInfo.absoluteBoundingBox.height
     });
     if (res.succeed) {
-      const on = assets.value.find(item => item.src === asset.src);
-      if (on) {
-        on.ossUrl = res.data || "";
+      const { nodeCuDataList = [] } = (await figmaLocalStorage.get()) || {};
+      const onNode = nodeCuDataList.find(item => item.fileKey === fileKey.value && item.nodeId === nodeId.value);
+      if (onNode) {
+        onNode.ossUrl = res.data || "";
+      } else {
+        nodeCuDataList.push({
+          fileKey: fileKey.value,
+          nodeId: nodeId.value,
+          name: "",
+          ossUrl: res.data || ""
+        });
       }
     }
   } catch (error) {
@@ -199,11 +196,7 @@ const handleCopyOssUrl = (ossUrl: string) => {
   navigator.clipboard.writeText(ossUrl);
 };
 
-const handleUploadAllAssets = async () => {
-  for (const asset of assets.value) {
-    await handleUploadAsset(asset);
-  }
-};
+const handleUploadAllAssets = async () => {};
 
 const getFigmaAssetsLoading = ref(false);
 const getFigmaAssets = async () => {
@@ -222,26 +215,23 @@ const getFigmaAssets = async () => {
 
   try {
     getFigmaAssetsLoading.value = true;
+
     const res = await figmaAssetsMessage.sendTabMessage(tab.id || 0);
     if (!res.succeed) {
       getFigmaAssetsErrorAlert.value = res.msg || "获取figma资源失败";
       return;
     }
-    const { codes: codesData, assets: assetsData } = res.data || { codes: [], assets: [] };
+    const { fileKey, nodeId, codes: codesData } = res.data || { codes: [] };
+    if (!fileKey || !nodeId) {
+      getFigmaAssetsErrorAlert.value = "获取figma资源失败，fileKey或nodeId为空";
+      return;
+    }
 
-    const { assets: assets_ = [] } = (await figmaLocalStorage.get()) || {};
+    const { nodeCuDataList = [] } = (await figmaLocalStorage.get()) || {};
+
+    componentName.value = nodeCuDataList.find(item => item.fileKey === fileKey && item.nodeId === nodeId)?.name || "";
 
     codes.value = codesData;
-
-    assets.value = assetsData.map((item, index) => {
-      const asset = assets_.find(asset => asset.figmaDownloadUrl === item.src);
-
-      return {
-        ...item,
-        cuName: asset?.name || `${item.type}-${index}`,
-        ossUrl: asset?.ossUrl || ""
-      };
-    });
 
     generateShowCode();
   } catch (error) {
@@ -253,9 +243,7 @@ const getFigmaAssets = async () => {
 };
 
 onMounted(async () => {
-  const { componentName: componentName_ = "com", activeTab: activeTab_ = TableType.Html } = (await figmaLocalStorage.get()) || {};
-
-  componentName.value = componentName_;
+  const { activeTab: activeTab_ = TableType.Html } = (await figmaLocalStorage.get()) || {};
 
   activeTableType.value = activeTab_ as TableType;
 
