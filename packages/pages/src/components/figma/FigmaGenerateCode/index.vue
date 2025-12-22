@@ -77,7 +77,7 @@ import { getAssetsJsCode, handleBaseCode, toUniappCode } from "./index";
 import type { Asset, BaseCode } from "./types";
 import Input from "./components/input/index.vue";
 import { uploadAssetToOssMessage } from "@taozi-chrome-extensions/common/src/message";
-import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/figmaMessage";
+import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/FigmaMessage";
 
 enum TableType {
   Html = "html",
