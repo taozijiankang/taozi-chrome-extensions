@@ -8,9 +8,10 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "checkJs": true,
+    "allowJs": true,
     "strict": true,
     "target": "ES2022",
     "types": ["node"]
   },
-  "include": [".node/**/*.js"]
+  "include": [".node/**/*"]
 }

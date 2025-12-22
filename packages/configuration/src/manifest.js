@@ -20,6 +20,14 @@ export const MANIFEST = {
     service_worker: "background/index.iife.js",
     type: "module"
   },
+  content_scripts: [
+    {
+      matches: ["*://codesign.qq.com/*", "*://mp.weixin.qq.com/*", "*://www.figma.com/*"],
+      js: ["inject/index.iife.js"],
+      css: ["inject/index.css"],
+      runAt: "document_idle"
+    }
+  ],
   permissions: ["tabs", "scripting", "activeTab", "storage", "cookies"],
   host_permissions: ["<all_urls>"],
   sandbox: {
