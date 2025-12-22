@@ -1,7 +1,8 @@
 import { BaseMessage } from "../BaseMessage";
 
 export interface UploadAssetToOssReq {
-  src: string;
+  fileKey: string;
+  nodeId: string;
   isCompressed: boolean;
   width: number;
   height: number;

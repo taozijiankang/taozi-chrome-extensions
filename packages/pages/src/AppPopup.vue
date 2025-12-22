@@ -11,6 +11,7 @@ import ProxyServerConfig from "./components/ProxyServerConfig/index.vue";
 import Commit from "./components/Version/commit.vue";
 import MpReleasePlan from "./components/MpReleasePlan/index.vue";
 import FigmaGenerateCode from "./components/figma/FigmaGenerateCode/index.vue";
+import FigmaConfig from "./components/figma/Config/index.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
@@ -110,17 +111,24 @@ onMounted(async () => {
       <template v-else-if="activeTab === TabType.Config">
         <div class="title">
           <div class="left"></div>
-          <span>代理服务配置</span>
-        </div>
-        <div class="content">
-          <ProxyServerConfig />
-        </div>
-        <div class="title">
-          <div class="left"></div>
           <span>百度翻译api配置</span>
         </div>
         <div class="content">
           <BaiDuAppConfig />
+        </div>
+        <div class="title">
+          <div class="left"></div>
+          <span>figma api配置</span>
+        </div>
+        <div class="content">
+          <FigmaConfig />
+        </div>
+        <div class="title">
+          <div class="left"></div>
+          <span>代理服务配置</span>
+        </div>
+        <div class="content">
+          <ProxyServerConfig />
         </div>
       </template>
       <template v-else-if="activeTab === TabType.Version">

@@ -19,6 +19,12 @@
     }
   }
 
+  .com-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .codes {
     display: flex;
     flex-direction: column;

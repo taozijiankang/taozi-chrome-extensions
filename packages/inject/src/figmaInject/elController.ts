@@ -1,5 +1,5 @@
 import { wait } from "@taozi-chrome-extensions/common/src/utils/global";
-import type { Asset, BaseCode } from "./types";
+import type { BaseCode } from "./types";
 
 /**
  * 获取 figma 画布元素
@@ -86,61 +86,4 @@ export async function getBaseCodes() {
       content
     };
   });
-}
-
-export async function getAssets() {
-  const assetsInspectorPanelEl = getAssetsInspectorPanelEl();
-  if (!assetsInspectorPanelEl) {
-    return [];
-  }
-
-  const iconsInspectionPanelEl = document.querySelector<HTMLDivElement>("#icons-inspection-panel");
-  const imagesInspectionPanelEl = document.querySelector<HTMLDivElement>("#images-inspection-panel");
-
-  const getResult = async (panelEl: HTMLDivElement | null, type: "icon" | "image") => {
-    if (!panelEl) {
-      return [];
-    }
-    const assetsContentsEl = panelEl.querySelector(`div[class*="inspection_panel--inspectionPanelContents--"]`);
-    if (!assetsContentsEl) {
-      return [];
-    }
-
-    const showMoreButton = assetsContentsEl.querySelector<HTMLButtonElement>('button[data-testid="show-more-button"]');
-    if (showMoreButton) {
-      showMoreButton.click();
-    }
-
-    await wait(100);
-
-    const assetsContainers = [
-      ...assetsContentsEl.querySelectorAll<HTMLDivElement>('div[class*="asset_panel--assetContainer--"]')
-    ];
-
-    return assetsContainers.map<Asset>(assetsContainerEl => {
-      const src = assetsContainerEl.querySelector<HTMLImageElement>("img")?.src || "";
-      const detailsEl = assetsContainerEl.querySelector<HTMLDivElement>('div[class*="asset_panel--assetDetails--"]');
-
-      const name = detailsEl?.querySelector("div[class*=asset_panel--assetName--]")?.textContent || "";
-      const widthStr = detailsEl?.querySelector(`span[data-testid="assetPanelWidth"]`)?.textContent || "";
-      const heightStr = detailsEl?.querySelector(`span[data-testid="assetPanelHeight"]`)?.textContent || "";
-      const width = parseInt(widthStr.replace(",", ""));
-      const height = parseInt(heightStr.replace(",", ""));
-      return {
-        type,
-        src,
-        name,
-        width,
-        height
-      };
-    });
-  };
-
-  const result = [...(await getResult(iconsInspectionPanelEl, "icon")), ...(await getResult(imagesInspectionPanelEl, "image"))];
-
-  // 如果存在没有src的资产，则重新获取
-  if (result.some(item => !item.src)) {
-    return await getAssets();
-  }
-  return result;
 }

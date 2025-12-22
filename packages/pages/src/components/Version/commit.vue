@@ -1,6 +1,6 @@
 <template>
   <div class="commit">
-    <ElDescriptions>
+    <ElDescriptions :column="1" border>
       <ElDescriptionsItem label="hash">
         {{ COMMIT_INFO.hash }}
       </ElDescriptionsItem>

@@ -16,13 +16,13 @@ export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
 
   const rootNodeClassName = body.match(/^\s*<[\w]+\s*class="(.*?)"/)?.[1] || "";
 
-  const componentVariableName = camelToKebabCase(toValidVariableName(`ai-${componentName}`));
+  const componentVariableName = camelToKebabCase(toValidVariableName(componentName));
 
   const transformClassName = (className: string) => {
     if (className === rootNodeClassName) {
       return componentVariableName;
     }
-    return camelToKebabCase(toValidVariableName(`ai-${className}`));
+    return camelToKebabCase(toValidVariableName(`figma-${className}`));
   };
 
   const css = cssCode.replace(/\.([\w-]+?)(?=\s*{)/g, (_, className) => {
@@ -43,7 +43,7 @@ export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
         plugins: prettierPlugins
       }
     ),
-    css: await prettier.format(
+    scss: await prettier.format(
       rootNodeCss.replace(/}$/, () => {
         return `
           ${css.slice(0, cssRootNodeExec.index)}
@@ -58,9 +58,24 @@ export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
   };
 }
 
-export function getAssetsJsCode(option: { name: string; url: string }) {
-  const { name, url } = option;
+export function getAssetsJsCode(option: { name: string; url: string; type: "image" | "icon" }) {
+  const { name, url, type } = option;
   return `
-    const ${kebabToCamelCase(toValidVariableName(name), true)} = \`${url}\`;
+    const ${kebabToCamelCase(toValidVariableName(`${name}-${type}`), true)} = \`${url}\`;
   `.trim();
+}
+
+export function toUniappCode(code: { html: string; scss: string }) {
+  let { html, scss } = code;
+
+  // 将html中的div标签替换为view标签
+  html = html.replace(/(?<=<\/?)div/g, "view");
+
+  // 将html的img标签替换为image标签
+  html = html.replace(/(?<=<\/?)img/g, "image");
+
+  return {
+    html,
+    scss
+  };
 }
