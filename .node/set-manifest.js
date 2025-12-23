@@ -11,13 +11,13 @@ const manifestPath = path.join(__dirname, "../extensions/manifest.json");
 
 /**
  * @typedef {Object} SetManifestOptions
- * @property {string} [pemContent] pem 内容
+ * @property {string} [pemPath] pem 文件路径
  */
 
 program
   .version("1.0.0")
   .description("设置 manifest.json 中的 key 值")
-  .option("-p, --pemContent <pemContent>", "pem 内容")
+  .option("-p, --pemPath <pemPath>", "pem 文件路径")
   .action(() => {
     setManifest(program.opts());
   })
@@ -27,23 +27,25 @@ program
  * @param {SetManifestOptions} options
  */
 async function setManifest(options) {
-  let { pemContent } = options;
+  let { pemPath } = options;
 
-  if (!pemContent) {
-    throw new Error("pemContent 不能为空");
+  if (!pemPath) {
+    throw new Error("pemPath 不能为空");
   }
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath).toString());
 
-  manifest.key = getKey(pemContent);
+  manifest.key = getKey(pemPath);
 
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
 }
 
 /**
- * @param {string} pemContent
+ * @param {string} pemPath
  */
-function getKey(pemContent) {
+function getKey(pemPath) {
+  const pemContent = fs.readFileSync(pemPath).toString();
+
   // 2. 从私钥中提取公钥
   const publicKey = crypto.createPublicKey({
     key: pemContent,
