@@ -38,7 +38,7 @@ jobs:
 
       - name: 设置 manifest.json 中的 key 值
         run: |
-          echo ${{ secrets.PEM_CONTENT }} > ./key.pem
+          echo "${{ secrets.PEM_CONTENT }}" > ./key.pem
           node .node/set-manifest.js -p ./key.pem
 
       - name: Package extensions
