@@ -1,8 +1,12 @@
 <template>
-  <div>index</div>
+  <div>
+    <Test />
+  </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Test from "./view/test/index.vue";
+</script>
 
 <style scoped>
 header {

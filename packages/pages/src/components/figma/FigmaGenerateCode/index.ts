@@ -34,16 +34,16 @@ export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
   const rootNodeCss = cssRootNodeExec[0]!.trim();
 
   return {
-    html: await prettier.format(
+    html: await window.prettier.format(
       body.replace(/class="([\w-]+?)"/g, (_, className) => {
         return `class="${transformClassName(className)}"`;
       }),
       {
         parser: "html",
-        plugins: prettierPlugins
+        plugins: window.prettierPlugins
       }
     ),
-    scss: await prettier.format(
+    scss: await window.prettier.format(
       rootNodeCss.replace(/}$/, () => {
         return `
           ${css.slice(0, cssRootNodeExec.index)}
@@ -52,7 +52,7 @@ export async function handleBaseCode(componentName: string, codes: BaseCode[]) {
       }),
       {
         parser: "scss",
-        plugins: prettierPlugins
+        plugins: window.prettierPlugins
       }
     )
   };

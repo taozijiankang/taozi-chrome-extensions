@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
-import path, { dirname, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { exec } from "node:child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
