@@ -1,15 +1,31 @@
 <template>
   <div class="test">
-    <Code :code="formattedJsCode" :type="CodeType.Js" />
+    <ElTabs v-model="activeTab">
+      <ElTabPane label="Test" :name="TabType.Test">
+        <Code :code="htmlCode" :type="CodeType.Vue" />
+      </ElTabPane>
+      <ElTabPane label="Version" :name="TabType.Version">
+        <Version />
+      </ElTabPane>
+    </ElTabs>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ElTabs, ElTabPane } from "element-plus";
 import Code from "../../components/Code/index.vue";
 import { CodeType } from "../../components/Code/index";
 import { onMounted, ref } from "vue";
 import { formatCode } from "../../utils/prettier";
 import { parseHtmlScss } from ".";
+import Version from "../Version/index.vue";
+
+enum TabType {
+  Test = "Test",
+  Version = "Version"
+}
+
+const activeTab = ref(TabType.Test);
 
 const jsCode = `
   const a = 1;

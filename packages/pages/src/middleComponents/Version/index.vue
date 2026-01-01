@@ -1,6 +1,9 @@
 <template>
-  <div class="commit">
+  <div class="version">
     <ElDescriptions :column="1" border>
+      <ElDescriptionsItem label="version">
+        {{ PACKAGE_JSON.version }}
+      </ElDescriptionsItem>
       <ElDescriptionsItem label="hash">
         {{ COMMIT_INFO.hash }}
       </ElDescriptionsItem>
@@ -27,7 +30,10 @@
 import dayjs from "dayjs";
 import { ElDescriptions, ElDescriptionsItem } from "element-plus";
 
+const PACKAGE_JSON = __PACKAGE_JSON__;
 const COMMIT_INFO = __COMMIT_INFO__;
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@use "./index";
+</style>

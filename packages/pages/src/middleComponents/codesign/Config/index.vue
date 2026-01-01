@@ -53,8 +53,5 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.baidu-app-config {
-  display: flex;
-  flex-direction: column;
-}
+@use "./index";
 </style>

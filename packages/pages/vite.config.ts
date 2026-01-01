@@ -5,6 +5,9 @@ import vueDevTools from "vite-plugin-vue-devtools";
 import { dirname, resolve } from "node:path";
 import { exec } from "node:child_process";
 
+/** @ts-ignore */
+import { packageJson } from "@taozi-chrome-extensions/scripts/src/packageJson.js";
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // https://vite.dev/config/
@@ -26,6 +29,7 @@ export default defineConfig({
   },
   define: {
     "process.env": {},
+    __PACKAGE_JSON__: JSON.stringify(packageJson),
     __COMMIT_INFO__: {
       hash: await getGitInfo("%h"),
       author: await getGitInfo("%an"),

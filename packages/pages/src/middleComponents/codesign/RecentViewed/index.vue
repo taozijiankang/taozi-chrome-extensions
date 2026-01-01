@@ -24,9 +24,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue";
-import { requestUser, requestRecentViewed } from "./api";
-import type { RecentViewedItem } from "./api/type";
+import { onMounted, ref } from "vue";
+import { requestUser, requestRecentViewed } from "../api";
+import type { RecentViewedItem } from "../api/type";
 import { ElMessage, ElEmpty, ElSkeleton } from "element-plus";
 import dayjs from "dayjs";
 
@@ -66,65 +66,5 @@ const handleClick = async (item: RecentViewedItem) => {
 </script>
 
 <style lang="scss" scoped>
-.codesign-recent-viewed {
-  display: flex;
-  flex-direction: column;
-  .list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-
-    .recent-viewed-item {
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      border-radius: 12px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      &:hover {
-        filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.08));
-      }
-      .recent-viewed-item-cover {
-        width: 100%;
-        height: 100px;
-        overflow: hidden;
-        position: relative;
-        background: url("data:img/jpg;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAACVBMVEX3+fvv8vTz9vhtSfzXAAAAGklEQVQI12MIDWNgIECsWrVqBQMDU2gIfgIAwnIMASbGc5UAAAAASUVORK5CYII=");
-        img {
-          width: 100%;
-        }
-        .model {
-          position: absolute;
-          z-index: 10;
-          background: rgba(34, 35, 36, 0.8);
-          border-radius: 2px;
-          color: hsla(0, 0%, 100%, 0.9);
-          line-height: 20px;
-          padding: 0 4px;
-          font-weight: 500;
-          font-size: 10px;
-          right: 8px;
-          bottom: 8px;
-        }
-      }
-      .recent-viewed-item-info {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        box-sizing: border-box;
-        background-color: #f6f9fb;
-        padding: 8px 16px;
-        .name {
-          font-size: 14px;
-          font-weight: bold;
-        }
-
-        .update-time {
-          font-size: 12px;
-          color: #999;
-        }
-      }
-    }
-  }
-}
+@use "./index";
 </style>

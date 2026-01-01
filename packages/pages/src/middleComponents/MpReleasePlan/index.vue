@@ -79,58 +79,5 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.mp-release-plan {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .control {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    border-bottom: 1px solid #e5e5e5;
-    padding-bottom: 12px;
-  }
-
-  .list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-
-    .list-item:last-child {
-      border-bottom: none;
-    }
-
-    .list-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      justify-content: space-between;
-      border-bottom: 1px solid #e5e5e5;
-      padding-bottom: 12px;
-
-      .left {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-
-        .headimg {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-        }
-
-        .info {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          span {
-            font-size: 14px;
-            color: #333;
-          }
-        }
-      }
-    }
-  }
-}
+@use "./index";
 </style>

@@ -33,9 +33,5 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.proxy-server-config {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+@use "./index";
 </style>

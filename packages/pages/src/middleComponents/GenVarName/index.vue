@@ -98,33 +98,5 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.gen-var-name {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .results-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .result-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .try-result {
-    padding: 12px;
-    border-radius: 6px;
-    background: #f7f7f7;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background: #e8e8e8;
-    }
-  }
-}
+@use "./index";
 </style>
