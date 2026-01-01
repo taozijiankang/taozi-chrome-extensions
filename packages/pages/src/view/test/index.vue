@@ -9,7 +9,7 @@ import Code from "../../components/Code/index.vue";
 import { CodeType } from "../../components/Code/index";
 import { onMounted, ref } from "vue";
 import { formatCode } from "../../utils/prettier";
-import { parse as parseHtml } from "parse5";
+import { parseHtmlScss } from ".";
 
 const jsCode = `
   const a = 1;
@@ -110,12 +110,14 @@ const htmlCode = `
 </html>
 `;
 
+const cssCode = ``;
+
 const formattedJsCode = ref("");
 
 onMounted(async () => {
   formattedJsCode.value = await formatCode(jsCode, "typescript");
 
-  const a = parseHtml(htmlCode);
+  const a = parseHtmlScss(htmlCode, cssCode);
   console.log(a);
 });
 </script>
