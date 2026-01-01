@@ -1,9 +1,9 @@
-import { packageJson } from "@taozi-chrome-extensions/scripts/src/packageJson.js";
+import rootPackageJson from "../../../package.json" with { type: "json" };
 
 export const MANIFEST = {
-  name: packageJson.name,
-  description: packageJson.description,
-  version: packageJson.version,
+  name: rootPackageJson.name,
+  description: rootPackageJson.description,
+  version: rootPackageJson.version,
   manifest_version: 3,
   action: {
     default_popup: "pages/popup.html",
