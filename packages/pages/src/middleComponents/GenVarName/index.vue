@@ -56,11 +56,16 @@ const handleClick = async () => {
       const validName = toValidVariableName(res.data || "");
       results.value = [
         {
-          camelCase: kebabToCamelCase(validName),
           pascalCase: kebabToCamelCase(validName, true),
+          camelCase: kebabToCamelCase(validName),
           kebabCase: camelToKebabCase(validName)
         }
       ];
+    } else {
+      ElMessage({
+        type: "error",
+        message: res.msg || "翻译失败"
+      });
     }
   } catch (err) {
     console.error("Translation error:", err);
