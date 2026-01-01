@@ -99,7 +99,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { ElForm, ElFormItem, ElButton, ElInput, ElSelect, ElOption, ElMessage, ElIcon, ElTag } from "element-plus";
 import { Box, Picture, PictureRounded, Document } from "@element-plus/icons-vue";
 import { kebabToCamelCase, camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
-import Code from "../../../components/Code/index.vue";
+import Code from "@/components/Code/index.vue";
 import { codesignLocalStorage, type CodesignLocalStorage } from "@taozi-chrome-extensions/common/src/local/codesign";
 import { getCssPropConfig, ElType, ObjectType, ObjectTypeOptions, ElTypeDesc, FrameTypeOptions, FrameType } from "./index";
 import { parseCssRules, type CssProp, type CssRule } from "./parseCssRules";

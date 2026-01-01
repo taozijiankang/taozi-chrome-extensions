@@ -1,7 +1,7 @@
 import Controller from "./components/Controller/index.vue";
 import { getAllSectionNodeBox, getCssCode, getScreenInspectorEl, getTextContent, getIconSrc, isImgFill } from "./elController";
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
-import { insertMountEl } from "../utils/insertMountEl";
+import { insertMountEl } from "@/utils/insertMountEl";
 import { renderComponentToEl } from "@/utils/renderComponentToEl";
 import { h } from "vue";
 import { ElType } from "./components/Controller";
@@ -19,19 +19,19 @@ export function codesignInject() {
         return;
       }
       console.log("触发代码设计");
-      retry(triggerCodesign, 10, 100).catch((err) => {
+      retry(triggerCodesign, 10, 100).catch(err => {
         console.error("代码注入失败", err);
       });
     }, 100),
     {
-      capture: true,
+      capture: true
     }
   );
 }
 
 async function triggerCodesign() {
   const sectionNodeBoxs = getAllSectionNodeBox();
-  const codeSectionNode = sectionNodeBoxs.find((item) => item.title === "代码");
+  const codeSectionNode = sectionNodeBoxs.find(item => item.title === "代码");
   if (!codeSectionNode) {
     throw new Error("代码节点不存在");
   }
@@ -52,15 +52,15 @@ async function triggerCodesign() {
   let textContent: string = "";
   let identification: string = "";
 
-  if (sectionNodeBoxs.some((item) => item.title === "文本")) {
+  if (sectionNodeBoxs.some(item => item.title === "文本")) {
     elType = ElType.Text;
-    const textSectionNode = sectionNodeBoxs.find((item) => item.title === "内容")?.contentEl;
+    const textSectionNode = sectionNodeBoxs.find(item => item.title === "内容")?.contentEl;
     if (textSectionNode) {
       textContent = getTextContent(textSectionNode);
     }
-  } else if (sectionNodeBoxs.some((item) => item.title === "切图")) {
+  } else if (sectionNodeBoxs.some(item => item.title === "切图")) {
     elType = ElType.Icon;
-    const iconSectionNode = sectionNodeBoxs.find((item) => item.title === "切图")?.contentEl;
+    const iconSectionNode = sectionNodeBoxs.find(item => item.title === "切图")?.contentEl;
     if (iconSectionNode) {
       const iconSrc = getIconSrc(iconSectionNode);
       identification = md5(iconSrc + cssCode).toString();
@@ -88,7 +88,7 @@ async function triggerCodesign() {
         identification,
         elType,
         textContent,
-        cssCode,
-      }),
+        cssCode
+      })
   });
 }
