@@ -6,6 +6,8 @@ export interface ConfigLocalStorage {
   baiduKey?: string;
   /** 当前激活的标签页 */
   popupActiveTab?: string;
+  /** 主页当前激活的标签页 */
+  homeActiveTab?: string;
   /** 代理服务地址 */
   proxyServiceUrl?: string;
 }

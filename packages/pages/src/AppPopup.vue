@@ -10,14 +10,12 @@ import CodesignConfig from "./middleComponents/codesign/Config/index.vue";
 import ProxyServerConfig from "./middleComponents/ProxyServerConfig/index.vue";
 import Version from "./middleComponents/Version/index.vue";
 import MpReleasePlan from "./middleComponents/MpReleasePlan/index.vue";
-import FigmaGenerateCode from "./middleComponents/figma/GenerateCode/index.vue";
 import FigmaConfig from "./middleComponents/figma/Config/index.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
   MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
-  Figma = "Figma",
   Config = "Config",
   Version = "Version"
 }
@@ -41,10 +39,6 @@ const tabs = ref<
     value: TabType.Codesign
   },
   {
-    label: "Figma",
-    value: TabType.Figma
-  },
-  {
     label: "项目配置",
     value: TabType.Config
   },
@@ -62,14 +56,15 @@ watch(activeTab, () => {
 });
 
 onMounted(async () => {
-  activeTab.value = ((await configLocalStorage.get())?.popupActiveTab as TabType) || TabType.GenVarName;
+  const { popupActiveTab } = (await configLocalStorage.get()) || {};
+  activeTab.value = tabs.value.find(item => item.value === popupActiveTab)?.value || TabType.GenVarName;
 });
 </script>
 
 <template>
   <div class="popup">
     <div class="head">
-      <Head />
+      <Head :show-home-button="true" />
     </div>
     <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <div class="content-container">
@@ -97,15 +92,6 @@ onMounted(async () => {
         </div>
         <div class="content">
           <CodesignConfig />
-        </div>
-      </template>
-      <template v-else-if="activeTab === TabType.Figma">
-        <div class="title">
-          <div class="left"></div>
-          <span>Figma代码生成</span>
-        </div>
-        <div class="content">
-          <FigmaGenerateCode />
         </div>
       </template>
       <template v-else-if="activeTab === TabType.Config">

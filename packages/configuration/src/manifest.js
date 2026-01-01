@@ -35,7 +35,7 @@ export const MANIFEST = {
   },
   web_accessible_resources: [
     {
-      resources: ["inject/index.css", "sandbox/index.html"],
+      resources: ["inject/index.css", "sandbox/index.html", "pages/home.html"],
       matches: ["*://*/*"]
     }
   ]
