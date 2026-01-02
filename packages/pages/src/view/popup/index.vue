@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import BaiDuAppConfig from "./middleComponents/BaiDuAppConfig/index.vue";
-import GenVarName from "./middleComponents/GenVarName/index.vue";
-import Head from "./middleComponents/Head/index.vue";
-import Tabs from "./components/Tabs/index.vue";
+import BaiDuAppConfig from "../../middleComponents/BaiDuAppConfig/index.vue";
+import GenVarName from "../../middleComponents/GenVarName/index.vue";
+import Head from "../../middleComponents/Head/index.vue";
+import Tabs from "../../components/Tabs/index.vue";
 import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
-import CodesignRecentViewed from "./middleComponents/codesign/RecentViewed/index.vue";
-import CodesignConfig from "./middleComponents/codesign/Config/index.vue";
-import ProxyServerConfig from "./middleComponents/ProxyServerConfig/index.vue";
-import Version from "./middleComponents/Version/index.vue";
-import MpReleasePlan from "./middleComponents/MpReleasePlan/index.vue";
-import FigmaConfig from "./middleComponents/figma/Config/index.vue";
+import CodesignRecentViewed from "../../middleComponents/codesign/RecentViewed/index.vue";
+import CodesignConfig from "../../middleComponents/codesign/Config/index.vue";
+import ProxyServerConfig from "../../middleComponents/ProxyServerConfig/index.vue";
+import Version from "../../middleComponents/Version/index.vue";
+import MpReleasePlan from "../../middleComponents/MpReleasePlan/index.vue";
+import { openPage } from "@taozi-chrome-extensions/common/src/utils/openPage";
+import { Page } from "@taozi-chrome-extensions/common/src/constant/page";
+import { ElButton } from "element-plus";
+import FigmaConfig from "../../middleComponents/figma/Config/index.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
   MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
+  Figma = "Figma",
   Config = "Config",
   Version = "Version"
 }
@@ -23,6 +27,7 @@ const tabs = ref<
   {
     label: string;
     value: TabType;
+    click?: () => void;
   }[]
 >([
   {
@@ -33,10 +38,13 @@ const tabs = ref<
     label: "小程序发版计划",
     value: TabType.MpReleasePlan
   },
-
   {
     label: "Codesign",
     value: TabType.Codesign
+  },
+  {
+    label: "Figma",
+    value: TabType.Figma
   },
   {
     label: "项目配置",
@@ -54,6 +62,10 @@ watch(activeTab, () => {
     v.popupActiveTab = activeTab.value;
   });
 });
+
+const handleOpenFigmaPage = async () => {
+  await openPage(Page.Figma);
+};
 
 onMounted(async () => {
   const { popupActiveTab } = (await configLocalStorage.get()) || {};
@@ -94,6 +106,16 @@ onMounted(async () => {
           <CodesignConfig />
         </div>
       </template>
+      <template v-else-if="activeTab === TabType.Figma">
+        <ElButton type="primary" @click="handleOpenFigmaPage"> 打开Figma 控制台页面 </ElButton>
+        <div class="title">
+          <div class="left"></div>
+          <span>配置</span>
+        </div>
+        <div class="content">
+          <FigmaConfig />
+        </div>
+      </template>
       <template v-else-if="activeTab === TabType.Config">
         <div class="title">
           <div class="left"></div>
@@ -101,13 +123,6 @@ onMounted(async () => {
         </div>
         <div class="content">
           <BaiDuAppConfig />
-        </div>
-        <div class="title">
-          <div class="left"></div>
-          <span>figma api配置</span>
-        </div>
-        <div class="content">
-          <FigmaConfig />
         </div>
         <div class="title">
           <div class="left"></div>
@@ -131,5 +146,5 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-@use "./app-popup.scss";
+@use "./index.scss";
 </style>

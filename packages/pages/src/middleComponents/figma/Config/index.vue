@@ -12,18 +12,18 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElForm, ElFormItem, ElAlert } from "element-plus";
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
+import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const figmaApiKeyInput = ref("");
 
 watch([figmaApiKeyInput], () => {
-  configLocalStorage.edit(v => {
+  figmaLocalStorage.edit(v => {
     v.figmaApiKey = figmaApiKeyInput.value;
   });
 });
 
 onMounted(async () => {
-  const { figmaApiKey = "" } = (await configLocalStorage.get()) || {};
+  const { figmaApiKey = "" } = (await figmaLocalStorage.get()) || {};
   figmaApiKeyInput.value = figmaApiKey;
 });
 </script>

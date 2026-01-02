@@ -1,13 +1,13 @@
 <template>
-  <div>
+  <div class="main">
     <Test />
   </div>
 </template>
 
 <script setup lang="ts">
-import Test from "./middleComponents/Test/index.vue";
+import Test from "../../middleComponents/Test/index.vue";
 </script>
 
 <style lang="scss" scoped>
-@use "./app.scss";
+@use "./index.scss";
 </style>

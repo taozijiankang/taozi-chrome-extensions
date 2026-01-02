@@ -12,14 +12,15 @@
           </div>
           <div class="recent-viewed-item-info">
             <span class="name">{{ item.name }}</span>
-            <span class="update-time"
-              >{{ dayjs(item.updated_at).format("YYYY-MM-DD HH:mm:ss") }} 由 {{ item.updater.nickname }} 更新</span
-            >
+            <span class="update-time">
+              {{ dayjs(item.updated_at).format("YYYY-MM-DD HH:mm:ss") }} 由 {{ item.updater.nickname }} 更新
+            </span>
           </div>
         </div>
       </template>
     </div>
-    <ElEmpty v-if="!loading && list.length <= 0" description="暂无最近浏览" />
+    <ElEmpty v-if="!loading && list.length <= 0 && !errorAlert" description="暂无最近浏览" />
+    <ElAlert v-else-if="errorAlert" class="error-alert" :closable="false" :title="errorAlert" type="error" />
   </div>
 </template>
 
@@ -27,11 +28,12 @@
 import { onMounted, ref } from "vue";
 import { requestUser, requestRecentViewed } from "../api";
 import type { RecentViewedItem } from "../api/type";
-import { ElMessage, ElEmpty, ElSkeleton } from "element-plus";
+import { ElEmpty, ElSkeleton, ElAlert } from "element-plus";
 import dayjs from "dayjs";
 
 const loading = ref(false);
 const list = ref<RecentViewedItem[]>([]);
+const errorAlert = ref("");
 
 onMounted(async () => {
   loading.value = true;
@@ -40,7 +42,7 @@ onMounted(async () => {
     const { data: recentViewed } = await requestRecentViewed(user.last_team_id);
     list.value = recentViewed;
   } catch (error: any) {
-    ElMessage.error(error.toString());
+    errorAlert.value = error.toString();
   } finally {
     loading.value = false;
   }

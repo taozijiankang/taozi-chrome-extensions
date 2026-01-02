@@ -1,10 +1,17 @@
-/**
- * 打开扩展主页
- */
-export async function openHomePage() {
-  const url = chrome.runtime.getURL("pages/home.html");
+import { Page, PageUrlMap } from "../constant/page";
 
-  // 检查是否已经打开了主页
+/**
+ * 打开页面
+ */
+export async function openPage(page: Page) {
+  const pageUrl = PageUrlMap[page];
+  if (!pageUrl) {
+    throw new Error(`page ${page} not found`);
+  }
+
+  const url = chrome.runtime.getURL(pageUrl);
+
+  // 检查是否已经打开了页面
   const tabs = await chrome.tabs.query({});
   const existingTab = tabs.find(tab => tab.url === url);
 

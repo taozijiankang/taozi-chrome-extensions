@@ -2,7 +2,7 @@
   <div class="gen-var-name">
     <ElInput type="text" v-model="input" @keydown.enter="handleClick" placeholder="请输入...">
       <template #append>
-        <ElButton @click="handleClick" :loading="loading">确定</ElButton>
+        <ElButton type="primary" @click="handleClick" :loading="loading">确定</ElButton>
       </template>
     </ElInput>
     <ElSkeleton v-if="loading" :rows="3" animated />
