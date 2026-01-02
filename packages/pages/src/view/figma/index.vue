@@ -5,6 +5,7 @@ import Tabs from "../../components/Tabs/index.vue";
 import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 import FigmaGenerateCode from "../../middleComponents/figma/GenerateCode/index.vue";
 import FigmaConfig from "../../middleComponents/figma/Config/index.vue";
+import ContentCard from "../../components/ContentCard/index.vue";
 
 enum TabType {
   CodeGenerate = "CodeGenerate",
@@ -51,22 +52,14 @@ onMounted(async () => {
     </div>
     <div class="content-container">
       <template v-if="activeTab === TabType.CodeGenerate">
-        <div class="title">
-          <div class="left"></div>
-          <span>Figma代码生成</span>
-        </div>
-        <div class="content">
+        <ContentCard title="Figma代码生成">
           <FigmaGenerateCode />
-        </div>
+        </ContentCard>
       </template>
       <template v-if="activeTab === TabType.Config">
-        <div class="title">
-          <div class="left"></div>
-          <span>配置</span>
-        </div>
-        <div class="content">
+        <ContentCard title="配置">
           <FigmaConfig />
-        </div>
+        </ContentCard>
       </template>
     </div>
   </div>

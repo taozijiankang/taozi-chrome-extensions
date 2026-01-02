@@ -14,6 +14,8 @@ import { openPage } from "@taozi-chrome-extensions/common/src/utils/openPage";
 import { Page } from "@taozi-chrome-extensions/common/src/constant/page";
 import { ElButton } from "element-plus";
 import FigmaConfig from "../../middleComponents/figma/Config/index.vue";
+import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
+import ContentCard from "../../components/ContentCard/index.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
@@ -81,65 +83,44 @@ onMounted(async () => {
     <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <div class="content-container">
       <template v-if="activeTab === TabType.GenVarName">
-        <div class="content">
+        <ContentCard>
           <GenVarName />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.MpReleasePlan">
-        <div class="content">
+        <ContentCard>
           <MpReleasePlan />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Codesign">
-        <div class="title">
-          <div class="left"></div>
-          <span>最近浏览</span>
-        </div>
-        <div class="content">
+        <ContentCard title="最近浏览">
           <CodesignRecentViewed />
-        </div>
-        <div class="title">
-          <div class="left"></div>
-          <span>配置</span>
-        </div>
-        <div class="content">
+        </ContentCard>
+        <ContentCard title="配置">
           <CodesignConfig />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Figma">
         <ElButton type="primary" @click="handleOpenFigmaPage"> 打开Figma 控制台页面 </ElButton>
-        <div class="title">
-          <div class="left"></div>
-          <span>配置</span>
-        </div>
-        <div class="content">
+        <ContentCard title="配置">
           <FigmaConfig />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Config">
-        <div class="title">
-          <div class="left"></div>
-          <span>百度翻译api配置</span>
-        </div>
-        <div class="content">
+        <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
-        </div>
-        <div class="title">
-          <div class="left"></div>
-          <span>代理服务配置</span>
-        </div>
-        <div class="content">
+        </ContentCard>
+        <ContentCard title="代理服务配置">
           <ProxyServerConfig />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">
-        <div class="title">
-          <div class="left"></div>
-          <span>版本信息</span>
-        </div>
-        <div class="content">
+        <ContentCard title="版本信息">
           <Version />
-        </div>
+        </ContentCard>
+        <ContentCard title="提交信息">
+          <CodeSubmit />
+        </ContentCard>
       </template>
     </div>
   </div>
