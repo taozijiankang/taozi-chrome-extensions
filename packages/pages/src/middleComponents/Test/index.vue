@@ -17,7 +17,7 @@ import Code from "../../components/Code/index.vue";
 import { CodeType } from "../../components/Code/index";
 import { onMounted, ref } from "vue";
 import { formatCode } from "../../utils/prettier";
-import { parseHtmlScss } from ".";
+import { parseHtmlCss } from ".";
 import Version from "../Version/index.vue";
 
 enum TabType {
@@ -191,7 +191,7 @@ const formattedJsCode = ref("");
 onMounted(async () => {
   formattedJsCode.value = await formatCode(jsCode, "typescript");
 
-  const a = parseHtmlScss(htmlCode, cssCode);
+  const a = parseHtmlCss(htmlCode, cssCode);
   console.log(a);
 });
 </script>
