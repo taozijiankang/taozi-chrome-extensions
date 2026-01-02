@@ -2,8 +2,10 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
-import path, { dirname, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { exec } from "node:child_process";
+
+import rootPackageJson from "../../package.json" with { type: "json" };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -14,7 +16,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(__dirname, "index.html"),
-        popup: resolve(__dirname, "popup.html")
+        popup: resolve(__dirname, "popup.html"),
+        figma: resolve(__dirname, "figma.html")
       }
     }
   },
@@ -26,6 +29,7 @@ export default defineConfig({
   },
   define: {
     "process.env": {},
+    __PACKAGE_JSON__: JSON.stringify(rootPackageJson),
     __COMMIT_INFO__: {
       hash: await getGitInfo("%h"),
       author: await getGitInfo("%an"),

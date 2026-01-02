@@ -1,17 +1,12 @@
 import { useLocalStorage } from "./useLocalStorage";
 
 export interface FigmaLocalStorage {
-  componentName?: string;
-  assets?: {
-    name: string;
-    figmaDownloadUrl: string;
-    ossUrl: string;
-  }[];
+  /** figma 应用页面当前激活的标签页 */
   activeTab?: string;
+  figmaApiKey?: string;
 }
 
 export const figmaLocalStorage = useLocalStorage<string, FigmaLocalStorage>("figma-local-storage", {
-  componentName: "",
-  assets: [],
-  activeTab: ""
+  activeTab: "",
+  figmaApiKey: ""
 });

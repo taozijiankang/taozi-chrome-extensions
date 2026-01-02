@@ -7,7 +7,7 @@
       :class="{
         on: value === item.value
       }"
-      @click="itemClick(item.value)"
+      @click="item.click ? item.click() : itemClick(item.value)"
     >
       <span class="label" v-if="!item.slot">
         {{ item.label }}
@@ -23,6 +23,7 @@ const props = defineProps<{
     label: string;
     value: string;
     slot?: string;
+    click?: () => void;
   }[];
   value: string;
 }>();
