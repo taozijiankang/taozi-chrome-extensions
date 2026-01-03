@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ElButton, ElAlert, ElSkeleton } from "element-plus";
 import { onMounted, ref } from "vue";
-import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/FigmaMessage";
+import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message";
 
 const getFigmaAssetsErrorAlert = ref("");
 

@@ -11,19 +11,41 @@ console.log("运行 background servers worker 脚本");
 start();
 
 function start() {
-  baiduTranslateMessage.addListener(async req => {
-    const res = await requestBaiduTranslate(req);
+  baiduTranslateMessage.addListener(req => {
     return {
-      succeed: true,
-      data: res
+      result: true,
+      getResponse: async () => {
+        if (!req) {
+          return {
+            succeed: false,
+            msg: "请求参数为空"
+          };
+        }
+        const test = await requestBaiduTranslate(req);
+        return {
+          succeed: true,
+          data: test
+        };
+      }
     };
   });
 
-  uploadAssetToOssMessage.addListener(async req => {
-    const res = await requestUploadAsset(req);
+  uploadAssetToOssMessage.addListener(req => {
     return {
-      succeed: true,
-      data: res
+      result: true,
+      getResponse: async () => {
+        if (!req) {
+          return {
+            succeed: false,
+            msg: "请求参数为空"
+          };
+        }
+        const remoteUrl = await requestUploadAsset(req);
+        return {
+          succeed: true,
+          data: remoteUrl
+        };
+      }
     };
   });
 }
