@@ -1,4 +1,4 @@
-import { MessageReq, MessageRes } from "./type";
+import type { MessageReq, MessageRes } from "./type";
 
 export function useMessage<Req, Res>(type: string) {
   type originListener = (
