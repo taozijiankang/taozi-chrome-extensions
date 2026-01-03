@@ -1,12 +1,9 @@
 <template>
   <div class="proxy-server-config">
-    <ElAlert title="可以通过cloudflare快速部署一个代理服务" type="info" :closable="false" />
-    <a target="_blank" href="https://dash.cloudflare.com/">cloudflare官网</a>
-    <a target="_blank" href="https://github.com/yayaluoya/taozi-chrome-extensions/tree/master/packages/cf-worker">
-      cloudflare worker代码
-    </a>
+    <ElAlert title="可以通过阿里云边缘安全加速 ESA 快速部署一个代理服务" type="info" :closable="false" />
+    <a target="_blank" href="https://esa.console.aliyun.com/">阿里云边缘安全加速 ESA 控制台</a>
     <ElForm :model="{}" :rules="{}" label-width="auto" label-suffix=":">
-      <ElFormItem label="Api代理服务地址">
+      <ElFormItem label="api代理服务地址">
         <ElInput type="text" v-model="proxyServiceUrlInput" />
       </ElFormItem>
     </ElForm>
