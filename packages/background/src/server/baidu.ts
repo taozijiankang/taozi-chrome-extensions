@@ -1,5 +1,5 @@
 import { baiduTranslateMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestBaiduTranslate } from "../api/baiduTranslate";
+import { requestBaiduTranslate } from "../api";
 
 export function startBaiduTranslateServer() {
   baiduTranslateMessage.addListener(req => {

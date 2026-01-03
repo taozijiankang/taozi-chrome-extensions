@@ -1,6 +1,5 @@
-import { startBaiduTranslateServer, startPageServer } from "./server";
-import { startUploadAssetToOssServer } from "./server";
-import { startFigmaServer } from "./server";
+import { startServer } from "./server";
+import { startTimedTask } from "./timed-task";
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("安装扩展");
@@ -8,11 +7,8 @@ chrome.runtime.onInstalled.addListener(() => {
 
 console.log("运行 background servers worker 脚本");
 
-start();
+console.log("开始启动 server");
+startServer();
 
-function start() {
-  startPageServer();
-  startBaiduTranslateServer();
-  startUploadAssetToOssServer();
-  startFigmaServer();
-}
+console.log("开始启动 timed task");
+startTimedTask();

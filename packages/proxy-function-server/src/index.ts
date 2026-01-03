@@ -1,4 +1,13 @@
 export default {
+  /**
+   * 代理请求
+   * 请求头中必须包含 x-target
+   * x-target 为目标地址
+   * x-cookie 为请求头中的 cookie
+   *
+   * @param request
+   * @returns
+   */
   async fetch(request: Request): Promise<Response> {
     try {
       const url = new URL(request.url);
