@@ -1,6 +1,7 @@
-import { useLocalStorage } from "./useLocalStorage";
+import { useLocalStorage } from "../useLocalStorage";
 
 export interface WeixinLocalStorage {
+  /** 小程序发版计划列表 */
   mpReleasePlanList?: {
     appId: string;
     name: string;
@@ -9,6 +10,7 @@ export interface WeixinLocalStorage {
     email: string;
     type: string;
   }[];
+  /** 搜索输入 */
   searchInput?: string;
 }
 

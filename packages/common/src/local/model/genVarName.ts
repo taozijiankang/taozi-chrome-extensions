@@ -1,6 +1,7 @@
-import { useLocalStorage } from "./useLocalStorage";
+import { useLocalStorage } from "../useLocalStorage";
 
 export interface GenVarNameLocalStorage {
+  /** 生成变量名输入 */
   genVarNameInput?: string;
 }
 

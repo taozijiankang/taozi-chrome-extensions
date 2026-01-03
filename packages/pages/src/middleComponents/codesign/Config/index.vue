@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { ElForm, ElFormItem, ElSwitch, ElInput } from "element-plus";
-import { codesignLocalStorage } from "@taozi-chrome-extensions/common/src/local/codesign";
+import { codesignLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const ignoreCssFontFamily = ref(false);
 const boxSizing = ref(false);

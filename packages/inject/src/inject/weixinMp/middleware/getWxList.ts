@@ -1,6 +1,6 @@
 import type { WXMPItem } from "../api/type";
 import { requestWxaList } from "../api";
-import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const wxaListCache: WXMPItem[] = [];
 

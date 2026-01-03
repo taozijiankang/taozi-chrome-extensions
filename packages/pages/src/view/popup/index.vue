@@ -4,7 +4,7 @@ import BaiDuAppConfig from "../../middleComponents/BaiDuAppConfig/index.vue";
 import GenVarName from "../../middleComponents/GenVarName/index.vue";
 import Head from "../../middleComponents/Head/index.vue";
 import Tabs from "../../components/Tabs/index.vue";
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
+import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 import CodesignRecentViewed from "../../middleComponents/codesign/RecentViewed/index.vue";
 import CodesignConfig from "../../middleComponents/codesign/Config/index.vue";
 import ProxyServerConfig from "../../middleComponents/ProxyServerConfig/index.vue";

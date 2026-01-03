@@ -35,8 +35,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElButton, ElImage, ElEmpty, ElTable, ElTableColumn } from "element-plus";
-import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
-import type { WeixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
+import { weixinLocalStorage, type WeixinLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const mpList = ref<Required<WeixinLocalStorage>["mpReleasePlanList"]>([]);
 const mpAppIdInput = ref("");
