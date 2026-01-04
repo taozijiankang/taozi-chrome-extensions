@@ -27,6 +27,9 @@ importers:
 
   packages/background:
     dependencies:
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
@@ -172,6 +175,9 @@ importers:
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
