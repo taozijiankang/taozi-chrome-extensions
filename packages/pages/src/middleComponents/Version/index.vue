@@ -16,8 +16,14 @@
       </div>
     </ElAlert>
     <ElDescriptions :column="1" border>
-      <ElDescriptionsItem :label="`当前版本号${newVersionList.length > 0 ? '（有新版本）' : '（最新版本）'}`">
-        {{ onVersion }}
+      <ElDescriptionsItem>
+        <template #label>
+          <div class="current-version-label">
+            <span>当前版本号</span>
+            <ElTag v-if="newVersionList.length <= 0" type="primary">最新版本</ElTag>
+          </div>
+        </template>
+        v{{ onVersion }}
       </ElDescriptionsItem>
     </ElDescriptions>
     <ElButton :loading="loading" @click="handleGetLatestReleaseVersionList">检测最新版本</ElButton>
@@ -25,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ElAlert, ElButton, ElDescriptions, ElDescriptionsItem, ElIcon } from "element-plus";
+import { ElAlert, ElButton, ElDescriptions, ElDescriptionsItem, ElIcon, ElTag } from "element-plus";
 import type { Github } from "@taozi-chrome-extensions/common/src/type";
 import { computed, onMounted, ref } from "vue";
 import { requestReleaseVersionListMessage } from "@taozi-chrome-extensions/common/src/message";
