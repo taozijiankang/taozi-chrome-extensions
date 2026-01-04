@@ -10,6 +10,7 @@ export namespace Github {
     body: string;
     created_at: string;
     published_at: string;
+    target_commitish: string;
     assets?: {
       browser_download_url: string;
       name: string;
