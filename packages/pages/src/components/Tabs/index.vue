@@ -9,7 +9,7 @@
       }"
       @click="item.click ? item.click() : itemClick(item.value)"
     >
-      <ElBadge :is-dot="item.alert">
+      <ElBadge :value="item.badgeCount" :is-dot="item.isDot" :max="99">
         <span class="label" v-if="!item.slot">
           {{ item.label }}
         </span>

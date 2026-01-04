@@ -20,7 +20,7 @@
         <template #label>
           <div class="current-version-label">
             <span>当前版本号</span>
-            <ElTag v-if="newVersionList.length <= 0" type="primary">最新版本</ElTag>
+            <ElTag v-if="!loading && newVersionList.length <= 0" type="primary">最新版本</ElTag>
           </div>
         </template>
         v{{ onVersion }}
