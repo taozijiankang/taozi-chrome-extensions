@@ -1,5 +1,4 @@
 import { useLocalStorage } from "../useLocalStorage";
-import { MessageAlertType } from "../../constant";
 
 export interface ConfigLocalStorage {
   /** 百度翻译api id */
@@ -10,8 +9,8 @@ export interface ConfigLocalStorage {
   proxyServiceUrl?: string;
   /** 弹窗当前激活的标签页 */
   popupActiveTab?: string;
-  /** 消息提醒 */
-  messageAlerts?: MessageAlertType[];
+  /** 是否有新版本 */
+  hasNewVersion?: boolean;
 }
 
 export const configLocalStorage = useLocalStorage<string, ConfigLocalStorage>("config-local-storage", {
@@ -19,5 +18,5 @@ export const configLocalStorage = useLocalStorage<string, ConfigLocalStorage>("c
   baiduAppId: "",
   baiduKey: "",
   proxyServiceUrl: "",
-  messageAlerts: []
+  hasNewVersion: false
 });

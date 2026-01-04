@@ -4,7 +4,7 @@ import BaiDuAppConfig from "../../middleComponents/BaiDuAppConfig/index.vue";
 import GenVarName from "../../middleComponents/GenVarName/index.vue";
 import Head from "../../middleComponents/Head/index.vue";
 import Tabs from "../../components/Tabs/index.vue";
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
+import { configLocalStorage, messageAlertLocalStorage, type MessageAlertItem } from "@taozi-chrome-extensions/common/src/local";
 import CodesignRecentViewed from "../../middleComponents/codesign/RecentViewed/index.vue";
 import CodesignConfig from "../../middleComponents/codesign/Config/index.vue";
 import ProxyServerConfig from "../../middleComponents/ProxyServerConfig/index.vue";
@@ -28,7 +28,7 @@ enum TabType {
   Version = "Version"
 }
 
-const messageAlerts = ref<MessageAlertType[]>([]);
+const messageAlerts = ref<MessageAlertItem[]>([]);
 
 const tabs = computed<TabItem[]>(() => {
   return [
@@ -38,7 +38,8 @@ const tabs = computed<TabItem[]>(() => {
     },
     {
       label: "小程序发版计划",
-      value: TabType.MpReleasePlan
+      value: TabType.MpReleasePlan,
+      badgeCount: messageAlerts.value.find(item => item.type === MessageAlertType.HasMpReleasePlan)?.count
     },
     {
       label: "Codesign",
@@ -55,7 +56,7 @@ const tabs = computed<TabItem[]>(() => {
     {
       label: "版本信息",
       value: TabType.Version,
-      alert: messageAlerts.value.includes(MessageAlertType.HasNewVersion)
+      isDot: messageAlerts.value.some(item => item.type === MessageAlertType.HasNewVersion)
     }
   ];
 });
@@ -70,7 +71,7 @@ watch(activeTab, () => {
 const getMessageAlertsTimer = ref<ReturnType<typeof setInterval> | null>(null);
 
 const getMessageAlerts = async () => {
-  const { messageAlerts: messageAlertsData = [] } = (await configLocalStorage.get()) || {};
+  const { messageAlerts: messageAlertsData = [] } = (await messageAlertLocalStorage.get()) || {};
   messageAlerts.value = messageAlertsData;
 };
 
@@ -133,7 +134,7 @@ onUnmounted(() => {
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">
-        <ContentCard title="版本信息" :alert="messageAlerts.includes(MessageAlertType.HasNewVersion)">
+        <ContentCard title="版本信息" :alert="messageAlerts.some(item => item.type === MessageAlertType.HasNewVersion)">
           <Version />
         </ContentCard>
         <ContentCard title="提交信息">

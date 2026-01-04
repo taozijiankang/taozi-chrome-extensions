@@ -1,7 +1,8 @@
 export interface TabItem {
   label: string;
   value: string;
-  alert?: boolean;
+  isDot?: boolean;
+  badgeCount?: number;
   slot?: string;
   click?: () => void;
 }
