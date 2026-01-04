@@ -40,23 +40,16 @@ program
  * @returns
  */
 async function generateReleaseContent(options) {
-  const latestReleaseVersionCommitish = await getLatestReleaseVersionCommitish();
-  if (!latestReleaseVersionCommitish) {
-    console.error("无法获取最新发布版本的提交信息");
-    return "";
-  }
-
   try {
-    // 获取从 latestReleaseVersionCommitish 到当前 HEAD 的非合并提交记录
-    const commits = getNonMergeCommits(latestReleaseVersionCommitish);
+    const latestReleaseVersionCommitish = await getLatestReleaseVersionCommitish();
+    let releaseContent = "";
+    if (latestReleaseVersionCommitish) {
+      // 获取从 latestReleaseVersionCommitish 到当前 HEAD 的非合并提交记录
+      const commits = getNonMergeCommits(latestReleaseVersionCommitish);
 
-    if (commits.length === 0) {
-      console.log("没有新的提交记录");
-      return "";
+      // 格式化发布内容
+      releaseContent = formatReleaseContent(commits);
     }
-
-    // 格式化发布内容
-    const releaseContent = formatReleaseContent(commits);
 
     // 如果指定了文件路径，写入文件
     if (options.filePath) {
@@ -71,7 +64,7 @@ async function generateReleaseContent(options) {
     return releaseContent;
   } catch (error) {
     console.error("生成发布内容时出错:", error instanceof Error ? error.message : String(error));
-    return "";
+    throw error;
   }
 }
 
