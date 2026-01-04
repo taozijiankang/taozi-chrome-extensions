@@ -2,7 +2,7 @@
   <div class="version-info">
     <ElAlert v-if="newVersion" :title="`发现新版本：${newVersion.tag_name}`" type="success" :closable="false">
       <div class="new-version-alert">
-        <span v-if="newVersion.body">{{ newVersion.body }}</span>
+        <span v-for="(line, index) in newVersion.body.split('\n')" :key="index">{{ line }}</span>
         <span>发布时间: {{ dayjs(newVersion.published_at).format("YYYY-MM-DD HH:mm:ss") }}</span>
         <a :href="newVersion.html_url" target="_blank">查看详情</a>
         <div class="new-version-assets">
