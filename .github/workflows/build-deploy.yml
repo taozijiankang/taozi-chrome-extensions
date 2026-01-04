@@ -18,15 +18,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: 安装 pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9.11.0
+
       - name: 使用 Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
+
       - name: 安装依赖
         run: pnpm install
 
