@@ -1,4 +1,4 @@
-export * from "./getGithubTags";
+export * from "./modules/github";
 export * from "./proxyRequest";
-export * from "./uploadAsset";
-export * from "./baiduTranslate";
+export * from "./modules/taozi";
+export * from "./modules/baidu";

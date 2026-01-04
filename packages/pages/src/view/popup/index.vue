@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, onUnmounted, computed } from "vue";
 import BaiDuAppConfig from "../../middleComponents/BaiDuAppConfig/index.vue";
 import GenVarName from "../../middleComponents/GenVarName/index.vue";
 import Head from "../../middleComponents/Head/index.vue";
@@ -16,6 +16,8 @@ import { ElButton } from "element-plus";
 import FigmaConfig from "../../middleComponents/figma/Config/index.vue";
 import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
 import ContentCard from "../../components/ContentCard/index.vue";
+import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
+import type { TabItem } from "../../components/Tabs/index";
 
 enum TabType {
   GenVarName = "GenVarName",
@@ -25,38 +27,38 @@ enum TabType {
   Config = "Config",
   Version = "Version"
 }
-const tabs = ref<
-  {
-    label: string;
-    value: TabType;
-    click?: () => void;
-  }[]
->([
-  {
-    label: "生成变量名",
-    value: TabType.GenVarName
-  },
-  {
-    label: "小程序发版计划",
-    value: TabType.MpReleasePlan
-  },
-  {
-    label: "Codesign",
-    value: TabType.Codesign
-  },
-  {
-    label: "Figma",
-    value: TabType.Figma
-  },
-  {
-    label: "项目配置",
-    value: TabType.Config
-  },
-  {
-    label: "版本信息",
-    value: TabType.Version
-  }
-]);
+
+const messageAlerts = ref<MessageAlertType[]>([]);
+
+const tabs = computed<TabItem[]>(() => {
+  return [
+    {
+      label: "生成变量名",
+      value: TabType.GenVarName
+    },
+    {
+      label: "小程序发版计划",
+      value: TabType.MpReleasePlan
+    },
+    {
+      label: "Codesign",
+      value: TabType.Codesign
+    },
+    {
+      label: "Figma",
+      value: TabType.Figma
+    },
+    {
+      label: "项目配置",
+      value: TabType.Config
+    },
+    {
+      label: "版本信息",
+      value: TabType.Version,
+      alert: messageAlerts.value.includes(MessageAlertType.HasNewVersion)
+    }
+  ];
+});
 const activeTab = ref(TabType.GenVarName);
 
 watch(activeTab, () => {
@@ -65,13 +67,29 @@ watch(activeTab, () => {
   });
 });
 
+const getMessageAlertsTimer = ref<ReturnType<typeof setInterval> | null>(null);
+
+const getMessageAlerts = async () => {
+  const { messageAlerts: messageAlertsData = [] } = (await configLocalStorage.get()) || {};
+  messageAlerts.value = messageAlertsData;
+};
+
 const handleOpenFigmaPage = async () => {
   await openPage(Page.Figma);
 };
 
 onMounted(async () => {
   const { popupActiveTab } = (await configLocalStorage.get()) || {};
-  activeTab.value = tabs.value.find(item => item.value === popupActiveTab)?.value || TabType.GenVarName;
+  activeTab.value = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
+
+  getMessageAlerts();
+  getMessageAlertsTimer.value = setInterval(getMessageAlerts, 300);
+});
+
+onUnmounted(() => {
+  if (getMessageAlertsTimer.value) {
+    clearInterval(getMessageAlertsTimer.value);
+  }
 });
 </script>
 
@@ -115,7 +133,7 @@ onMounted(async () => {
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">
-        <ContentCard title="版本信息">
+        <ContentCard title="版本信息" :alert="messageAlerts.includes(MessageAlertType.HasNewVersion)">
           <Version />
         </ContentCard>
         <ContentCard title="提交信息">

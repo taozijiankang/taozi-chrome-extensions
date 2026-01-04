@@ -1,11 +1,11 @@
-import { checkNewVersion } from "./checkNewVersion";
+import { messageAlert } from "./messageAlert";
 
 export function startTimedTask() {
-  checkNewVersion();
+  messageAlert();
 
   setInterval(
     () => {
-      checkNewVersion();
+      messageAlert();
     },
     // 3 分钟检查一次
     1000 * 60 * 3

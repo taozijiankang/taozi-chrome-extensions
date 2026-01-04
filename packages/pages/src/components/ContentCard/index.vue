@@ -2,7 +2,9 @@
   <div class="content-card">
     <div class="title" v-if="title">
       <div class="left"></div>
-      <span>{{ title }}</span>
+      <ElBadge :is-dot="alert">
+        <span>{{ title }}</span>
+      </ElBadge>
     </div>
     <div class="content">
       <slot></slot>
@@ -11,12 +13,16 @@
 </template>
 
 <script setup lang="ts">
+import { ElBadge } from "element-plus";
+
 withDefaults(
   defineProps<{
     title?: string;
+    alert?: boolean;
   }>(),
   {
-    title: ""
+    title: "",
+    alert: false
   }
 );
 </script>
