@@ -1,3 +1,5 @@
+import rootPackageJson from "../../../../package.json";
+
 export * from "./page";
 export * from "./enum";
 
@@ -10,6 +12,6 @@ export const AllUrlsMatches = "<all_urls>";
  * Github 仓库地址
  */
 export const GithubRepo = {
-  owner: "taozijiankang",
-  repo: "taozi-chrome-extensions"
+  owner: rootPackageJson.repository.owner,
+  repo: rootPackageJson.repository.repo
 };
