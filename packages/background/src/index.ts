@@ -1,6 +1,5 @@
-import { baiduTranslateMessage, uploadAssetToOssMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestBaiduTranslate } from "./api/baiduTranslate";
-import { requestUploadAsset } from "./api/uploadAsset";
+import { startServer } from "./server";
+import { startTimedTask } from "./timed-task";
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("安装扩展");
@@ -8,22 +7,8 @@ chrome.runtime.onInstalled.addListener(() => {
 
 console.log("运行 background servers worker 脚本");
 
-start();
+console.log("开始启动 server");
+startServer();
 
-function start() {
-  baiduTranslateMessage.addListener(async req => {
-    const res = await requestBaiduTranslate(req);
-    return {
-      succeed: true,
-      data: res
-    };
-  });
-
-  uploadAssetToOssMessage.addListener(async req => {
-    const res = await requestUploadAsset(req);
-    return {
-      succeed: true,
-      data: res
-    };
-  });
-}
+console.log("开始启动 timed task");
+startTimedTask();

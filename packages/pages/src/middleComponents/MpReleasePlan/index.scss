@@ -1,0 +1,25 @@
+.mp-release-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .mp-app-input {
+      width: 100%;
+    }
+
+    .add-btn {
+      width: 100%;
+    }
+  }
+
+  .headimg {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+  }
+}

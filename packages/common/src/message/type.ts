@@ -5,6 +5,6 @@ export interface MessageReq<T = any> {
 
 export interface MessageRes<T = any> {
   succeed: boolean;
-  msg?: string;
   data?: T;
+  msg?: string;
 }

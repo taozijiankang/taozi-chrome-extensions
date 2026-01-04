@@ -1,2 +1,5 @@
-declare const prettier: any;
-declare const prettierPlugins: any;
+declare global {
+  interface Window {}
+}
+
+export {};
