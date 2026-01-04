@@ -2,7 +2,7 @@
   <div class="test">
     <ElTabs v-model="activeTab">
       <ElTabPane label="Test" :name="TabType.Test">
-        <Code :code="htmlCode" :type="CodeType.Vue" />
+        <Code :code="formattedJsCode" :type="CodeType.Vue" />
       </ElTabPane>
       <ElTabPane label="Version" :name="TabType.Version">
         <Version />
@@ -17,7 +17,7 @@ import Code from "../../components/Code/index.vue";
 import { CodeType } from "../../components/Code/index";
 import { onMounted, ref } from "vue";
 import { formatCode } from "../../utils/prettier";
-import { parseHtmlScss } from ".";
+import { parseHtmlCss } from ".";
 import Version from "../Version/index.vue";
 
 enum TabType {
@@ -50,71 +50,27 @@ const htmlCode = `
 <body>
   	
   	<div class="frame-parent">
+    		<img class="frame-child" alt="">
+    		
     		<div class="frame-group">
       			<div class="parent">
-        				<div class="div">合作药企</div>
-        				<div class="div2">平均 60 秒接诊</div>
+        				<div class="div">李善福</div>
+        				<div class="wrapper">
+          					<div class="div2">未绑定</div>
+        				</div>
       			</div>
       			<div class="group">
-        				<div class="div3">共 13 家药企</div>
-        				<img class="frame-icon" alt="">
-        				
+        				<div class="div2">主任医师</div>
+        				<div class="div4">丨</div>
+        				<div class="div2">肿瘤科</div>
       			</div>
-    		</div>
-    		<div class="frame-container">
-      			<div class="frame-div">
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
+      			<div class="frame-container">
+        				<div class="frame-div">
+          					<img class="frame-item" alt="">
           					
-          					<div class="div4">美国强生</div>
+          					<div class="div6">三甲</div>
         				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">辉瑞制药</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">罗氏制药</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">诺华制药</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">默沙东</div>
-        				</div>
-      			</div>
-      			<div class="frame-div">
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">艾伯维</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">‌‌阿斯利康</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">赛诺菲</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">拜耳</div>
-        				</div>
-        				<div class="rectangle-parent">
-          					<img class="frame-child" alt="">
-          					
-          					<div class="div4">武田制药</div>
-        				</div>
+        				<div class="div7">四川省华西医院</div>
       			</div>
     		</div>
   	</div>
@@ -126,14 +82,116 @@ const htmlCode = `
 </html>
 `;
 
-const cssCode = ``;
+const cssCode = `
+.frame-parent {
+  	width: 100%;
+  	position: relative;
+  	border-radius: 8px;
+  	background-color: #fff;
+  	display: flex;
+  	align-items: flex-start;
+  	padding: 12px;
+  	box-sizing: border-box;
+  	gap: 8px;
+  	text-align: left;
+  	font-size: 16px;
+  	color: #333;
+  	font-family: 'PingFang SC';
+}
+.frame-child {
+  	height: 40px;
+  	width: 40px;
+  	object-fit: contain;
+  	flex-shrink: 0;
+}
+.frame-group {
+  	width: 199px;
+  	display: flex;
+  	flex-direction: column;
+  	align-items: flex-start;
+  	gap: 4px;
+  	flex-shrink: 0;
+}
+.parent {
+  	display: flex;
+  	align-items: center;
+  	gap: 8px;
+}
+.div {
+  	position: relative;
+  	line-height: 120%;
+  	font-weight: 500;
+}
+.wrapper {
+  	border-radius: 3px;
+  	background-color: #e5ecff;
+  	border: 0.5px solid rgba(79, 125, 254, 0.5);
+  	display: flex;
+  	align-items: center;
+  	justify-content: center;
+  	padding: 2px 4px;
+  	font-size: 12px;
+  	color: #1c58ff;
+}
+.div2 {
+  	position: relative;
+  	line-height: 120%;
+}
+.group {
+  	display: flex;
+  	align-items: center;
+  	font-size: 13px;
+  	color: #999;
+}
+.div4 {
+  	position: relative;
+  	font-size: 14px;
+  	line-height: 120%;
+  	color: #ccc;
+}
+.frame-container {
+  	align-self: stretch;
+  	display: flex;
+  	align-items: center;
+  	gap: 6px;
+  	font-size: 11px;
+  	color: #fff;
+}
+.frame-div {
+  	border-radius: 2px;
+  	background-color: #387af6;
+  	display: none;
+  	align-items: center;
+  	justify-content: center;
+  	padding: 2px 4px 2px 3px;
+  	gap: 2px;
+}
+.frame-item {
+  	height: 12px;
+  	width: 12px;
+  	position: relative;
+}
+.div6 {
+  	position: relative;
+  	line-height: 13px;
+}
+.div7 {
+  	flex: 1;
+  	position: relative;
+  	font-size: 13px;
+  	line-height: 120%;
+  	color: #999;
+}
+
+
+`;
 
 const formattedJsCode = ref("");
 
 onMounted(async () => {
   formattedJsCode.value = await formatCode(jsCode, "typescript");
 
-  const a = parseHtmlScss(htmlCode, cssCode);
+  const a = parseHtmlCss(htmlCode, cssCode);
   console.log(a);
 });
 </script>

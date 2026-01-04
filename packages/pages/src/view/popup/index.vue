@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, onUnmounted, computed } from "vue";
 import BaiDuAppConfig from "../../middleComponents/BaiDuAppConfig/index.vue";
 import GenVarName from "../../middleComponents/GenVarName/index.vue";
 import Head from "../../middleComponents/Head/index.vue";
 import Tabs from "../../components/Tabs/index.vue";
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
+import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 import CodesignRecentViewed from "../../middleComponents/codesign/RecentViewed/index.vue";
 import CodesignConfig from "../../middleComponents/codesign/Config/index.vue";
 import ProxyServerConfig from "../../middleComponents/ProxyServerConfig/index.vue";
@@ -14,6 +14,10 @@ import { openPage } from "@taozi-chrome-extensions/common/src/utils/openPage";
 import { Page } from "@taozi-chrome-extensions/common/src/constant/page";
 import { ElButton } from "element-plus";
 import FigmaConfig from "../../middleComponents/figma/Config/index.vue";
+import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
+import ContentCard from "../../components/ContentCard/index.vue";
+import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
+import type { TabItem } from "../../components/Tabs/index";
 
 enum TabType {
   GenVarName = "GenVarName",
@@ -23,38 +27,38 @@ enum TabType {
   Config = "Config",
   Version = "Version"
 }
-const tabs = ref<
-  {
-    label: string;
-    value: TabType;
-    click?: () => void;
-  }[]
->([
-  {
-    label: "生成变量名",
-    value: TabType.GenVarName
-  },
-  {
-    label: "小程序发版计划",
-    value: TabType.MpReleasePlan
-  },
-  {
-    label: "Codesign",
-    value: TabType.Codesign
-  },
-  {
-    label: "Figma",
-    value: TabType.Figma
-  },
-  {
-    label: "项目配置",
-    value: TabType.Config
-  },
-  {
-    label: "版本信息",
-    value: TabType.Version
-  }
-]);
+
+const messageAlerts = ref<MessageAlertType[]>([]);
+
+const tabs = computed<TabItem[]>(() => {
+  return [
+    {
+      label: "生成变量名",
+      value: TabType.GenVarName
+    },
+    {
+      label: "小程序发版计划",
+      value: TabType.MpReleasePlan
+    },
+    {
+      label: "Codesign",
+      value: TabType.Codesign
+    },
+    {
+      label: "Figma",
+      value: TabType.Figma
+    },
+    {
+      label: "项目配置",
+      value: TabType.Config
+    },
+    {
+      label: "版本信息",
+      value: TabType.Version,
+      alert: messageAlerts.value.includes(MessageAlertType.HasNewVersion)
+    }
+  ];
+});
 const activeTab = ref(TabType.GenVarName);
 
 watch(activeTab, () => {
@@ -63,13 +67,29 @@ watch(activeTab, () => {
   });
 });
 
+const getMessageAlertsTimer = ref<ReturnType<typeof setInterval> | null>(null);
+
+const getMessageAlerts = async () => {
+  const { messageAlerts: messageAlertsData = [] } = (await configLocalStorage.get()) || {};
+  messageAlerts.value = messageAlertsData;
+};
+
 const handleOpenFigmaPage = async () => {
   await openPage(Page.Figma);
 };
 
 onMounted(async () => {
   const { popupActiveTab } = (await configLocalStorage.get()) || {};
-  activeTab.value = tabs.value.find(item => item.value === popupActiveTab)?.value || TabType.GenVarName;
+  activeTab.value = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
+
+  getMessageAlerts();
+  getMessageAlertsTimer.value = setInterval(getMessageAlerts, 300);
+});
+
+onUnmounted(() => {
+  if (getMessageAlertsTimer.value) {
+    clearInterval(getMessageAlertsTimer.value);
+  }
 });
 </script>
 
@@ -81,65 +101,44 @@ onMounted(async () => {
     <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <div class="content-container">
       <template v-if="activeTab === TabType.GenVarName">
-        <div class="content">
+        <ContentCard>
           <GenVarName />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.MpReleasePlan">
-        <div class="content">
+        <ContentCard>
           <MpReleasePlan />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Codesign">
-        <div class="title">
-          <div class="left"></div>
-          <span>最近浏览</span>
-        </div>
-        <div class="content">
+        <ContentCard title="最近浏览">
           <CodesignRecentViewed />
-        </div>
-        <div class="title">
-          <div class="left"></div>
-          <span>配置</span>
-        </div>
-        <div class="content">
+        </ContentCard>
+        <ContentCard title="配置">
           <CodesignConfig />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Figma">
         <ElButton type="primary" @click="handleOpenFigmaPage"> 打开Figma 控制台页面 </ElButton>
-        <div class="title">
-          <div class="left"></div>
-          <span>配置</span>
-        </div>
-        <div class="content">
+        <ContentCard title="配置">
           <FigmaConfig />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Config">
-        <div class="title">
-          <div class="left"></div>
-          <span>百度翻译api配置</span>
-        </div>
-        <div class="content">
+        <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
-        </div>
-        <div class="title">
-          <div class="left"></div>
-          <span>代理服务配置</span>
-        </div>
-        <div class="content">
+        </ContentCard>
+        <ContentCard title="代理服务配置">
           <ProxyServerConfig />
-        </div>
+        </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">
-        <div class="title">
-          <div class="left"></div>
-          <span>版本信息</span>
-        </div>
-        <div class="content">
+        <ContentCard title="版本信息" :alert="messageAlerts.includes(MessageAlertType.HasNewVersion)">
           <Version />
-        </div>
+        </ContentCard>
+        <ContentCard title="提交信息">
+          <CodeSubmit />
+        </ContentCard>
       </template>
     </div>
   </div>

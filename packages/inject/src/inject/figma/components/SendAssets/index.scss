@@ -1,0 +1,15 @@
+.send-assets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+  .control {
+    display: flex;
+  }
+  .alert {
+    display: flex;
+    justify-content: flex-start;
+  }
+}

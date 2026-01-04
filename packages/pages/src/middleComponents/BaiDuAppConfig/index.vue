@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElForm, ElFormItem, ElAlert } from "element-plus";
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local/config";
+import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const appIdInput = ref("");
 const keyInput = ref("");

@@ -33,6 +33,9 @@ jobs:
       - name: 迭代版本号
         run: node .node/iteration-version.js -m ${{vars.MAJOR_VN}} -n ${{vars.MINOR_VN}}
 
+      - name: 生成发布内容
+        run: node .node/generate-release-content.js -f ./release-content.md
+
       - name: build-package
         run: pnpm run build-package
 
@@ -60,6 +63,7 @@ jobs:
           release_name: Release v${{ steps.read_version.outputs.VERSION }}
           draft: false
           prerelease: false
+          body_path: ./release-content.md
 
       - name: Upload Release Asset
         id: upload-release-asset

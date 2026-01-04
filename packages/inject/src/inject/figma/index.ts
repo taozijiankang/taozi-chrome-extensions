@@ -1,35 +1,47 @@
-import { getBaseCodes } from "./elController";
-import { figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message/content/FigmaMessage";
+import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
+import { getCodePanelInspectionPanelEl, getViewCanvasEl } from "./elController";
+import { insertMountEl } from "@/utils/insertMountEl";
+import { renderComponentToEl } from "@/utils/renderComponentToEl";
+import { h } from "vue";
+import SendAssets from "./components/SendAssets/index.vue";
 
 /**
  * figma 代码注入
  */
 export function figmaInject() {
-  figmaAssetsMessage.addListener(async () => {
-    console.log("收到获取figma资产任务消息");
-    const url = new URL(window.location.href);
-    const nodeId = url.searchParams.get("node-id");
-    const fileKey = url.href.match(/www\.figma\.com\/design\/(.*?)\//)?.[1] || "";
-
-    if (!nodeId || !fileKey) {
-      return {
-        succeed: false,
-        msg: "获取figma资产任务消息失败，nodeId或fileKey为空"
-      };
+  document.addEventListener(
+    "click",
+    debounce((e: MouseEvent) => {
+      // 点击画布
+      if (e.target instanceof Node && getViewCanvasEl()?.contains(e.target)) {
+        retry(triggerFigmaInject, 10, 100).catch(err => {
+          console.error("代码注入失败", err);
+        });
+      }
+    }, 100),
+    {
+      capture: true
     }
-
-    const { codes } = await getFigmaAssets();
-    return {
-      succeed: true,
-      data: { fileKey, nodeId, codes }
-    };
-  });
+  );
 }
 
-async function getFigmaAssets() {
-  const codes = await getBaseCodes();
+async function triggerFigmaInject() {
+  const codePanelInspectionPanelEl = getCodePanelInspectionPanelEl();
+  if (!codePanelInspectionPanelEl) {
+    throw new Error("代码检查面板不存在");
+  }
 
-  return {
-    codes
-  };
+  const mountEl = await insertMountEl(
+    codePanelInspectionPanelEl.parentElement!,
+    () => codePanelInspectionPanelEl,
+    "taozi-chrome-extensions-figma-inject-custom-el-class"
+  );
+  if (!mountEl) {
+    throw new Error("挂载节点不存在");
+  }
+
+  await renderComponentToEl({
+    mountEl,
+    render: () => h(SendAssets)
+  });
 }

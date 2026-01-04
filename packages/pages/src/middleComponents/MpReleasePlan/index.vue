@@ -3,34 +3,39 @@
     <div class="control">
       <ElInput
         v-model="mpAppIdInput"
+        class="mp-app-input"
         type="textarea"
         :rows="5"
         placeholder="请输入小程序AppId，多个AppId用逗号或换行符分隔"
         clearable
       />
-      <ElButton @click="handleAddMp" type="primary">添加</ElButton>
+      <ElButton class="add-btn" @click="handleAddMp" type="primary">添加</ElButton>
     </div>
-    <div v-if="mpList.length > 0" class="list">
-      <div class="list-item" v-for="(item, index) in mpList" :key="index">
-        <div class="left">
-          <ElImage v-if="item.headimg" :src="item.headimg" class="headimg" />
-          <div class="info">
-            <span v-if="item.name">{{ item.name }}</span>
-            <span>{{ item.appId }} {{ item.username ? `(${item.username})` : "" }}</span>
-          </div>
-        </div>
-        <ElButton type="success" @click="handleFinishMp(index)">已发版</ElButton>
-      </div>
-    </div>
-    <ElEmpty v-else description="暂无小程序待发版" :image-size="40" />
+    <ElTable :data="mpList" style="width: 100%" stripe>
+      <ElTableColumn width="55" label="头像">
+        <template #default="{ row }">
+          <ElImage v-if="row.headimg" :src="row.headimg" class="headimg" />
+        </template>
+      </ElTableColumn>
+      <ElTableColumn prop="appId" label="AppId" />
+      <ElTableColumn prop="name" label="小程序名称" />
+      <ElTableColumn prop="username" label="用户名" />
+      <ElTableColumn label="操作">
+        <template #default="{ row }">
+          <ElButton type="success" @click="handleFinishMp(row.index)">已发版</ElButton>
+        </template>
+      </ElTableColumn>
+      <template #empty>
+        <ElEmpty description="暂无小程序待发版" :image-size="40" />
+      </template>
+    </ElTable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { ElInput, ElButton, ElImage, ElEmpty } from "element-plus";
-import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
-import type { WeixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
+import { ElInput, ElButton, ElImage, ElEmpty, ElTable, ElTableColumn } from "element-plus";
+import { weixinLocalStorage, type WeixinLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const mpList = ref<Required<WeixinLocalStorage>["mpReleasePlanList"]>([]);
 const mpAppIdInput = ref("");
@@ -38,7 +43,6 @@ const mpAppIdInput = ref("");
 watch(
   mpList,
   () => {
-    console.log("watch", mpList.value);
     weixinLocalStorage.edit(v => {
       v.mpReleasePlanList = [...mpList.value];
     });

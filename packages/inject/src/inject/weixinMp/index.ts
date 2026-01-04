@@ -6,7 +6,7 @@ import { getAccountItemList, getAccountList, getMenuBoxAccountInfo, getSwitchAcc
 import { filter } from "@taozi-chrome-extensions/common/src/utils/fuzzy";
 import { debounce, retry } from "@taozi-chrome-extensions/common/src/utils/global";
 import { getWxList } from "./middleware/getWxList";
-import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 /**
  * 微信小程序注入

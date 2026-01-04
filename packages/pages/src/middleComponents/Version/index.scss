@@ -1,5 +1,17 @@
-.version {
+.version-info {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.new-version-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .new-version-assets {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 }

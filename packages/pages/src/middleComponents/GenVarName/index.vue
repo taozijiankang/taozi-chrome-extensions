@@ -23,7 +23,7 @@
 import { onMounted, ref, watch } from "vue";
 import { ElInput, ElButton, ElMessage, ElEmpty, ElSkeleton } from "element-plus";
 import { kebabToCamelCase, camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
-import { genVarNameLocalStorage } from "@taozi-chrome-extensions/common/src/local/genVarName";
+import { genVarNameLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 import { baiduTranslateMessage } from "@taozi-chrome-extensions/common/src/message";
 
 // Types

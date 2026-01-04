@@ -17,5 +17,5 @@
     "target": "ES2022",
     "types": ["chrome-types"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*"]
 }

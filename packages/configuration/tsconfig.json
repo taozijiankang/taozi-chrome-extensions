@@ -13,5 +13,5 @@
     "target": "ES2022",
     "types": ["chrome-types", "node"]
   },
-  "include": ["./**/*"]
+  "include": ["src/**/*"]
 }

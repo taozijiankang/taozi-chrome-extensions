@@ -16,7 +16,7 @@ import { onMounted, ref, watch } from "vue";
 import { ElInput, ElButton, ElText } from "element-plus";
 import { Search } from "@element-plus/icons-vue";
 import type { WXMPItem } from "../../api/type";
-import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local/weixin";
+import { weixinLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
 const props = defineProps<{
   wxaList: WXMPItem[];
