@@ -1,11 +1,11 @@
 <template>
   <div class="send-assets">
     <div class="control">
-      <ElButton @click="openFigmaControlPage">打开figma控制页面</ElButton>
-      <ElButton type="primary" @click="sendAssets">发送资产</ElButton>
+      <ElButton @click="openFigmaControlPage">打开figma控制台页面</ElButton>
+      <ElButton type="primary" :loading="sendNodeInfoLoading" @click="sendNodeInfoToConsole">发送节点信息到figma控制台</ElButton>
     </div>
-    <div v-if="sendAssetsErrorAlert" class="alert">
-      <ElAlert :title="sendAssetsErrorAlert" type="error" :closable="false" />
+    <div v-if="sendNodeInfoErrorAlert" class="alert">
+      <ElAlert :title="sendNodeInfoErrorAlert" type="error" :closable="false" />
     </div>
   </div>
 </template>
@@ -17,24 +17,24 @@ import { figmaAssetsBackgroundForwardingMessage, openPageMessage } from "@taozi-
 import { Page } from "@taozi-chrome-extensions/common/src/constant/page";
 import { ref } from "vue";
 
-const sendAssetsLoading = ref(false);
-const sendAssetsErrorAlert = ref<string | null>(null);
+const sendNodeInfoLoading = ref(false);
+const sendNodeInfoErrorAlert = ref<string | null>(null);
 
 const openFigmaControlPage = () => {
   openPageMessage.sendMessage({ page: Page.Figma });
 };
 
-const sendAssets = async () => {
+const sendNodeInfoToConsole = async () => {
   const url = new URL(window.location.href);
   const nodeId = url.searchParams.get("node-id");
   const fileKey = url.href.match(/www\.figma\.com\/design\/(.*?)\//)?.[1] || "";
   if (!nodeId || !fileKey) {
-    sendAssetsErrorAlert.value = "获取figma资产任务消息失败，nodeId或fileKey为空";
+    sendNodeInfoErrorAlert.value = "发送到控制台失败，nodeId或fileKey为空";
     return;
   }
 
   try {
-    sendAssetsLoading.value = true;
+    sendNodeInfoLoading.value = true;
 
     const codes = await getBaseCodes();
 
@@ -45,16 +45,16 @@ const sendAssets = async () => {
     });
 
     if (!res.succeed) {
-      sendAssetsErrorAlert.value = res.msg || "发送figma资产任务消息失败";
+      sendNodeInfoErrorAlert.value = res.msg || "发送到控制台失败";
       return;
     }
 
-    sendAssetsErrorAlert.value = null;
+    sendNodeInfoErrorAlert.value = null;
   } catch (error) {
-    sendAssetsErrorAlert.value = (error as Error).message || "发送figma资产任务消息失败";
-    console.error("发送figma资产任务消息失败", error);
+    sendNodeInfoErrorAlert.value = (error as Error).message || "发送到控制台失败";
+    console.error("发送到控制台失败", error);
   } finally {
-    sendAssetsLoading.value = false;
+    sendNodeInfoLoading.value = false;
   }
 };
 </script>

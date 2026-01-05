@@ -50,7 +50,15 @@ export function useMessage<Req, Res>(type: string) {
       if (req.type === type) {
         const { result = false, getResponse } = originListener(req.value, sender) || {};
         if (getResponse) {
-          Promise.resolve(getResponse()).then(sendResponse_);
+          Promise.resolve(getResponse())
+            .then(sendResponse_)
+            .catch(error => {
+              console.error("处理消息失败", error);
+              sendResponse_({
+                succeed: false,
+                msg: (error as Error).message
+              });
+            });
         }
         return result;
       }

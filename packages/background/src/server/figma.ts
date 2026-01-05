@@ -1,5 +1,6 @@
 import { Page, PageUrlMap } from "@taozi-chrome-extensions/common/src/constant/page";
 import { figmaAssetsBackgroundForwardingMessage, figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message";
+import { requestFigmaNodeInfo } from "../api";
 
 export function startFigmaServer() {
   figmaAssetsBackgroundForwardingMessage.addListener(req => {
@@ -22,11 +23,12 @@ export function startFigmaServer() {
               msg: "figma控制页面tabId为空"
             };
           }
-          await figmaAssetsMessage.sendTabMessage(figmaControlTab.id, req);
-          return {
-            succeed: true,
-            data: undefined
-          };
+          const nodeInfo = await requestFigmaNodeInfo(req.fileKey, req.nodeId);
+          const res = await figmaAssetsMessage.sendTabMessage(figmaControlTab.id, {
+            ...req,
+            nodeInfo
+          });
+          return res;
         }
         return {
           succeed: false,

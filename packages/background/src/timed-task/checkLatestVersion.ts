@@ -12,5 +12,9 @@ export async function checkLatestVersion() {
     configLocalStorage.edit(v => {
       v.hasNewVersion = true;
     });
+  } else {
+    configLocalStorage.edit(v => {
+      v.hasNewVersion = false;
+    });
   }
 }

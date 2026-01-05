@@ -15,7 +15,13 @@ const figmaAssetsListener: Parameters<typeof figmaAssetsMessage.addListener>[0] 
     figmaAssetsReq.value = req;
   }
   return {
-    result: false
+    result: true,
+    getResponse: async () => {
+      return {
+        succeed: true,
+        data: undefined
+      };
+    }
   };
 };
 
