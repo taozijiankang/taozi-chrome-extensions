@@ -28,7 +28,15 @@ export const MANIFEST = {
       runAt: "document_idle"
     }
   ],
-  permissions: ["tabs", "scripting", "activeTab", "storage", "cookies"],
+  permissions: [
+    "tabs",
+    "scripting",
+    "activeTab",
+    "storage",
+    /** 无限存储 */
+    "unlimitedStorage",
+    "cookies"
+  ],
   host_permissions: ["<all_urls>"],
   sandbox: {
     pages: ["sandbox/index.html"]
