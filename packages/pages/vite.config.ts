@@ -4,6 +4,7 @@ import vue from "@vitejs/plugin-vue";
 import vueDevTools from "vite-plugin-vue-devtools";
 import { dirname, resolve } from "node:path";
 import { exec } from "node:child_process";
+import vueJsx from "@vitejs/plugin-vue-jsx";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,7 +20,7 @@ export default defineConfig({
       }
     }
   },
-  plugins: [vue(), vueDevTools()],
+  plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))

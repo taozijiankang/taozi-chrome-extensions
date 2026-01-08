@@ -1,0 +1,32 @@
+.code-editor {
+  display: flex;
+  gap: 10px;
+
+  .html-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+
+    .html-view-item {
+      display: flex;
+      &.active {
+        box-shadow:
+          0 0 8px 0 rgba(232, 237, 250, 0.6),
+          0 2px 4px 0 rgba(232, 237, 250, 0.5);
+      }
+    }
+  }
+
+  .code-view {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .con-view {
+    flex: 1;
+    background-color: #f0f2f5;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+}

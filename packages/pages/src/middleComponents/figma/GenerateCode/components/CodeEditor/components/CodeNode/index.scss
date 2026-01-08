@@ -1,0 +1,15 @@
+.code-node {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .code-node-children {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+  }
+
+  .code-node-text {
+    padding-left: 10px;
+  }
+}

@@ -1,20 +1,28 @@
 <template>
-  <div class="test"></div>
+  <div class="test">
+    <CodeEditor class="code-editor" :cons="cons" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { parseHtmlCss } from "../utils/parseHtmlCss";
 import { testFigmaAssetsData as testFigmaAssetsData_ } from "./data/index";
+import { byFigmaAssetsGetCons } from "../utils/byFigmaAssetsGetCons";
+import { BaseCon } from "../GenerateCode/components/CodeEditor/controller";
+import CodeEditor from "../GenerateCode/components/CodeEditor/index.vue";
 
 const testFigmaAssetsData = ref(testFigmaAssetsData_);
 
-onMounted(async () => {
-  const htmlContent = testFigmaAssetsData.value.codes.find(item => item.lang === "html")?.content;
-  const cssContent = testFigmaAssetsData.value.codes.find(item => item.lang === "css")?.content;
-  const a = parseHtmlCss(htmlContent || "", cssContent || "");
+const cons = ref<BaseCon[]>([]);
 
-  console.log(a);
+onMounted(async () => {
+  const con = byFigmaAssetsGetCons(testFigmaAssetsData.value);
+
+  if (con) {
+    cons.value.push(con);
+  }
+
+  console.log(cons.value);
 });
 </script>
 
