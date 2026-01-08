@@ -8,4 +8,6 @@ export interface OpenPageMessageReq {
 
 export const openPageMessage = useMessage<OpenPageMessageReq, void>("open-page-message");
 
-export const requestReleaseVersionListMessage = useMessage<void, Github.ReleaseVersion[]>("request-release-version-list-message");
+export const requestReleaseVersionListMessage = useMessage<void, Github.Api.GetReleases.Res>(
+  "request-release-version-list-message"
+);

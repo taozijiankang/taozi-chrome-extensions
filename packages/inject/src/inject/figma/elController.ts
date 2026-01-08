@@ -82,7 +82,7 @@ export async function getBaseCodes() {
     const lang = codeEl?.dataset?.["lang"] || "";
     return {
       title,
-      lang,
+      lang: lang as "html" | "css",
       content
     };
   });

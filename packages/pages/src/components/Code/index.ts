@@ -2,6 +2,7 @@ import Color from "color";
 
 export enum CodeType {
   Vue = "vue",
+  Html = "html",
   React = "react",
   Js = "js",
   Css = "css",

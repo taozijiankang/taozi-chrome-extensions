@@ -1,5 +1,5 @@
 import { ifElementNode, parseHtml } from "@/utils/html";
-import { parseCssWithRegex } from "../../utils/css";
+import { parseCssWithRegex } from "../../../utils/css";
 import type { DefaultTreeAdapterTypes } from "parse5";
 
 export function parseHtmlCss(html: string, css: string) {

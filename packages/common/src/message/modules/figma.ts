@@ -8,7 +8,8 @@ export interface FigmaAssetsReq {
 }
 
 export interface FigmaAssetsExtendReq extends FigmaAssetsReq {
-  nodeInfo: Figma.FigmaNodeInfo;
+  nodeInfo: Figma.Api.NodeInfo;
+  images: Figma.Api.Images[];
 }
 
 // background 转发到 figma 控制页面

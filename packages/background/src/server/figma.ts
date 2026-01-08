@@ -1,6 +1,7 @@
 import { Page, PageUrlMap } from "@taozi-chrome-extensions/common/src/constant/page";
 import { figmaAssetsBackgroundForwardingMessage, figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestFigmaNodeInfo } from "../api";
+import { requestFigmaImages, requestFigmaNodeInfo } from "../api";
+import type { Figma } from "@taozi-chrome-extensions/common/src/type/modules/figma";
 
 export function startFigmaServer() {
   figmaAssetsBackgroundForwardingMessage.addListener(req => {
@@ -23,10 +24,32 @@ export function startFigmaServer() {
               msg: "figma控制页面tabId为空"
             };
           }
-          const nodeInfo = await requestFigmaNodeInfo(req.fileKey, req.nodeId);
+          const nodeInfo = await requestFigmaNodeInfo({ fileKey: req.fileKey, nodeId: req.nodeId });
+          const imageIds: string[] = [];
+          const f = (item: Figma.Api.NodeInfo) => {
+            if (item.exportSettings?.some(item => item.format === "PNG") || item.fills.some(item => item.type === "IMAGE")) {
+              imageIds.push(item.id);
+              return;
+            }
+            item.children?.forEach(child => {
+              f(child);
+            });
+          };
+          f(nodeInfo);
+          const images: Figma.Api.Images[] = [];
+          if (imageIds.length > 0) {
+            const imagesData = await requestFigmaImages({
+              fileKey: req.fileKey,
+              nodeIds: imageIds,
+              scale: 4,
+              format: "png"
+            });
+            images.push(...imagesData);
+          }
           const res = await figmaAssetsMessage.sendTabMessage(figmaControlTab.id, {
             ...req,
-            nodeInfo
+            nodeInfo,
+            images
           });
           return res;
         }
