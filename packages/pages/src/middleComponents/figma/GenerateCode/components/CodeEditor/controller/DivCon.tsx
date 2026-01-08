@@ -1,4 +1,4 @@
-import { BaseCon, type BaseConProps, type RenderCodeProps } from "./_BaseCon";
+import { BaseCon, type BaseConProps } from "./_BaseCon";
 import type { VNode } from "vue";
 
 export interface DivConProps extends BaseConProps<"div"> {}

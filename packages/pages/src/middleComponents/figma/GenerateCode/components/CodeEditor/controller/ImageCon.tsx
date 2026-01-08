@@ -1,5 +1,5 @@
 import type { VNode } from "vue";
-import { BaseCon, type BaseConProps, type RenderCodeProps } from "./_BaseCon";
+import { BaseCon, type BaseConProps } from "./_BaseCon";
 
 export interface ImageConProps extends BaseConProps<"img"> {
   src: string;

@@ -17,7 +17,15 @@
     </div>
     <div class="code-view">
       <template v-if="activeCon">
-        <Render :render="activeCon.renderCode.bind(activeCon, { indent: 0, click: handleConCodeClick } as RenderCodeProps)" />
+        <Render
+          :render="
+            activeCon?.renderCode.bind(activeCon, {
+              indent: 0,
+              activeConKey: activeCodeConKey,
+              click: handleConCodeClick
+            } as RenderCodeProps)
+          "
+        />
       </template>
     </div>
     <div class="con-view">

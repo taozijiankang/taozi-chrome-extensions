@@ -12,6 +12,7 @@ export interface BaseConProps<T extends string = string> {
 
 export interface RenderCodeProps {
   indent?: number;
+  activeConKey?: string;
   click?: (con: BaseCon) => void;
 }
 
@@ -61,10 +62,10 @@ export abstract class BaseCon {
   }
 
   renderCode(props?: RenderCodeProps): VNode {
-    const { indent = 0, click } = props ?? {};
+    const { indent = 0, activeConKey, click } = props ?? {};
     return (
-      <CodeNode con={this} indent={indent} onClick={click}>
-        {this.children?.map(child => child.renderCode({ indent: indent + 1, click }))}
+      <CodeNode con={this} indent={indent} activeConKey={activeConKey} onClick={click}>
+        {this.children?.map(child => child.renderCode({ ...props, indent: indent + 1 }))}
       </CodeNode>
     );
   }

@@ -5,7 +5,7 @@
       <!-- 代码格式化测试 -->
       <CodeFormatTest v-if="activeTab === TabType.CodeFormatTest" />
       <!-- figma资产测试 -->
-      <FigmaTest v-if="activeTab === TabType.FigmaTest" />
+      <FigmaTest class="figma-test" v-if="activeTab === TabType.FigmaTest" />
     </div>
   </div>
 </template>

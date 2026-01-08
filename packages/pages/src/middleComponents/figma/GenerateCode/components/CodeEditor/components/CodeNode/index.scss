@@ -1,15 +1,72 @@
 .code-node {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  position: relative;
+
+  &.active {
+    background-color: white;
+    border-radius: 5px;
+  }
+
+  .code-node-tag {
+    color: #e23e57;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+
+    .down-arrow-icon {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+      transform: rotate(-90deg);
+
+      &.expansion {
+        transform: rotate(0deg);
+      }
+    }
+
+    .more-icon {
+      color: gray;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 2px;
+      background: #dcdcdc;
+      border-radius: 5px;
+      padding: 0 3px;
+    }
+
+    .tag-prop {
+      color: #ffaaa5;
+    }
+  }
 
   .code-node-children {
     display: flex;
     flex-direction: column;
-    padding-left: 10px;
+    position: relative;
+
+    .code-node-children-line {
+      position: absolute;
+      left: 8px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      border-right: 1px solid #dcdcdc;
+    }
   }
 
   .code-node-text {
-    padding-left: 10px;
+    position: relative;
+    color: gray;
+
+    .code-node-children-line {
+      position: absolute;
+      left: 8px;
+      top: 0;
+      width: 0;
+      height: 100%;
+      border-right: 1px solid #dcdcdc;
+    }
   }
 }
