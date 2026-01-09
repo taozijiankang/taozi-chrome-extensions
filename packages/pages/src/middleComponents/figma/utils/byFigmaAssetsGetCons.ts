@@ -4,7 +4,7 @@ import type { DefaultTreeAdapterTypes } from "parse5";
 import { DivCon, ImageCon, SpanCon, type BaseCon } from "../GenerateCode/components/CodeEditor/controller";
 import { ifElementNode, ifTextNode } from "@/utils/html";
 
-export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq) {
+export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): BaseCon | undefined {
   const htmlContent = figmaAssetsReq.codes.find(item => item.lang === "html")?.content;
   const cssContent = figmaAssetsReq.codes.find(item => item.lang === "css")?.content;
   const { htmlAst, css } = parseHtmlCss(htmlContent || "", cssContent || "");

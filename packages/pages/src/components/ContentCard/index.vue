@@ -6,7 +6,7 @@
         <span>{{ title }}</span>
       </ElBadge>
     </div>
-    <div class="content">
+    <div class="content" :style="{ backgroundColor: contentBackground }">
       <slot></slot>
     </div>
   </div>
@@ -19,10 +19,12 @@ withDefaults(
   defineProps<{
     title?: string;
     alert?: boolean;
+    contentBackground?: string;
   }>(),
   {
     title: "",
-    alert: false
+    alert: false,
+    contentBackground: "#ffffff"
   }
 );
 </script>

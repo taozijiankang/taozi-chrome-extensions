@@ -9,12 +9,15 @@
         }"
       >
         <img src="@/assets/down-arrow.png" alt="div" :class="['down-arrow-icon', { expansion }]" @click="handleExpansion" />
-        <span>{{ `\<${con.props.tagName}` }}</span>
+        <span>{{ `\<${con.config.tagName}` }}</span>
+        <!-- 显示背景颜色和字体颜色 -->
+        <Color :con="con" />
         <span class="tag-prop">{{ ` class="${con.className}"` }}</span>
         <span>{{ `\>` }}</span>
+        <!-- 显示更多操作 -->
         <template v-if="!expansion">
           <span class="more-icon" @click="handleExpansion">...</span>
-          <span>{{ `\</${con.props.tagName}\>` }}</span>
+          <span>{{ `\</${con.config.tagName}\>` }}</span>
         </template>
       </div>
       <div v-if="expansion" class="code-node-children">
@@ -35,7 +38,7 @@
         }"
       >
         <div class="down-arrow-icon"></div>
-        <span>{{ `\</${con.props.tagName}\>` }}</span>
+        <span>{{ `\</${con.config.tagName}\>` }}</span>
       </div>
     </template>
     <!-- 图片 -->
@@ -46,8 +49,9 @@
           paddingLeft: indent * Retract + 'px'
         }"
       >
-        <span>{{ `\<${con.props.tagName}` }}</span>
-        <span class="tag-prop">{{ ` class="${con.className}"` }}</span>
+        <span>{{ `\<${con.config.tagName}` }}</span>
+        <img v-if="con.config.src" :src="con.config.src" alt="image" class="image-icon" />
+        <span class="tag-prop">{{ `class="${con.className}"` }}</span>
         <span>{{ `\/\>` }}</span>
       </div>
     </template>
@@ -60,10 +64,15 @@
         }"
       >
         <img src="@/assets/down-arrow.png" alt="div" :class="['down-arrow-icon', { expansion }]" @click="handleExpansion" />
-        <span>{{ `\<${con.props.tagName} class="${con.className}"\>` }}</span>
+        <span>{{ `\<${con.config.tagName}\>` }}</span>
+        <!-- 显示字体颜色 -->
+        <Color :con="con" />
+        <span class="tag-prop">{{ `class="${con.className}"` }}</span>
+        <span>{{ `\>` }}</span>
+        <!-- 显示更多操作 -->
         <template v-if="!expansion">
           <span class="more-icon" @click="handleExpansion">...</span>
-          <span>{{ `\</${con.props.tagName}\>` }}</span>
+          <span>{{ `\</${con.config.tagName}\>` }}</span>
         </template>
       </div>
       <div
@@ -80,7 +89,7 @@
             paddingLeft: indent * Retract + 'px'
           }"
         ></div>
-        {{ con.props.text }}
+        <span>{{ con.config.text }}</span>
       </div>
       <div
         v-if="expansion"
@@ -90,7 +99,7 @@
         }"
       >
         <div class="down-arrow-icon"></div>
-        <span>{{ `\</${con.props.tagName}\>` }}</span>
+        <span>{{ `\</${con.config.tagName}\>` }}</span>
       </div>
     </template>
   </div>
@@ -99,6 +108,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { BaseCon, isDivCon, isImageCon, isSpanCon } from "../../controller";
+import Color from "./components/Color/index.vue";
 
 const Retract = 16;
 

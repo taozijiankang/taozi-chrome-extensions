@@ -1,0 +1,15 @@
+.color {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+
+  .font-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+}

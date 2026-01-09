@@ -31,9 +31,14 @@
       cursor: pointer;
       font-size: 12px;
       margin-left: 2px;
-      background: #dcdcdc;
+      background: #ececec;
       border-radius: 5px;
       padding: 0 3px;
+    }
+
+    .image-icon {
+      width: 16px;
+      height: 16px;
     }
 
     .tag-prop {
@@ -52,7 +57,7 @@
       top: 0;
       width: 0;
       height: 100%;
-      border-right: 1px solid #dcdcdc;
+      border-right: 1px solid #ececec;
     }
   }
 
@@ -66,7 +71,7 @@
       top: 0;
       width: 0;
       height: 100%;
-      border-right: 1px solid #dcdcdc;
+      border-right: 1px solid #ececec;
     }
   }
 }

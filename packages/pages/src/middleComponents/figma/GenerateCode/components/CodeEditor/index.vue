@@ -15,34 +15,41 @@
         <Render :render="con.renderHtml.bind(con)" />
       </view>
     </div>
-    <div class="code-view">
+    <div class="code-node-tree-view">
       <template v-if="activeCon">
         <Render
           :render="
-            activeCon?.renderCode.bind(activeCon, {
+            activeCon?.renderNodeTree.bind(activeCon, {
               indent: 0,
               activeConKey: activeCodeConKey,
               click: handleConCodeClick
-            } as RenderCodeProps)
+            })
           "
         />
       </template>
     </div>
-    <div class="con-view">
+    <div class="con-editor-view">
       <template v-if="activeCodeCon">
-        <Render :render="activeCodeCon.renderCon.bind(activeCodeCon)" />
+        <Render
+          :render="
+            activeCodeCon.renderEditor.bind(activeCodeCon, {
+              imageAssets: imageAssets
+            })
+          "
+        />
       </template>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BaseCon, type RenderCodeProps } from "./controller/_BaseCon";
+import { BaseCon } from "./controller";
 import Render from "@/components/Render/index.vue";
 import { computed, ref } from "vue";
 
 const props = defineProps<{
   cons: BaseCon[];
+  imageAssets: string[];
 }>();
 
 const activeConKey = ref<string>();

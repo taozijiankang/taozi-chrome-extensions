@@ -1,13 +1,13 @@
-import { BaseCon, type BaseConProps } from "./_BaseCon";
+import { BaseCon, type BaseConConfig } from "./_BaseCon";
 import type { VNode } from "vue";
 
-export interface DivConProps extends BaseConProps<"div"> {}
+export interface DivConConfig extends BaseConConfig<"div"> {}
 
 export class DivCon extends BaseCon {
   static tagName = "div" as const;
 
-  constructor(public readonly props: DivConProps) {
-    super({ ...props, tagName: DivCon.tagName });
+  constructor(public readonly config: DivConConfig) {
+    super({ ...config, tagName: DivCon.tagName });
   }
 
   renderHtml(): VNode {
@@ -18,7 +18,7 @@ export class DivCon extends BaseCon {
     );
   }
 
-  static getCon(props: Omit<DivConProps, "tagName">): DivCon {
-    return new DivCon({ ...props, tagName: DivCon.tagName });
+  static getCon(config: Omit<DivConConfig, "tagName">): DivCon {
+    return new DivCon({ ...config, tagName: DivCon.tagName });
   }
 }

@@ -1,19 +1,33 @@
 import { camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 import { type VNode } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import ConNodeCon from "../components/ConNodeCon/index.vue";
 import CodeNode from "../components/CodeNode/index.vue";
+import ConNameEditor from "../components/ConNameEditor/index.vue";
+import ConStyleEditor from "../components/ConStyleEditor/index.vue";
 
-export interface BaseConProps<T extends string = string> {
+export interface BaseConConfig<T extends string = string> {
   tagName: T;
   name: string;
-  styleProps?: { property: string; value: string }[];
+  styleProps?: {
+    property: string;
+    value: string;
+    disabled?: boolean;
+  }[];
 }
 
-export interface RenderCodeProps {
+export interface RenderNodeTreeOptions {
   indent?: number;
   activeConKey?: string;
   click?: (con: BaseCon) => void;
+}
+
+export interface RenderEditorOptions {
+  imageAssets: string[];
+}
+
+export enum EditorType {
+  name = "name",
+  style = "style"
 }
 
 export abstract class BaseCon {
@@ -24,7 +38,7 @@ export abstract class BaseCon {
   private parent_?: () => BaseCon;
   private children_?: BaseCon[];
 
-  constructor(public readonly props: BaseConProps) {
+  constructor(public readonly config: BaseConConfig) {
     this.key = uuidv4();
   }
 
@@ -32,11 +46,11 @@ export abstract class BaseCon {
     /**
      * 将 name 转换为 kebab-case 格式
      */
-    return camelToKebabCase(toValidVariableName(this.props.name));
+    return camelToKebabCase(toValidVariableName(this.config.name));
   }
 
   get lineStyle(): string {
-    return this.props.styleProps?.map(item => `${item.property}:${item.value}`).join(";") || "";
+    return this.config.styleProps?.map(item => `${item.property}:${item.value}`).join(";") || "";
   }
 
   set parent(parent: (() => BaseCon) | undefined) {
@@ -61,16 +75,29 @@ export abstract class BaseCon {
     return <></>;
   }
 
-  renderCode(props?: RenderCodeProps): VNode {
-    const { indent = 0, activeConKey, click } = props ?? {};
+  renderNodeTree(options?: RenderNodeTreeOptions): VNode {
+    const { indent = 0, activeConKey, click } = options ?? {};
     return (
       <CodeNode con={this} indent={indent} activeConKey={activeConKey} onClick={click}>
-        {this.children?.map(child => child.renderCode({ ...props, indent: indent + 1 }))}
+        {this.children?.map(child => child.renderNodeTree({ ...options, indent: indent + 1 }))}
       </CodeNode>
     );
   }
 
-  renderCon(): VNode {
-    return <ConNodeCon con={this} />;
+  protected getEditor(options?: RenderEditorOptions): { type: string; component: VNode }[] {
+    return [
+      {
+        type: EditorType.name,
+        component: <ConNameEditor con={this} />
+      },
+      {
+        type: EditorType.style,
+        component: <ConStyleEditor con={this} />
+      }
+    ];
+  }
+
+  renderEditor(options?: RenderEditorOptions): VNode {
+    return <>{this.getEditor(options).map(item => item.component)}</>;
   }
 }
