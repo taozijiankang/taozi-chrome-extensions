@@ -11,7 +11,7 @@
           height: activeConElementOffset?.height + 'px'
         }"
       ></div>
-      <div class="content-container">
+      <div class="content-container" @mouseenter="handleHtmlViewMouseEnter" @mouseleave="handleHtmlViewMouseLeave">
         <div
           v-for="con in cons"
           :key="con.className"
@@ -28,23 +28,31 @@
       </div>
     </div>
     <div class="code-node-tree-view">
-      <template v-if="activeCon">
-        <Render
-          :render="
-            activeCon?.renderNodeTree.bind(activeCon, {
-              indent: 0,
-              activeConKey: activeNodeTreeConKey,
-              click: handleNodeTreeConClick
-            })
-          "
-        />
-      </template>
+      <div class="controller-container">
+        <div class="select-element-icon-container" @click="handleSelectElement">
+          <img v-if="selectElement" class="select-element-icon" src="@/assets/select-active.png" alt="" />
+          <img v-else class="select-element-icon" src="@/assets/select.png" alt="" />
+        </div>
+      </div>
+      <div class="node-tree-container">
+        <template v-if="activeCon">
+          <Render
+            :render="
+              activeCon?.renderNodeTree.bind(activeCon, {
+                indent: 0,
+                activeConKey: activeNodeTreeConKey,
+                click: handleNodeTreeConClick
+              })
+            "
+          />
+        </template>
+      </div>
     </div>
     <div class="con-editor-view">
-      <template v-if="activeCodeCon">
+      <template v-if="activeNodeTreeCon">
         <Render
           :render="
-            activeCodeCon.renderEditor.bind(activeCodeCon, {
+            activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
               imageAssets: imageAssets
             })
           "
@@ -55,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { BaseCon } from "./controller";
+import { BaseCon, findConByKey, forEachCon } from "./controller";
 import Render from "@/components/Render/index.vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 
@@ -77,23 +85,15 @@ const activeConElementOffset = ref<{
   height: number;
 } | null>(null);
 
+const selectElement = ref(false);
+
 const activeCon = computed(() => {
   return props.cons.find(con => con.key === activeConKey.value);
 });
 
-const activeCodeCon = computed(() => {
-  const f = (list: BaseCon[]): BaseCon | undefined => {
-    for (const con of list) {
-      if (con.key === activeNodeTreeConKey.value) {
-        return con;
-      }
-      if (con.children) {
-        const result = f(con.children);
-        if (result) return result;
-      }
-    }
-  };
-  return f(props.cons);
+const activeNodeTreeCon = computed(() => {
+  if (!activeNodeTreeConKey.value) return undefined;
+  return findConByKey(props.cons, activeNodeTreeConKey.value);
 });
 
 const handleClickCon = (con: BaseCon) => {
@@ -125,6 +125,51 @@ const findNodeTreeConElement = () => {
       };
     }
   }
+};
+
+const handleSelectElement = () => {
+  selectElement.value = !selectElement.value;
+};
+
+const handleHtmlViewMouseEnter = () => {
+  if (!selectElement.value) {
+    return;
+  }
+  document.addEventListener("mousemove", handleHtmlViewMouseMove);
+  document.addEventListener("mousedown", handleHtmlViewMousedown);
+};
+const handleHtmlViewMouseMove = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  const key = target.dataset["key"];
+  if (!key) {
+    return;
+  }
+  const con = findConByKey([activeCon.value].filter(Boolean) as BaseCon[], key);
+  if (!con) {
+    return;
+  }
+  //闭合所有子节点
+  forEachCon([con].filter(Boolean) as BaseCon[], con => {
+    con.expansionChildrenNodeTree = false;
+  });
+  // 展开所有父节点
+  let parentCon = con.parent?.();
+  while (parentCon) {
+    parentCon.expansionChildrenNodeTree = true;
+    parentCon = parentCon.parent?.();
+  }
+  activeNodeTreeConKey.value = con.key;
+};
+const handleHtmlViewMousedown = (e: MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  selectElement.value = false;
+
+  handleHtmlViewMouseLeave();
+};
+const handleHtmlViewMouseLeave = () => {
+  document.removeEventListener("mousemove", handleHtmlViewMouseMove);
+  document.removeEventListener("mousedown", handleHtmlViewMousedown);
 };
 
 const findConElTimer = ref<ReturnType<typeof setInterval>>();

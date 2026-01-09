@@ -4,7 +4,7 @@
   position: relative;
 
   &.active {
-    background-color: white;
+    background-color: #eaeaea;
     border-radius: 5px;
   }
 
@@ -39,10 +39,6 @@
     .image-icon {
       width: 16px;
       height: 16px;
-    }
-
-    .tag-prop {
-      color: #ffaaa5;
     }
   }
 

@@ -39,9 +39,35 @@
 
   .code-node-tree-view {
     flex: 1;
-    overflow: auto;
     display: flex;
     flex-direction: column;
+    gap: 5px;
+
+    .controller-container {
+      display: flex;
+      background-color: white;
+      padding: 10px;
+      box-sizing: border-box;
+
+      .select-element-icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        .select-element-icon {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+    .node-tree-container {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .con-editor-view {

@@ -38,6 +38,9 @@ export abstract class BaseCon {
   private parent_?: () => BaseCon;
   private children_?: BaseCon[];
 
+  /** 展开子节点树 */
+  expansionChildrenNodeTree = false;
+
   constructor(public readonly config: BaseConConfig) {
     this.key = uuidv4();
   }

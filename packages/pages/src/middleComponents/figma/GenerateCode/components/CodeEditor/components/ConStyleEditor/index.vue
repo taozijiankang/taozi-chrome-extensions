@@ -7,7 +7,11 @@
           <ElInput v-model="item.property" />
           <span>:</span>
           <ElInput v-model="item.value" />
-          <ElColorPicker v-if="item.property === 'color'" v-model="item.value" show-alpha />
+          <ElColorPicker
+            v-if="item.property === 'color' || item.property === 'background-color'"
+            v-model="item.value"
+            show-alpha
+          />
           <ElButton type="danger" :icon="Delete" circle @click="handleDeleteStyle(index)"></ElButton>
         </div>
         <ElButton type="primary" :icon="Plus" @click="handleAddStyle"> </ElButton>

@@ -11,7 +11,7 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
 
   const getCon = (htmlAst: DefaultTreeAdapterTypes.Element): BaseCon | undefined => {
     const className = htmlAst.attrs.find(attr => attr.name === "class")?.value || "";
-    const styleDeclarations = css.find(item => item.selector === `.${className}`)?.declarations;
+    const styleDeclarations = JSON.parse(JSON.stringify(css.find(item => item.selector === `.${className}`)?.declarations || []));
 
     let con: BaseCon | undefined;
 

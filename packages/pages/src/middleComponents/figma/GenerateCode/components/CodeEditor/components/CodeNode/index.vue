@@ -8,19 +8,24 @@
           paddingLeft: indent * Retract + 'px'
         }"
       >
-        <img src="@/assets/down-arrow.png" alt="div" :class="['down-arrow-icon', { expansion }]" @click="handleExpansion" />
+        <img
+          src="@/assets/down-arrow.png"
+          alt="div"
+          :class="['down-arrow-icon', { expansion: con.expansionChildrenNodeTree }]"
+          @click="handleExpansion"
+        />
         <span>{{ `\<${con.config.tagName}` }}</span>
         <!-- 显示背景颜色和字体颜色 -->
         <Color :con="con" />
         <span class="tag-prop">{{ ` class="${con.className}"` }}</span>
         <span>{{ `\>` }}</span>
         <!-- 显示更多操作 -->
-        <template v-if="!expansion">
+        <template v-if="!con.expansionChildrenNodeTree">
           <span class="more-icon" @click="handleExpansion">...</span>
           <span>{{ `\</${con.config.tagName}\>` }}</span>
         </template>
       </div>
-      <div v-if="expansion" class="code-node-children">
+      <div v-if="con.expansionChildrenNodeTree" class="code-node-children">
         <div
           v-if="isActive"
           class="code-node-children-line"
@@ -31,7 +36,7 @@
         <slot />
       </div>
       <div
-        v-if="expansion"
+        v-if="con.expansionChildrenNodeTree"
         class="code-node-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
@@ -63,20 +68,25 @@
           paddingLeft: indent * Retract + 'px'
         }"
       >
-        <img src="@/assets/down-arrow.png" alt="div" :class="['down-arrow-icon', { expansion }]" @click="handleExpansion" />
+        <img
+          src="@/assets/down-arrow.png"
+          alt="div"
+          :class="['down-arrow-icon', { expansion: con.expansionChildrenNodeTree }]"
+          @click="handleExpansion"
+        />
         <span>{{ `\<${con.config.tagName}\>` }}</span>
         <!-- 显示字体颜色 -->
         <Color :con="con" />
         <span class="tag-prop">{{ `class="${con.className}"` }}</span>
         <span>{{ `\>` }}</span>
         <!-- 显示更多操作 -->
-        <template v-if="!expansion">
+        <template v-if="!con.expansionChildrenNodeTree">
           <span class="more-icon" @click="handleExpansion">...</span>
           <span>{{ `\</${con.config.tagName}\>` }}</span>
         </template>
       </div>
       <div
-        v-if="expansion"
+        v-if="con.expansionChildrenNodeTree"
         class="code-node-text"
         :style="{
           paddingLeft: (indent + 1) * Retract + 'px'
@@ -92,7 +102,7 @@
         <span>{{ con.config.text }}</span>
       </div>
       <div
-        v-if="expansion"
+        v-if="con.expansionChildrenNodeTree"
         class="code-node-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
@@ -128,8 +138,6 @@ const emit = defineEmits<{
   (e: "click", con: BaseCon): void;
 }>();
 
-const expansion = ref(false);
-
 const isActive = computed(() => {
   return props.activeConKey === props.con.key;
 });
@@ -139,7 +147,7 @@ const handleClick = () => {
 };
 
 const handleExpansion = () => {
-  expansion.value = !expansion.value;
+  props.con.expansionChildrenNodeTree = !props.con.expansionChildrenNodeTree;
 };
 </script>
 
