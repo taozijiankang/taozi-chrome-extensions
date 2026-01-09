@@ -56,7 +56,12 @@ export abstract class BaseCon {
   }
 
   get lineStyle(): string {
-    return this.config.styleProps?.map(item => `${item.property}:${item.value}`).join(";") || "";
+    return (
+      this.config.styleProps
+        ?.filter(item => !item.disabled)
+        ?.map(item => `${item.property}:${item.value}`)
+        .join(";") || ""
+    );
   }
 
   set parent(parent: (() => BaseCon) | undefined) {
