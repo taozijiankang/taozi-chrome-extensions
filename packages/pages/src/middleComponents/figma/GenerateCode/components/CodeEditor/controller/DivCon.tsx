@@ -12,7 +12,7 @@ export class DivCon extends BaseCon {
 
   renderHtml(): VNode {
     return (
-      <div class={this.className} style={this.lineStyle}>
+      <div class={this.className} style={this.lineStyle} data-key={this.key}>
         {this.children?.map(child => child.renderHtml())}
       </div>
     );

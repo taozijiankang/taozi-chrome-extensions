@@ -19,7 +19,7 @@ export class ImageCon extends BaseCon {
   }
 
   renderHtml(): VNode {
-    return <img class={this.className} style={this.lineStyle} src={this.config.src} alt={this.config.alt} />;
+    return <img class={this.className} style={this.lineStyle} src={this.config.src} alt={this.config.alt} data-key={this.key} />;
   }
 
   protected getEditor(options?: RenderEditorOptions) {

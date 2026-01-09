@@ -14,7 +14,7 @@ export class SpanCon extends BaseCon {
 
   renderHtml(): VNode {
     return (
-      <span class={this.className} style={this.lineStyle}>
+      <span class={this.className} style={this.lineStyle} data-key={this.key}>
         {this.config.text}
       </span>
     );

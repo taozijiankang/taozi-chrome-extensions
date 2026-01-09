@@ -7,16 +7,32 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 10px;
     overflow: auto;
+    position: relative;
 
-    .html-view-item {
+    .html-view-item-active-outline {
+      position: absolute;
+      pointer-events: none;
+      z-index: 2;
+      border: 1px dashed rgb(127 32 210);
+      background-color: rgba(26, 115, 232, 0.05);
+      box-sizing: border-box;
+    }
+
+    .content-container {
+      z-index: 1;
+      position: relative;
       display: flex;
-      cursor: pointer;
-      &.active {
-        box-shadow:
-          0 0 8px 0 rgba(232, 237, 250, 0.6),
-          0 2px 4px 0 rgba(232, 237, 250, 0.5);
+      flex-direction: column;
+      gap: 10px;
+      .html-view-item {
+        display: flex;
+        cursor: pointer;
+        &.active {
+          box-shadow:
+            0 0 8px 0 rgba(232, 237, 250, 0.6),
+            0 2px 4px 0 rgba(232, 237, 250, 0.5);
+        }
       }
     }
   }
