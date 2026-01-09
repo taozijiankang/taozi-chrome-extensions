@@ -2,7 +2,7 @@ import { camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/
 import { type VNode } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import CodeNode from "../components/CodeNode/index.vue";
-import ConNameEditor from "../components/ConNameEditor/index.vue";
+import ConBaseEditor from "../components/ConBaseEditor/index.vue";
 import ConStyleEditor from "../components/ConStyleEditor/index.vue";
 
 export interface BaseConConfig<T extends string = string> {
@@ -26,7 +26,7 @@ export interface RenderEditorOptions {
 }
 
 export enum EditorType {
-  name = "name",
+  base = "base",
   style = "style"
 }
 
@@ -37,6 +37,9 @@ export abstract class BaseCon {
 
   private parent_?: () => BaseCon;
   private children_?: BaseCon[];
+
+  /** 禁用 */
+  disabled = false;
 
   /** 展开子节点树 */
   expansionChildrenNodeTree = false;
@@ -90,8 +93,8 @@ export abstract class BaseCon {
   protected getEditor(options?: RenderEditorOptions): { type: string; component: VNode }[] {
     return [
       {
-        type: EditorType.name,
-        component: <ConNameEditor con={this} />
+        type: EditorType.base,
+        component: <ConBaseEditor con={this} />
       },
       {
         type: EditorType.style,

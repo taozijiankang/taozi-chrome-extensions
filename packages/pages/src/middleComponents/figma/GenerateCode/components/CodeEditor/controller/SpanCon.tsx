@@ -1,8 +1,13 @@
 import type { VNode } from "vue";
-import { BaseCon, type BaseConConfig } from "./_BaseCon";
+import { BaseCon, type BaseConConfig, type RenderEditorOptions } from "./_BaseCon";
+import TextEditor from "../components/TextEditor/index.vue";
 
 export interface SpanConConfig extends BaseConConfig<"span"> {
   text: string;
+}
+
+export enum SpanEditorType {
+  text = "text"
 }
 
 export class SpanCon extends BaseCon {
@@ -18,6 +23,15 @@ export class SpanCon extends BaseCon {
         {this.config.text}
       </span>
     );
+  }
+
+  protected getEditor(options?: RenderEditorOptions) {
+    const editor = super.getEditor(options);
+    editor.push({
+      type: SpanEditorType.text,
+      component: <TextEditor con={this} />
+    });
+    return editor;
   }
 
   static getCon(config: Omit<SpanConConfig, "tagName">): SpanCon {

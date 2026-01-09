@@ -3,7 +3,7 @@
     <ContentCard title="图片" contentBackground="#f7f9fb">
       <div class="image-editor-content">
         <span>图片地址:</span>
-        <ElInput v-model="con.config.src" />
+        <ElInput v-model="con.config.src" clearable />
         <span>可用资源:</span>
         <div class="image-assets-list">
           <div

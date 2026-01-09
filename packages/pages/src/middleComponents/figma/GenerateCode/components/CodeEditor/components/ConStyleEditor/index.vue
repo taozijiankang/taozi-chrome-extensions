@@ -4,9 +4,9 @@
       <div class="con-style-editor-content">
         <div class="con-style-editor-content-item" v-for="(item, index) in con.config.styleProps" :key="index">
           <ElCheckbox :modelValue="!item.disabled" @update:modelValue="handleDisabled(item)" />
-          <ElInput v-model="item.property" />
+          <ElInput v-model="item.property" clearable />
           <span>:</span>
-          <ElInput v-model="item.value" />
+          <ElInput v-model="item.value" clearable />
           <ElColorPicker
             v-if="item.property === 'color' || item.property === 'background-color'"
             v-model="item.value"

@@ -14,6 +14,7 @@
           :class="['down-arrow-icon', { expansion: con.expansionChildrenNodeTree }]"
           @click="handleExpansion"
         />
+        <img v-if="con.disabled" src="@/assets/disabled.png" alt="" class="disabled-icon" />
         <span>{{ `\<${con.config.tagName}` }}</span>
         <!-- 显示背景颜色和字体颜色 -->
         <Color :con="con" />
@@ -54,6 +55,7 @@
           paddingLeft: indent * Retract + 'px'
         }"
       >
+        <img v-if="con.disabled" src="@/assets/disabled.png" alt="" class="disabled-icon" />
         <span>{{ `\<${con.config.tagName}` }}</span>
         <img v-if="con.config.src" :src="con.config.src" alt="image" class="image-icon" />
         <span class="tag-prop">{{ `class="${con.className}"` }}</span>
@@ -74,6 +76,7 @@
           :class="['down-arrow-icon', { expansion: con.expansionChildrenNodeTree }]"
           @click="handleExpansion"
         />
+        <img v-if="con.disabled" src="@/assets/disabled.png" alt="" class="disabled-icon" />
         <span>{{ `\<${con.config.tagName}\>` }}</span>
         <!-- 显示字体颜色 -->
         <Color :con="con" />
