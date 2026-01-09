@@ -1,6 +1,7 @@
 import type { VNode } from "vue";
 import { BaseCon, type BaseConConfig, type RenderEditorOptions } from "./_BaseCon";
 import ImageEditor from "../components/ImageEditor/index.vue";
+import { UniappImageModeType } from "../constants/enum";
 
 export interface ImageConConfig extends BaseConConfig<"img"> {
   src: string;
@@ -13,6 +14,14 @@ export enum ImageEditorType {
 
 export class ImageCon extends BaseCon {
   static tagName = "img" as const;
+
+  customComName?: string;
+
+  uniappConfig: {
+    mode: UniappImageModeType;
+  } = {
+    mode: UniappImageModeType.ScaleToFill
+  };
 
   constructor(public readonly config: ImageConConfig) {
     super(config);
