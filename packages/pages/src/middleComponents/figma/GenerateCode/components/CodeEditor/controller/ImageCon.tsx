@@ -19,6 +19,9 @@ export class ImageCon extends BaseCon {
   }
 
   renderHtml(): VNode {
+    if (this.disabled) {
+      return <></>;
+    }
     return <img class={this.className} style={this.lineStyle} src={this.config.src} alt={this.config.alt} data-key={this.key} />;
   }
 

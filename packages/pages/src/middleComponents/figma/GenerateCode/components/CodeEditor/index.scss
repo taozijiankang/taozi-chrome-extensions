@@ -6,7 +6,7 @@
   .html-view {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 3;
     overflow: auto;
     position: relative;
 
@@ -28,7 +28,9 @@
       .html-view-item {
         display: flex;
         cursor: pointer;
+        border: 1px solid transparent;
         &.active {
+          border: 1px solid #409eff;
           box-shadow:
             0 0 8px 0 rgba(232, 237, 250, 0.6),
             0 2px 4px 0 rgba(232, 237, 250, 0.5);
@@ -38,7 +40,7 @@
   }
 
   .code-node-tree-view {
-    flex: 1;
+    flex: 2;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -74,7 +76,7 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
-    flex: 1;
+    flex: 2;
     padding: 10px;
     box-sizing: border-box;
     background-color: white;

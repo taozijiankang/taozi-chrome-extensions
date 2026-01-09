@@ -18,6 +18,9 @@ export class SpanCon extends BaseCon {
   }
 
   renderHtml(): VNode {
+    if (this.disabled) {
+      return <></>;
+    }
     return (
       <span class={this.className} style={this.lineStyle} data-key={this.key}>
         {this.config.text}

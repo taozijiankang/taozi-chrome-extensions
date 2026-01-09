@@ -11,6 +11,9 @@ export class DivCon extends BaseCon {
   }
 
   renderHtml(): VNode {
+    if (this.disabled) {
+      return <></>;
+    }
     return (
       <div class={this.className} style={this.lineStyle} data-key={this.key}>
         {this.children?.map(child => child.renderHtml())}
