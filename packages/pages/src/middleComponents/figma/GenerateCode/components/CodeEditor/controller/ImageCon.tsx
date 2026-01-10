@@ -6,30 +6,39 @@ import { UniappImageModeType } from "../constants/enum";
 export interface ImageConConfig extends BaseConConfig<"img"> {
   src: string;
   alt: string;
+  uniappConfig: {
+    mode: UniappImageModeType;
+  };
 }
 
 export enum ImageEditorType {
   image = "image"
 }
 
-export class ImageCon extends BaseCon {
+export class ImageCon extends BaseCon<ImageConConfig> {
   static tagName = "img" as const;
 
-  uniappConfig: {
-    mode: UniappImageModeType;
-  } = {
-    mode: UniappImageModeType.ScaleToFill
-  };
+  constructor(config?: Partial<Omit<ImageConConfig, "tagName">>) {
+    super({ ...config, tagName: ImageCon.tagName });
 
-  constructor(public readonly config: ImageConConfig) {
-    super(config);
+    const { src, alt, uniappConfig } = config ?? {};
+    this.config.src = src ?? "";
+    this.config.alt = alt ?? "";
+    this.config.uniappConfig = uniappConfig ?? {
+      mode: UniappImageModeType.ScaleToFill
+    };
   }
 
-  renderHtml(): VNode {
-    if (this.disabled) {
-      return <></>;
-    }
-    return <img class={this.className} style={this.lineStyle} src={this.config.src} alt={this.config.alt} data-key={this.key} />;
+  protected getHtml(): VNode {
+    return (
+      <img
+        class={this.classNames.join(" ")}
+        style={this.lineStyle}
+        src={this.config.src}
+        alt={this.config.alt}
+        data-key={this.key}
+      />
+    );
   }
 
   protected getEditor(options?: RenderEditorOptions) {
@@ -40,9 +49,5 @@ export class ImageCon extends BaseCon {
       component: <ImageEditor con={this} imageAssets={imageAssets || []} />
     });
     return editor;
-  }
-
-  static getCon(config: Omit<ImageConConfig, "tagName">): ImageCon {
-    return new ImageCon({ ...config, tagName: ImageCon.tagName });
   }
 }

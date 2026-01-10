@@ -10,19 +10,19 @@ export enum SpanEditorType {
   text = "text"
 }
 
-export class SpanCon extends BaseCon {
+export class SpanCon extends BaseCon<SpanConConfig> {
   static tagName = "span" as const;
 
-  constructor(public readonly config: SpanConConfig) {
-    super(config);
+  constructor(config?: Partial<Omit<SpanConConfig, "tagName">>) {
+    super({ ...config, tagName: SpanCon.tagName });
+
+    const { text } = config ?? {};
+    this.config.text = text ?? "";
   }
 
-  renderHtml(): VNode {
-    if (this.disabled) {
-      return <></>;
-    }
+  protected getHtml(): VNode {
     return (
-      <span class={this.className} style={this.lineStyle} data-key={this.key}>
+      <span class={this.classNames.join(" ")} style={this.lineStyle} data-key={this.key}>
         {this.config.text}
       </span>
     );
@@ -35,9 +35,5 @@ export class SpanCon extends BaseCon {
       component: <TextEditor con={this} />
     });
     return editor;
-  }
-
-  static getCon(config: Omit<SpanConConfig, "tagName">): SpanCon {
-    return new SpanCon({ ...config, tagName: SpanCon.tagName });
   }
 }

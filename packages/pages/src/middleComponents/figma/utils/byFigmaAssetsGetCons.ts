@@ -26,20 +26,20 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
         });
         // 如果只有一个文本节点，则直接返回文本节点
         if (childNodes.length === 1 && ifTextNode(childNodes[0])) {
-          con = SpanCon.getCon({
+          con = new SpanCon({
             name: className,
             styleProps: styleDeclarations,
             text: childNodes[0].value
           });
         } else {
-          con = DivCon.getCon({
+          con = new DivCon({
             name: className,
             styleProps: styleDeclarations
           });
           con.children = childNodes.map(item => getCon(item as DefaultTreeAdapterTypes.Element)).filter(Boolean) as BaseCon[];
         }
       } else if (htmlAst.tagName === "img") {
-        con = ImageCon.getCon({
+        con = new ImageCon({
           name: className,
           styleProps: styleDeclarations,
           src: htmlAst.attrs.find(attr => attr.name === "src")?.value || "",

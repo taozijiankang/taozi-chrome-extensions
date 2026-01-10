@@ -3,25 +3,18 @@ import type { VNode } from "vue";
 
 export interface DivConConfig extends BaseConConfig<"div"> {}
 
-export class DivCon extends BaseCon {
+export class DivCon extends BaseCon<DivConConfig> {
   static tagName = "div" as const;
 
-  constructor(public readonly config: DivConConfig) {
+  constructor(config?: Partial<Omit<DivConConfig, "tagName">>) {
     super({ ...config, tagName: DivCon.tagName });
   }
 
-  renderHtml(): VNode {
-    if (this.disabled) {
-      return <></>;
-    }
+  protected getHtml(): VNode {
     return (
-      <div class={this.className} style={this.lineStyle} data-key={this.key}>
+      <div class={this.classNames.join(" ")} style={this.lineStyle} data-key={this.key}>
         {this.children?.map(child => child.renderHtml())}
       </div>
     );
-  }
-
-  static getCon(config: Omit<DivConConfig, "tagName">): DivCon {
-    return new DivCon({ ...config, tagName: DivCon.tagName });
   }
 }

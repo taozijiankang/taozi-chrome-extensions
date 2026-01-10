@@ -14,7 +14,7 @@
       <div class="content-container" @mouseenter="handleHtmlViewMouseEnter" @mouseleave="handleHtmlViewMouseLeave">
         <div
           v-for="con in cons"
-          :key="con.className"
+          :key="con.key"
           :class="[
             'html-view-item',
             {
@@ -150,12 +150,12 @@ const handleHtmlViewMouseMove = (e: MouseEvent) => {
   }
   //闭合所有子节点
   forEachCon([con].filter(Boolean) as BaseCon[], con => {
-    con.expansionChildrenNodeTree = false;
+    con.config.expansionChildrenNodeTree = false;
   });
   // 展开所有父节点
   let parentCon = con.parent?.();
   while (parentCon) {
-    parentCon.expansionChildrenNodeTree = true;
+    parentCon.config.expansionChildrenNodeTree = true;
     parentCon = parentCon.parent?.();
   }
   activeNodeTreeConKey.value = con.key;

@@ -3,7 +3,7 @@
     <ContentCard title="uniapp-config" contentBackground="#f7f9fb">
       <ElForm labelSuffix=":" labelPosition="left">
         <ElFormItem label="图片裁剪、缩放的模式" labelPosition="top">
-          <ElSelect v-model="con.uniappConfig.mode" clearable>
+          <ElSelect v-model="con.config.uniappConfig.mode" clearable>
             <ElOption v-for="item in UniappImageModeTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
           </ElSelect>
         </ElFormItem>

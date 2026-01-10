@@ -3,10 +3,10 @@
     <ContentCard title="元素基础信息" contentBackground="#f7f9fb">
       <ElForm labelSuffix=":" labelPosition="left">
         <ElFormItem label="禁用">
-          <ElSwitch v-model="con.disabled" />
+          <ElSwitch v-model="con.config.disabled" />
         </ElFormItem>
         <ElFormItem label="自定义组件名称">
-          <ElInput v-model="con.customComName" clearable />
+          <ElInput v-model="con.config.customComName" clearable />
         </ElFormItem>
         <ElFormItem label="元素名称">
           <TranslateInput v-model:value="con.config.name" />

@@ -6,13 +6,20 @@ import ConBaseEditor from "../components/ConBaseEditor/index.vue";
 import ConStyleEditor from "../components/ConStyleEditor/index.vue";
 
 export interface BaseConConfig<T extends string = string> {
+  key: string;
   tagName: T;
   name: string;
-  styleProps?: {
+  styleProps: {
     property: string;
     value: string;
     disabled?: boolean;
   }[];
+  /** 自定义组件名称 */
+  customComName: string;
+  /** 禁用 */
+  disabled: boolean;
+  /** 展开子节点树 */
+  expansionChildrenNodeTree: boolean;
 }
 
 export interface RenderNodeTreeOptions {
@@ -30,32 +37,41 @@ export enum EditorType {
   style = "style"
 }
 
-export abstract class BaseCon {
+export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
   static tagName = "";
 
-  key: string;
+  readonly config: C;
 
   private parent_?: () => BaseCon;
   private children_?: BaseCon[];
 
-  /** 自定义组件名称 */
-  customComName?: string;
-
-  /** 禁用 */
-  disabled = false;
-
-  /** 展开子节点树 */
-  expansionChildrenNodeTree = false;
-
-  constructor(public readonly config: BaseConConfig) {
-    this.key = uuidv4();
+  constructor(config?: Partial<C>) {
+    const { key, tagName, name, styleProps, customComName, disabled, expansionChildrenNodeTree } = config ?? {};
+    if (!tagName) {
+      throw new Error("tagName is required");
+    }
+    this.config = {
+      key: key ?? uuidv4(),
+      tagName,
+      name: name ?? "",
+      styleProps: styleProps ?? [],
+      customComName: customComName ?? "",
+      disabled: disabled ?? false,
+      expansionChildrenNodeTree: expansionChildrenNodeTree ?? false
+    } as C;
   }
 
-  get className(): string {
-    /**
-     * 将 name 转换为 kebab-case 格式
-     */
-    return camelToKebabCase(toValidVariableName(this.config.name));
+  get key(): string {
+    return this.config.key;
+  }
+
+  get classNames(): string[] {
+    return [
+      /**
+       * 将 name 转换为 kebab-case 格式
+       */
+      camelToKebabCase(toValidVariableName(this.config.name))
+    ].filter(Boolean);
   }
 
   get lineStyle(): string {
@@ -86,7 +102,10 @@ export abstract class BaseCon {
   }
 
   renderHtml(): VNode {
-    return <></>;
+    if (this.config.disabled) {
+      return <></>;
+    }
+    return this.getHtml();
   }
 
   renderNodeTree(options?: RenderNodeTreeOptions): VNode {
@@ -96,6 +115,14 @@ export abstract class BaseCon {
         {this.children?.map(child => child.renderNodeTree({ ...options, indent: indent + 1 }))}
       </CodeNode>
     );
+  }
+
+  renderEditor(options?: RenderEditorOptions): VNode {
+    return <>{this.getEditor(options).map(item => item.component)}</>;
+  }
+
+  protected getHtml(): VNode {
+    return <></>;
   }
 
   protected getEditor(options?: RenderEditorOptions): { type: string; component: VNode }[] {
@@ -109,9 +136,5 @@ export abstract class BaseCon {
         component: <ConStyleEditor con={this} />
       }
     ];
-  }
-
-  renderEditor(options?: RenderEditorOptions): VNode {
-    return <>{this.getEditor(options).map(item => item.component)}</>;
   }
 }
