@@ -18,6 +18,23 @@
       flex-shrink: 0;
     }
 
+    &.div-tag {
+      //
+    }
+
+    &.img-tag {
+      font-style: italic;
+
+      .image-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    &.span-tag {
+      font-style: italic;
+    }
+
     .disabled-icon {
       width: 16px;
       height: 16px;
@@ -44,17 +61,11 @@
       border-radius: 5px;
       padding: 0 3px;
     }
-
-    .image-icon {
-      width: 16px;
-      height: 16px;
-    }
   }
 
-  .code-node-children {
-    display: flex;
-    flex-direction: column;
+  .code-node-text {
     position: relative;
+    color: gray;
 
     .code-node-children-line {
       position: absolute;
@@ -66,9 +77,10 @@
     }
   }
 
-  .code-node-text {
+  .code-node-children {
+    display: flex;
+    flex-direction: column;
     position: relative;
-    color: gray;
 
     .code-node-children-line {
       position: absolute;

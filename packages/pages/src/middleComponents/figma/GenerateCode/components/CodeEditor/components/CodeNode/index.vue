@@ -3,7 +3,7 @@
     <!-- div -->
     <template v-if="isDivCon(con)">
       <div
-        class="code-node-tag"
+        class="code-node-tag div-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
         }"
@@ -38,7 +38,7 @@
       </div>
       <div
         v-if="con.expansionChildrenNodeTree"
-        class="code-node-tag"
+        class="code-node-tag div-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
         }"
@@ -50,7 +50,7 @@
     <!-- 图片 -->
     <template v-else-if="isImageCon(con)">
       <div
-        class="code-node-tag"
+        class="code-node-tag img-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
         }"
@@ -65,7 +65,7 @@
     <!-- 文字 -->
     <template v-else-if="isSpanCon(con)">
       <div
-        class="code-node-tag"
+        class="code-node-tag span-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
         }"
@@ -106,7 +106,7 @@
       </div>
       <div
         v-if="con.expansionChildrenNodeTree"
-        class="code-node-tag"
+        class="code-node-tag span-tag"
         :style="{
           paddingLeft: indent * Retract + 'px'
         }"
