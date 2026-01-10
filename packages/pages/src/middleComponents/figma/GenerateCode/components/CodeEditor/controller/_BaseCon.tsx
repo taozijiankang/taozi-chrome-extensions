@@ -6,7 +6,6 @@ import ConStyleEditor from "../components/ConStyleEditor/index.vue";
 import { getKey } from "../utils";
 
 export interface BaseConConfig<T extends string = string> {
-  key: string;
   tagName: T;
   name: string;
   styleProps: {
@@ -42,16 +41,20 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
 
   readonly config: C;
 
+  private _key: string;
+
   private parent_?: () => BaseCon;
   private children_?: BaseCon[];
 
   constructor(config?: Partial<C>) {
-    const { key, tagName, name, styleProps, customComName, disabled, expansionChildrenNodeTree } = config ?? {};
+    const { tagName, name, styleProps, customComName, disabled, expansionChildrenNodeTree } = config ?? {};
     if (!tagName) {
       throw new Error("tagName is required");
     }
+
+    this._key = getKey();
+
     this.config = {
-      key: key ?? getKey(),
       tagName,
       name: name ?? "",
       styleProps: styleProps ?? [],
@@ -62,7 +65,7 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
   }
 
   get key(): string {
-    return this.config.key;
+    return this._key;
   }
 
   get classNames(): string[] {

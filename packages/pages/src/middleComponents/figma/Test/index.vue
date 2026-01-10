@@ -10,7 +10,7 @@ import { testFigmaAssetsData as testFigmaAssetsData_ } from "./data/index";
 import { byFigmaAssetsGetCons } from "../utils/byFigmaAssetsGetCons";
 import { BaseCon } from "../GenerateCode/components/CodeEditor/controller";
 import CodeEditor from "../GenerateCode/components/CodeEditor/index.vue";
-import { cloneConfigs, exportConfigs, importConfigs } from "../GenerateCode/components/CodeEditor/utils";
+import { exportConfigs, importConfigs } from "../GenerateCode/components/CodeEditor/utils";
 
 const testFigmaAssetsData = ref(testFigmaAssetsData_);
 
@@ -34,7 +34,7 @@ onMounted(async () => {
   const exportConfigs_ = exportConfigs([con!]);
   console.log("exportConfigs", exportConfigs_);
 
-  cons.value.push(...importConfigs(cloneConfigs(exportConfigs_)));
+  cons.value.push(...importConfigs(exportConfigs_));
 });
 </script>
 

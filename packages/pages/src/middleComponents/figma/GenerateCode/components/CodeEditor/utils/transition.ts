@@ -1,6 +1,5 @@
 import type { BaseCon, BaseConConfig } from "../controller";
 import { DivCon, ImageCon, SpanCon } from "../controller";
-import { getKey } from "./index";
 
 export interface ExportConfig {
   config: BaseConConfig;
@@ -12,17 +11,6 @@ export function exportConfigs(cons: BaseCon[]): ExportConfig[] {
     return {
       config: JSON.parse(JSON.stringify(con.config)),
       children: exportConfigs(con.children ?? [])
-    };
-  });
-}
-
-export function cloneConfigs(configs: ExportConfig[]): ExportConfig[] {
-  return configs.map(config => {
-    const c: BaseConConfig = JSON.parse(JSON.stringify(config.config));
-    c.key = getKey();
-    return {
-      config: c,
-      children: cloneConfigs(config.children)
     };
   });
 }
