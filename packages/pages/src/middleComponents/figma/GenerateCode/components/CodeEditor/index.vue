@@ -63,7 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { BaseCon, findConByKey, forEachCon } from "./controller";
+import { BaseCon } from "./controller";
+import { findConByKey, forEachCon } from "./utils";
 import Render from "@/components/Render/index.vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 

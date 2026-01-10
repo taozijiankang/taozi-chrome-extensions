@@ -121,7 +121,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { BaseCon, isDivCon, isImageCon, isSpanCon } from "../../controller";
+import { BaseCon } from "../../controller";
+import { isDivCon, isImageCon, isSpanCon } from "../../utils";
 import Color from "./components/Color/index.vue";
 
 const Retract = 16;

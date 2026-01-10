@@ -1,9 +1,9 @@
 import { camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 import { type VNode } from "vue";
-import { v4 as uuidv4 } from "uuid";
 import CodeNode from "../components/CodeNode/index.vue";
 import ConBaseEditor from "../components/ConBaseEditor/index.vue";
 import ConStyleEditor from "../components/ConStyleEditor/index.vue";
+import { getKey } from "../utils";
 
 export interface BaseConConfig<T extends string = string> {
   key: string;
@@ -51,7 +51,7 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
       throw new Error("tagName is required");
     }
     this.config = {
-      key: key ?? uuidv4(),
+      key: key ?? getKey(),
       tagName,
       name: name ?? "",
       styleProps: styleProps ?? [],
