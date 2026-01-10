@@ -38,6 +38,7 @@ export function importConfigs(configs: ExportConfig[]): BaseCon[] {
       } else if (config.config.tagName === SpanCon.tagName) {
         con = new SpanCon(config.config);
       } else {
+        console.warn(`Unsupported tag name: ${config.config.tagName}`);
         return undefined;
       }
       con.children = importConfigs(config.children);
