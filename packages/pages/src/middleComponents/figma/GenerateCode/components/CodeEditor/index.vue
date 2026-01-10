@@ -21,7 +21,7 @@
               active: activeConKey === con.key
             }
           ]"
-          @click="handleClickCon(con)"
+          @click.stop="handleHtmlViewItemClick(con)"
         >
           <Render :render="con.renderHtml.bind(con)" />
         </div>
@@ -75,8 +75,6 @@ const props = defineProps<{
 
 const htmlViewRef = ref<HTMLDivElement>();
 
-const activeConKey = ref<string>();
-
 const activeNodeTreeConKey = ref<string>();
 
 const activeConElementOffset = ref<{
@@ -88,6 +86,15 @@ const activeConElementOffset = ref<{
 
 const selectElement = ref(false);
 
+const activeConKey = computed(() => {
+  if (!activeNodeTreeConKey.value) {
+    return "";
+  }
+  return props.cons.find(con => {
+    return !!findConByKey([con], activeNodeTreeConKey.value!);
+  })?.key;
+});
+
 const activeCon = computed(() => {
   return props.cons.find(con => con.key === activeConKey.value);
 });
@@ -97,8 +104,10 @@ const activeNodeTreeCon = computed(() => {
   return findConByKey(props.cons, activeNodeTreeConKey.value);
 });
 
-const handleClickCon = (con: BaseCon) => {
-  activeConKey.value = con.key;
+const handleHtmlViewItemClick = (con: BaseCon) => {
+  if (activeConKey.value !== con.key) {
+    activeNodeTreeConKey.value = con.key;
+  }
 };
 
 const handleNodeTreeConClick = (con: BaseCon) => {
@@ -145,7 +154,7 @@ const handleHtmlViewMouseMove = (e: MouseEvent) => {
   if (!key) {
     return;
   }
-  const con = findConByKey([activeCon.value].filter(Boolean) as BaseCon[], key);
+  const con = findConByKey(props.cons, key);
   if (!con) {
     return;
   }
