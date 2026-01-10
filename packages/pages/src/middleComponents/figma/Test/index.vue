@@ -32,7 +32,7 @@ onMounted(async () => {
   console.log("cons", cons.value);
 
   const exportConfigs_ = exportConfigs([con!]);
-  console.log("exportConfigs", exportConfigs);
+  console.log("exportConfigs", exportConfigs_);
 
   cons.value.push(...importConfigs(cloneConfigs(exportConfigs_)));
 });
