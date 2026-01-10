@@ -1,10 +1,17 @@
 <template>
   <div class="con-base-editor">
     <ContentCard title="元素基础信息" contentBackground="#f7f9fb">
-      <div class="con-base-editor-content">
-        <ElCheckbox :modelValue="!con.disabled" @update:modelValue="handleDisabled" />
-        <TranslateInput class="name-input" v-model:value="con.config.name" />
-      </div>
+      <ElForm labelSuffix=":" labelPosition="left">
+        <ElFormItem label="禁用">
+          <ElSwitch v-model="con.disabled" />
+        </ElFormItem>
+        <ElFormItem label="自定义组件名称">
+          <ElInput v-model="con.customComName" clearable />
+        </ElFormItem>
+        <ElFormItem label="元素名称">
+          <TranslateInput v-model:value="con.config.name" />
+        </ElFormItem>
+      </ElForm>
     </ContentCard>
   </div>
 </template>
@@ -13,15 +20,11 @@
 import TranslateInput from "@/components/TranslateInput/index.vue";
 import { BaseCon } from "../../controller";
 import ContentCard from "@/components/ContentCard/index.vue";
-import { ElCheckbox } from "element-plus";
+import { ElForm, ElFormItem, ElInput, ElSwitch } from "element-plus";
 
 const props = defineProps<{
   con: BaseCon;
 }>();
-
-const handleDisabled = () => {
-  props.con.disabled = !props.con.disabled;
-};
 </script>
 
 <style lang="scss" scoped>

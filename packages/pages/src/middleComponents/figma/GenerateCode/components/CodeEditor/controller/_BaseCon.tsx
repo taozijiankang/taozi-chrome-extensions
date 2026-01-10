@@ -38,6 +38,9 @@ export abstract class BaseCon {
   private parent_?: () => BaseCon;
   private children_?: BaseCon[];
 
+  /** 自定义组件名称 */
+  customComName?: string;
+
   /** 禁用 */
   disabled = false;
 

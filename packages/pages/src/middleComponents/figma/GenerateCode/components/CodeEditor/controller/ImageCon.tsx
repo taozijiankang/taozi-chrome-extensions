@@ -15,8 +15,6 @@ export enum ImageEditorType {
 export class ImageCon extends BaseCon {
   static tagName = "img" as const;
 
-  customComName?: string;
-
   uniappConfig: {
     mode: UniappImageModeType;
   } = {

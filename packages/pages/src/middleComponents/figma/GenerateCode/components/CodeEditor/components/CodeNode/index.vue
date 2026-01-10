@@ -15,7 +15,7 @@
           @click="handleExpansion"
         />
         <img v-if="con.disabled" src="@/assets/disabled.png" alt="" class="disabled-icon" />
-        <span>{{ `\<${con.config.tagName}` }}</span>
+        <span>{{ `\<${con.customComName || con.config.tagName}` }}</span>
         <!-- 显示背景颜色和字体颜色 -->
         <Color :con="con" />
         <span class="tag-prop">{{ ` class="${con.className}"` }}</span>
@@ -23,7 +23,7 @@
         <!-- 显示更多操作 -->
         <template v-if="!con.expansionChildrenNodeTree">
           <span class="more-icon" @click="handleExpansion">...</span>
-          <span>{{ `\</${con.config.tagName}\>` }}</span>
+          <span>{{ `\</${con.customComName || con.config.tagName}\>` }}</span>
         </template>
       </div>
       <div v-if="con.expansionChildrenNodeTree" class="code-node-children">
@@ -44,7 +44,7 @@
         }"
       >
         <div class="down-arrow-icon"></div>
-        <span>{{ `\</${con.config.tagName}\>` }}</span>
+        <span>{{ `\</${con.customComName || con.config.tagName}\>` }}</span>
       </div>
     </template>
     <!-- 图片 -->
@@ -56,7 +56,7 @@
         }"
       >
         <img v-if="con.disabled" src="@/assets/disabled.png" alt="" class="disabled-icon" />
-        <span>{{ `\<${con.config.tagName}` }}</span>
+        <span>{{ `\<${con.customComName || con.config.tagName}` }}</span>
         <img v-if="con.config.src" :src="con.config.src" alt="image" class="image-icon" />
         <span class="tag-prop">{{ `class="${con.className}"` }}</span>
         <span>{{ `\/\>` }}</span>
@@ -77,7 +77,7 @@
           @click="handleExpansion"
         />
         <img v-if="con.disabled" src="@/assets/disabled.png" alt="" class="disabled-icon" />
-        <span>{{ `\<${con.config.tagName}\>` }}</span>
+        <span>{{ `\<${con.customComName || con.config.tagName}\>` }}</span>
         <!-- 显示字体颜色 -->
         <Color :con="con" />
         <span class="tag-prop">{{ `class="${con.className}"` }}</span>
@@ -85,7 +85,7 @@
         <!-- 显示更多操作 -->
         <template v-if="!con.expansionChildrenNodeTree">
           <span class="more-icon" @click="handleExpansion">...</span>
-          <span>{{ `\</${con.config.tagName}\>` }}</span>
+          <span>{{ `\</${con.customComName || con.config.tagName}\>` }}</span>
         </template>
       </div>
       <div
@@ -112,7 +112,7 @@
         }"
       >
         <div class="down-arrow-icon"></div>
-        <span>{{ `\</${con.config.tagName}\>` }}</span>
+        <span>{{ `\</${con.customComName || con.config.tagName}\>` }}</span>
       </div>
     </template>
   </div>

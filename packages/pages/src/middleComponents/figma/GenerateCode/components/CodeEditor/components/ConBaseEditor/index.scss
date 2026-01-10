@@ -1,15 +1,4 @@
 .con-base-editor {
   display: flex;
   flex-direction: column;
-
-  .con-base-editor-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    .name-input {
-      flex: 1;
-      min-width: 0;
-    }
-  }
 }
