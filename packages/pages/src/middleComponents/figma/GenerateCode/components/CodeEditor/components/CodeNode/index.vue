@@ -22,7 +22,7 @@
         <span>{{ `\>` }}</span>
         <!-- 显示更多操作 -->
         <template v-if="!con.expansionChildrenNodeTree">
-          <span class="more-icon" @click="handleExpansion">...</span>
+          <div class="more-icon" @click="handleExpansion">...</div>
           <span>{{ `\</${con.customComName || con.config.tagName}\>` }}</span>
         </template>
       </div>
@@ -34,6 +34,7 @@
             paddingLeft: indent * Retract + 'px'
           }"
         ></div>
+        <!-- 子节点 -->
         <slot />
       </div>
       <div
@@ -84,7 +85,7 @@
         <span>{{ `\>` }}</span>
         <!-- 显示更多操作 -->
         <template v-if="!con.expansionChildrenNodeTree">
-          <span class="more-icon" @click="handleExpansion">...</span>
+          <div class="more-icon" @click="handleExpansion">...</div>
           <span>{{ `\</${con.customComName || con.config.tagName}\>` }}</span>
         </template>
       </div>
