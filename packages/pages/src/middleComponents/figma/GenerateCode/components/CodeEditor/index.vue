@@ -85,13 +85,29 @@
       </div>
     </div>
     <div v-if="activeNodeTreeCon" class="con-editor-view">
-      <Render
-        :render="
-          activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
-            imageAssets: imageAssets
-          })
-        "
-      />
+      <div class="controller-container">
+        <Tabs v-model:value="editorActiveTab" :list="editorTabs" class="tabs" />
+      </div>
+      <div class="content-container">
+        <!-- 属性编辑 -->
+        <template v-if="editorActiveTab === EditorTabType.Props">
+          <Render
+            :render="
+              activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
+                imageAssets: imageAssets
+              })
+            "
+          />
+        </template>
+        <!-- 代码 -->
+        <div class="codes" v-if="editorActiveTab === EditorTabType.Code">
+          <Code class="code" v-if="editorActiveConCode.html" :code="editorActiveConCode.html" :type="CodeType.Html" />
+          <Code class="code" v-if="editorActiveConCode.css" :code="editorActiveConCode.css" :type="CodeType.Css" />
+          <Code class="code" v-if="editorActiveConCode.js" :code="editorActiveConCode.js" :type="CodeType.Js" />
+        </div>
+        <!-- 资源列表 -->
+        <template v-if="editorActiveTab === EditorTabType.Assets"></template>
+      </div>
     </div>
   </div>
 </template>
@@ -100,9 +116,14 @@
 import { BaseCon } from "./controller";
 import { findConByKey, forEachCon } from "./utils";
 import Render from "@/components/Render/index.vue";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { ElButton, ElMessageBox, ElEmpty } from "element-plus";
 import { Delete, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
+import { editorTabs, EditorTabType } from "./index";
+import Tabs from "../../../../../components/Tabs/index.vue";
+import { formatCode } from "../../../../../utils/prettier";
+import { CodeType } from "../../../../../components/Code";
+import Code from "../../../../../components/Code/index.vue";
 
 const props = defineProps<{
   cons: BaseCon[];
@@ -128,6 +149,15 @@ const activeConElementOffset = ref<{
 
 const selectElement = ref(false);
 
+const editorActiveTab = ref(EditorTabType.Props);
+
+const editorActiveConCode = ref({
+  loading: false,
+  html: "",
+  css: "",
+  js: ""
+});
+
 const activeConKey = computed(() => {
   return (
     props.cons.find(con => {
@@ -142,6 +172,25 @@ const activeCon = computed(() => {
 
 const activeNodeTreeCon = computed(() => {
   return findConByKey(props.cons, props.activeNodeTreeConKey);
+});
+
+watch([editorActiveTab, activeNodeTreeCon], async () => {
+  let { html = "", css = "", js = "" } = activeNodeTreeCon.value?.getCode() || {};
+
+  try {
+    editorActiveConCode.value.loading = true;
+    html = await formatCode(html, "html");
+    css = await formatCode(css, "scss");
+    js = await formatCode(js, "typescript");
+  } catch (error) {
+    console.error("生成con code 错误", error);
+  } finally {
+    editorActiveConCode.value.loading = false;
+  }
+
+  editorActiveConCode.value.html = html;
+  editorActiveConCode.value.css = css;
+  editorActiveConCode.value.js = js;
 });
 
 const handleEditNodeList = () => {

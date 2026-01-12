@@ -1,5 +1,5 @@
 import type { VNode } from "vue";
-import { BaseCon, type BaseConConfig, type RenderEditorOptions } from "./_BaseCon";
+import { BaseCon, type BaseConConfig, type GetCodeOptions, type GetCodeReturn, type RenderEditorOptions } from "./_BaseCon";
 import TextEditor from "../components/TextEditor/index.vue";
 
 export interface SpanConConfig extends BaseConConfig<"span"> {
@@ -35,5 +35,24 @@ export class SpanCon extends BaseCon<SpanConConfig> {
       component: <TextEditor con={this} />
     });
     return editor;
+  }
+
+  protected getCode_(options?: GetCodeOptions): GetCodeReturn {
+    const style = this.style;
+
+    const class_ = this.classNames.join(" ");
+
+    let html = `<span class="${class_}">${this.config.text}</span>`;
+    let css = `
+    ${style.selector}{
+      ${style.value}
+    }
+    `;
+
+    return {
+      html,
+      css,
+      js: ""
+    };
   }
 }

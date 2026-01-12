@@ -10,7 +10,7 @@ export function exportConfigs(cons: BaseCon[]): ExportConfig[] {
   return cons.map(con => {
     return {
       config: JSON.parse(JSON.stringify(con.config)),
-      children: exportConfigs(con.children ?? [])
+      children: exportConfigs(con.children)
     };
   });
 }

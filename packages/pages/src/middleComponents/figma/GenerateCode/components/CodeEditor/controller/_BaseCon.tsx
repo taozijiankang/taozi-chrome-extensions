@@ -32,6 +32,14 @@ export interface RenderEditorOptions {
   imageAssets: string[];
 }
 
+export interface GetCodeOptions {}
+
+export interface GetCodeReturn {
+  html: string;
+  css: string;
+  js: string;
+}
+
 export enum EditorType {
   base = "base",
   style = "style"
@@ -70,13 +78,26 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
     return this._key;
   }
 
+  get mainClassName(): string {
+    /**
+     * 将 name 转换为 kebab-case 格式
+     */
+    return camelToKebabCase(toValidVariableName(this.config.name));
+  }
+
   get classNames(): string[] {
-    return [
-      /**
-       * 将 name 转换为 kebab-case 格式
-       */
-      camelToKebabCase(toValidVariableName(this.config.name))
-    ].filter(Boolean);
+    return [this.mainClassName].filter(Boolean);
+  }
+
+  get style() {
+    return {
+      selector: `.${this.mainClassName}`,
+      value:
+        this.config.styleProps
+          ?.filter(item => !item.disabled)
+          ?.map(item => `${item.property}:${item.value};`)
+          .join("\n") || ""
+    };
   }
 
   get lineStyle(): string {
@@ -102,8 +123,8 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
     this.children_?.forEach(child => (child.parent = () => this));
   }
 
-  get children(): BaseCon[] | undefined {
-    return this.children_;
+  get children(): BaseCon[] {
+    return this.children_ || [];
   }
 
   renderHtml(): VNode {
@@ -117,13 +138,17 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
     const { indent = 0, activeConKey, click } = options ?? {};
     return (
       <CodeNode con={this} indent={indent} activeConKey={activeConKey} onClick={click}>
-        {this.children?.map(child => child.renderNodeTree({ ...options, indent: indent + 1 }))}
+        {this.children.map(child => child.renderNodeTree({ ...options, indent: indent + 1 }))}
       </CodeNode>
     );
   }
 
   renderEditor(options?: RenderEditorOptions): VNode {
     return <>{this.getEditor(options).map(item => item.component)}</>;
+  }
+
+  getCode(options?: GetCodeOptions): GetCodeReturn {
+    return this.getCode_(options);
   }
 
   protected getHtml(): VNode {
@@ -141,5 +166,13 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
         component: <ConStyleEditor con={this} />
       }
     ];
+  }
+
+  protected getCode_(options?: GetCodeOptions): GetCodeReturn {
+    return {
+      html: "",
+      css: "",
+      js: ""
+    };
   }
 }

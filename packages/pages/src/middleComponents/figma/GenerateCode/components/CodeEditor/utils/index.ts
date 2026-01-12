@@ -10,7 +10,7 @@ export function getKey(): string {
 export function forEachCon(cons: BaseCon[], callback: (con: BaseCon) => void) {
   for (const con of cons) {
     callback(con);
-    forEachCon(con.children ?? [], callback);
+    forEachCon(con.children, callback);
   }
 }
 
@@ -19,7 +19,7 @@ export function findConByKey(cons: BaseCon[], key: string): BaseCon | undefined 
     if (con.key === key) {
       return con;
     }
-    const found = findConByKey(con.children ?? [], key);
+    const found = findConByKey(con.children, key);
     if (found) {
       return found;
     }

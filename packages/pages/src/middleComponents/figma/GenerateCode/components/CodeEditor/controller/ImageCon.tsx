@@ -1,7 +1,8 @@
 import type { VNode } from "vue";
-import { BaseCon, type BaseConConfig, type RenderEditorOptions } from "./_BaseCon";
+import { BaseCon, type BaseConConfig, type GetCodeOptions, type GetCodeReturn, type RenderEditorOptions } from "./_BaseCon";
 import ImageEditor from "../components/ImageEditor/index.vue";
 import { UniappImageModeType } from "../constants/enum";
+import { kebabToCamelCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 
 export interface ImageConConfig extends BaseConConfig<"img"> {
   src: string;
@@ -49,5 +50,26 @@ export class ImageCon extends BaseCon<ImageConConfig> {
       component: <ImageEditor con={this} imageAssets={imageAssets || []} />
     });
     return editor;
+  }
+
+  protected getCode_(options?: GetCodeOptions): GetCodeReturn {
+    const style = this.style;
+    const class_ = this.classNames.join(" ");
+
+    const variableName = kebabToCamelCase(toValidVariableName(this.config.name), true);
+
+    let html = `<img class="${class_}" src="${this.config.src}" alt="${this.config.alt}" />`;
+    let css = `
+    ${style.selector}{
+      ${style.value}
+    }
+    `;
+    let js = "";
+
+    return {
+      html,
+      css,
+      js
+    };
   }
 }
