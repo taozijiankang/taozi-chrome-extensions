@@ -7,7 +7,6 @@ import Tabs from "../../components/Tabs/index.vue";
 import { configLocalStorage, messageAlertLocalStorage, type MessageAlertItem } from "@taozi-chrome-extensions/common/src/local";
 import CodesignRecentViewed from "../../middleComponents/codesign/RecentViewed/index.vue";
 import CodesignConfig from "../../middleComponents/codesign/Config/index.vue";
-import ProxyServerConfig from "../../middleComponents/ProxyServerConfig/index.vue";
 import Version from "../../middleComponents/Version/index.vue";
 import MpReleasePlan from "../../middleComponents/MpReleasePlan/index.vue";
 import { openPage } from "@taozi-chrome-extensions/common/src/utils/openPage";
@@ -128,9 +127,6 @@ onUnmounted(() => {
       <template v-else-if="activeTab === TabType.Config">
         <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
-        </ContentCard>
-        <ContentCard title="代理服务配置">
-          <ProxyServerConfig />
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">

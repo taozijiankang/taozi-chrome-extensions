@@ -5,8 +5,7 @@ export interface ConfigLocalStorage {
   baiduAppId?: string;
   /** 百度翻译api key */
   baiduKey?: string;
-  /** 代理服务地址 */
-  proxyServiceUrl?: string;
+
   /** 弹窗当前激活的标签页 */
   popupActiveTab?: string;
   /** 是否有新版本 */
@@ -17,6 +16,5 @@ export const configLocalStorage = useLocalStorage<string, ConfigLocalStorage>("c
   popupActiveTab: "",
   baiduAppId: "",
   baiduKey: "",
-  proxyServiceUrl: "",
   hasNewVersion: false
 });

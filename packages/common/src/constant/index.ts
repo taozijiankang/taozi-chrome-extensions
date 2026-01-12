@@ -4,6 +4,11 @@ export * from "./page";
 export * from "./enum";
 
 /**
+ * 代理服务地址
+ */
+export const proxyServiceUrl = "https://taozi-chrome-extensions-proxy-function.zhansousou.com";
+
+/**
  * 所有url匹配
  */
 export const AllUrlsMatches = "<all_urls>";
