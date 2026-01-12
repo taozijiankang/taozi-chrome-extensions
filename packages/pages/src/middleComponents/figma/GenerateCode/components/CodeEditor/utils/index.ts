@@ -26,3 +26,14 @@ export function findConByKey(cons: BaseCon[], key: string): BaseCon | undefined 
   }
   return undefined;
 }
+
+export function filterCons(cons: BaseCon[], filter: (con: BaseCon) => boolean): BaseCon[] {
+  const result: BaseCon[] = [];
+  for (const con of cons) {
+    if (filter(con)) {
+      result.push(con);
+    }
+    result.push(...filterCons(con.children, filter));
+  }
+  return result;
+}

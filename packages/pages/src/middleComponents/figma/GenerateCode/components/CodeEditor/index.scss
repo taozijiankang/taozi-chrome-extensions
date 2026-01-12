@@ -135,7 +135,6 @@
     display: flex;
     flex-direction: column;
     flex: 2;
-    padding: 10px;
     box-sizing: border-box;
     background-color: white;
     border-radius: 5px;
@@ -160,22 +159,23 @@
         --padding: 8px 12px;
       }
     }
+    .content-container {
+      gap: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
     .props-content-container {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: auto;
       min-height: 0;
-      gap: 10px;
-      padding-top: 10px;
     }
     .codes-content-container {
       flex: 1;
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding-top: 10px;
 
       .controller {
         display: flex;
@@ -187,6 +187,52 @@
         display: flex;
         flex-direction: column;
         overflow: auto;
+        gap: 10px;
+      }
+    }
+    .assets-content-container {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+
+      .image-assets-list {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        .image-assets-list-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          &.active {
+            border: 2px solid rgb(127 32 210);
+          }
+          img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            background-color: #fff;
+            background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
+              linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
+              linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+            background-size: 10px 10px;
+            background-position:
+              0 0,
+              0 5px,
+              5px -5px,
+              -5px 0px;
+          }
+
+          span {
+            flex: 1;
+            min-width: 0;
+          }
+        }
       }
     }
   }

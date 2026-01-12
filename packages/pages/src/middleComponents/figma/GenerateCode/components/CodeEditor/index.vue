@@ -89,7 +89,7 @@
         <Tabs v-model:value="editorActiveTab" :list="editorTabs" class="tabs" />
       </div>
       <!-- 属性编辑 -->
-      <div v-if="editorActiveTab === EditorTabType.Props" class="props-content-container">
+      <div v-if="editorActiveTab === EditorTabType.Props" class="content-container props-content-container">
         <Render
           :render="
             activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
@@ -99,7 +99,7 @@
         />
       </div>
       <!-- 代码 -->
-      <div v-else-if="editorActiveTab === EditorTabType.Code" class="codes-content-container">
+      <div v-else-if="editorActiveTab === EditorTabType.Code" class="content-container codes-content-container">
         <div class="controller">
           <ElForm labelSuffix=":" labelPosition="left">
             <ElFormItem label="代码类型">
@@ -121,18 +121,33 @@
         </div>
       </div>
       <!-- 资源列表 -->
-      <div v-else-if="editorActiveTab === EditorTabType.Assets" class="assets-content-container"></div>
+      <div v-else-if="editorActiveTab === EditorTabType.Assets" class="content-container assets-content-container">
+        <div v-if="activeConImageCons.length > 0" class="image-assets-list">
+          <div
+            class="image-assets-list-item"
+            :class="{
+              active: imageCon.key === activeNodeTreeConKey
+            }"
+            v-for="imageCon in activeConImageCons"
+            :key="imageCon.key"
+          >
+            <img :src="imageCon.config.src" :alt="imageCon.config.alt" />
+            <ElButton :icon="CopyDocument" circle @click="copyImageAssetSrc(imageCon)"></ElButton>
+          </div>
+        </div>
+        <ElEmpty v-else description="暂无资源" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BaseCon } from "./controller";
-import { findConByKey, forEachCon } from "./utils";
+import { BaseCon, type ImageCon } from "./controller";
+import { filterCons, findConByKey, forEachCon, isImageCon } from "./utils";
 import Render from "@/components/Render/index.vue";
 import { computed, onMounted, onUnmounted, ref, toRef, watch } from "vue";
-import { ElButton, ElMessageBox, ElEmpty, ElForm, ElFormItem, ElSelect, ElOption } from "element-plus";
-import { Delete, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
+import { ElButton, ElMessageBox, ElEmpty, ElForm, ElFormItem, ElSelect, ElOption, ElMessage } from "element-plus";
+import { Delete, ArrowUp, ArrowDown, CopyDocument } from "@element-plus/icons-vue";
 import { editorTabs, EditorTabType } from "./index";
 import Tabs from "../../../../../components/Tabs/index.vue";
 import { formatCode } from "../../../../../utils/prettier";
@@ -190,6 +205,10 @@ const activeCon = computed(() => {
 
 const activeNodeTreeCon = computed(() => {
   return findConByKey(props.cons, props.activeNodeTreeConKey);
+});
+
+const activeConImageCons = computed(() => {
+  return filterCons([activeNodeTreeCon.value].filter(Boolean) as BaseCon[], con => isImageCon(con)) as ImageCon[];
 });
 
 watch([editorActiveTab, activeNodeTreeCon, toRef(props, "codeType")], async () => {
@@ -273,6 +292,23 @@ const handleHtmlViewItemClick = (con: BaseCon) => {
 
 const handleNodeTreeConClick = (con: BaseCon) => {
   emit("update:activeNodeTreeConKey", con.key);
+};
+
+const copyImageAssetSrc = (imageCon: ImageCon) => {
+  navigator.clipboard
+    .writeText(imageCon.config.src)
+    .then(() => {
+      ElMessage({
+        message: "复制成功",
+        type: "success"
+      });
+    })
+    .catch(() => {
+      ElMessage({
+        message: "复制失败",
+        type: "error"
+      });
+    });
 };
 
 const findNodeTreeConElement = () => {
