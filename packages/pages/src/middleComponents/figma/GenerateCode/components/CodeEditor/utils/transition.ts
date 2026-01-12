@@ -34,3 +34,16 @@ export function importConfigs(configs: ExportConfig[]): BaseCon[] {
     })
     .filter(Boolean) as BaseCon[];
 }
+
+export function cloneCons(cons: BaseCon[]): BaseCon[] {
+  const cs = exportConfigs(cons);
+  // 清除配置中的id属性
+  const f = (cs: ExportConfig[]) => {
+    cs.forEach(c => {
+      c.config.id = "";
+      f(c.children || []);
+    });
+  };
+  f(cs);
+  return importConfigs(cs);
+}

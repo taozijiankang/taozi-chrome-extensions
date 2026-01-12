@@ -7,46 +7,86 @@
     display: flex;
     flex-direction: column;
     flex: 3;
-    overflow: auto;
     position: relative;
     min-width: 0;
+    gap: 10px;
 
-    .html-view-item-active-outline {
-      position: absolute;
-      pointer-events: none;
-      z-index: 2;
-      border: 1px dashed rgb(127 32 210);
-      background-color: rgba(26, 115, 232, 0.05);
-      box-sizing: border-box;
-    }
-
-    .content-container {
-      z-index: 1;
-      position: relative;
+    .controller-container {
       display: flex;
+      background-color: white;
+      padding: 10px;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: space-between;
+      span {
+        font-size: 14px;
+        font-weight: bold;
+      }
+    }
+    .content-container {
+      display: flex;
+      overflow: auto;
       flex-direction: column;
-      gap: 10px;
-      .html-view-item {
-        display: flex;
-        padding: 3px;
+      flex: 1;
+      min-height: 0;
+
+      .ui-node-item-active-outline {
+        position: absolute;
+        pointer-events: none;
+        z-index: 2;
+        border: 1px dashed rgb(127 32 210);
+        background-color: rgba(26, 115, 232, 0.05);
         box-sizing: border-box;
-        border-radius: 5px;
-        border: 3px solid transparent;
-        background-color: #fff;
-        background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
-          linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
-        background-size: 10px 10px;
-        background-position:
-          0 0,
-          0 5px,
-          5px -5px,
-          -5px 0px;
-        &.active {
-          border-color: #409eff;
-          box-shadow:
-            0 0 8px 0 rgba(232, 237, 250, 0.6),
-            0 2px 4px 0 rgba(232, 237, 250, 0.5);
+      }
+
+      .ui-node-list-container {
+        z-index: 1;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        .ui-node-item-container {
+          display: flex;
+          .content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            padding: 3px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 3px solid transparent;
+            background-color: #fff;
+            background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
+              linear-gradient(-45deg, #e0e0e0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
+              linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+            background-size: 10px 10px;
+            background-position:
+              0 0,
+              0 5px,
+              5px -5px,
+              -5px 0px;
+            &.active {
+              border-color: #409eff;
+              box-shadow:
+                0 0 8px 0 rgba(232, 237, 250, 0.6),
+                0 2px 4px 0 rgba(232, 237, 250, 0.5);
+            }
+          }
+          .controller {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 0 5px 5px 0;
+            padding: 5px;
+            box-sizing: border-box;
+
+            .button {
+              margin: 0;
+            }
+          }
         }
       }
     }
@@ -77,12 +117,17 @@
         }
       }
     }
-    .node-tree-container {
+    .content-container {
       flex: 1;
       min-height: 0;
       overflow: auto;
       display: flex;
       flex-direction: column;
+      .content {
+        display: flex;
+        flex-direction: column;
+        width: max-content;
+      }
     }
   }
 

@@ -1,41 +1,77 @@
 <template>
   <div class="code-editor">
     <div class="html-view" ref="htmlViewRef">
-      <div
-        v-if="activeConElementOffset"
-        class="html-view-item-active-outline"
-        :style="{
-          left: activeConElementOffset?.x + 'px',
-          top: activeConElementOffset?.y + 'px',
-          width: activeConElementOffset?.width + 'px',
-          height: activeConElementOffset?.height + 'px'
-        }"
-      ></div>
-      <div class="content-container" @mouseenter="handleHtmlViewMouseEnter" @mouseleave="handleHtmlViewMouseLeave">
+      <div class="controller-container">
+        <span>节点列表</span>
+        <ElButton v-if="cons.length > 0" :type="editNodeList ? 'primary' : 'default'" @click="handleEditNodeList">
+          {{ editNodeList ? "完成" : "编辑" }}
+        </ElButton>
+      </div>
+      <div class="content-container">
         <div
-          v-for="con in cons"
-          :key="con.key"
-          :class="[
-            'html-view-item',
-            {
-              active: activeConKey === con.key
-            }
-          ]"
-          @click.stop="handleHtmlViewItemClick(con)"
+          v-if="activeConElementOffset"
+          class="ui-node-item-active-outline"
+          :style="{
+            left: activeConElementOffset?.x + 'px',
+            top: activeConElementOffset?.y + 'px',
+            width: activeConElementOffset?.width + 'px',
+            height: activeConElementOffset?.height + 'px'
+          }"
+        ></div>
+        <div
+          v-if="cons.length > 0"
+          class="ui-node-list-container"
+          @mouseenter="handleHtmlViewMouseEnter"
+          @mouseleave="handleHtmlViewMouseLeave"
         >
-          <Render :render="con.renderHtml.bind(con)" />
+          <div v-for="(con, index) in cons" :key="con.key" class="ui-node-item-container">
+            <div
+              :class="[
+                'content',
+                {
+                  active: activeConKey === con.key
+                }
+              ]"
+              @click.stop="handleHtmlViewItemClick(con)"
+            >
+              <Render :render="con.renderHtml.bind(con)" />
+            </div>
+            <div v-if="editNodeList" class="controller">
+              <!-- 上移 -->
+              <ElButton
+                class="button"
+                type="primary"
+                :icon="ArrowUp"
+                circle
+                :disabled="index === 0"
+                @click="handleMoveUpHtmlViewItem(con)"
+              ></ElButton>
+              <!-- 删除 -->
+              <ElButton class="button" type="danger" :icon="Delete" circle @click="handleDeleteHtmlViewItem(con)"></ElButton>
+              <!-- 下移 -->
+              <ElButton
+                class="button"
+                type="primary"
+                :icon="ArrowDown"
+                circle
+                :disabled="index === cons.length - 1"
+                @click="handleMoveDownHtmlViewItem(con)"
+              ></ElButton>
+            </div>
+          </div>
         </div>
+        <ElEmpty v-else description="请添加节点" />
       </div>
     </div>
-    <div class="code-node-tree-view">
+    <div v-if="activeCon" class="code-node-tree-view">
       <div class="controller-container">
         <div class="select-element-icon-container" @click="handleSelectElement">
           <img v-if="selectElement" class="select-element-icon" src="@/assets/select-active.png" alt="" />
           <img v-else class="select-element-icon" src="@/assets/select.png" alt="" />
         </div>
       </div>
-      <div class="node-tree-container">
-        <template v-if="activeCon">
+      <div class="content-container">
+        <div class="content">
           <Render
             :render="
               activeCon?.renderNodeTree.bind(activeCon, {
@@ -45,19 +81,17 @@
               })
             "
           />
-        </template>
+        </div>
       </div>
     </div>
-    <div class="con-editor-view">
-      <template v-if="activeNodeTreeCon">
-        <Render
-          :render="
-            activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
-              imageAssets: imageAssets
-            })
-          "
-        />
-      </template>
+    <div v-if="activeNodeTreeCon" class="con-editor-view">
+      <Render
+        :render="
+          activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
+            imageAssets: imageAssets
+          })
+        "
+      />
     </div>
   </div>
 </template>
@@ -67,15 +101,23 @@ import { BaseCon } from "./controller";
 import { findConByKey, forEachCon } from "./utils";
 import Render from "@/components/Render/index.vue";
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { ElButton, ElMessageBox, ElEmpty } from "element-plus";
+import { Delete, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
 
 const props = defineProps<{
   cons: BaseCon[];
   imageAssets: string[];
+  activeNodeTreeConKey: string;
+}>();
+
+const emit = defineEmits<{
+  (e: "update:cons", cons: BaseCon[]): void;
+  (e: "update:activeNodeTreeConKey", key: string): void;
 }>();
 
 const htmlViewRef = ref<HTMLDivElement>();
 
-const activeNodeTreeConKey = ref<string>();
+const editNodeList = ref(false);
 
 const activeConElementOffset = ref<{
   x: number;
@@ -87,12 +129,11 @@ const activeConElementOffset = ref<{
 const selectElement = ref(false);
 
 const activeConKey = computed(() => {
-  if (!activeNodeTreeConKey.value) {
-    return "";
-  }
-  return props.cons.find(con => {
-    return !!findConByKey([con], activeNodeTreeConKey.value!);
-  })?.key;
+  return (
+    props.cons.find(con => {
+      return !!findConByKey([con], props.activeNodeTreeConKey);
+    })?.key || ""
+  );
 });
 
 const activeCon = computed(() => {
@@ -100,22 +141,64 @@ const activeCon = computed(() => {
 });
 
 const activeNodeTreeCon = computed(() => {
-  if (!activeNodeTreeConKey.value) return undefined;
-  return findConByKey(props.cons, activeNodeTreeConKey.value);
+  return findConByKey(props.cons, props.activeNodeTreeConKey);
 });
+
+const handleEditNodeList = () => {
+  editNodeList.value = !editNodeList.value;
+};
+
+const handleMoveUpHtmlViewItem = (con: BaseCon) => {
+  const cons = [...props.cons];
+  const index = cons.findIndex(c => c.key === con.key);
+  if (index > 0) {
+    const temp = cons[index - 1];
+    cons[index - 1] = con;
+    cons[index] = temp;
+  }
+  emit("update:cons", cons);
+};
+
+const handleMoveDownHtmlViewItem = (con: BaseCon) => {
+  const cons = [...props.cons];
+  const index = cons.findIndex(c => c.key === con.key);
+  if (index < cons.length - 1) {
+    const temp = cons[index + 1];
+    cons[index + 1] = con;
+    cons[index] = temp;
+  }
+  emit("update:cons", cons);
+};
+
+const handleDeleteHtmlViewItem = (con: BaseCon) => {
+  ElMessageBox.alert("确定删除该节点吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  })
+    .then(() => {
+      emit(
+        "update:cons",
+        props.cons.filter(c => c.key !== con.key)
+      );
+    })
+    .catch(() => {
+      return;
+    });
+};
 
 const handleHtmlViewItemClick = (con: BaseCon) => {
   if (activeConKey.value !== con.key) {
-    activeNodeTreeConKey.value = con.key;
+    emit("update:activeNodeTreeConKey", con.key);
   }
 };
 
 const handleNodeTreeConClick = (con: BaseCon) => {
-  activeNodeTreeConKey.value = con.key;
+  emit("update:activeNodeTreeConKey", con.key);
 };
 
 const findNodeTreeConElement = () => {
-  const key = activeNodeTreeConKey.value;
+  const key = props.activeNodeTreeConKey;
   if (!key) return;
   activeConElementOffset.value = null;
   const element = document.querySelector(`[data-key="${key}"]`);
@@ -168,7 +251,7 @@ const handleHtmlViewMouseMove = (e: MouseEvent) => {
     parentCon.config.expansionChildrenNodeTree = true;
     parentCon = parentCon.parent?.();
   }
-  activeNodeTreeConKey.value = con.key;
+  emit("update:activeNodeTreeConKey", con.key);
 };
 const handleHtmlViewMousedown = (e: MouseEvent) => {
   e.preventDefault();
