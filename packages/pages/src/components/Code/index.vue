@@ -1,11 +1,11 @@
 <template>
   <div class="code-component">
-    <div class="code-list">
+    <div class="code-list-container">
       <div class="code-container" v-for="(line, index) in lineCode" :key="index">
         <span
           class="code-index"
           :style="{
-            width: lineCode.length.toString().length * 8 + 'px',
+            width: lineCode.length.toString().length * 8 + 'px'
           }"
         >
           {{ index }}
@@ -40,13 +40,13 @@ const handleCopyCode = (code: string) => {
     .then(() => {
       ElMessage({
         message: "复制成功",
-        type: "success",
+        type: "success"
       });
     })
     .catch(() => {
       ElMessage({
         message: "复制失败",
-        type: "error",
+        type: "error"
       });
     });
 };

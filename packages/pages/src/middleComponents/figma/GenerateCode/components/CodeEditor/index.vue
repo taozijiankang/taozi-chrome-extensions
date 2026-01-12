@@ -88,26 +88,40 @@
       <div class="controller-container">
         <Tabs v-model:value="editorActiveTab" :list="editorTabs" class="tabs" />
       </div>
-      <div class="content-container">
-        <!-- 属性编辑 -->
-        <template v-if="editorActiveTab === EditorTabType.Props">
-          <Render
-            :render="
-              activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
-                imageAssets: imageAssets
-              })
-            "
-          />
-        </template>
-        <!-- 代码 -->
-        <div class="codes" v-if="editorActiveTab === EditorTabType.Code">
-          <Code class="code" v-if="editorActiveConCode.html" :code="editorActiveConCode.html" :type="CodeType.Html" />
-          <Code class="code" v-if="editorActiveConCode.css" :code="editorActiveConCode.css" :type="CodeType.Css" />
-          <Code class="code" v-if="editorActiveConCode.js" :code="editorActiveConCode.js" :type="CodeType.Js" />
-        </div>
-        <!-- 资源列表 -->
-        <template v-if="editorActiveTab === EditorTabType.Assets"></template>
+      <!-- 属性编辑 -->
+      <div v-if="editorActiveTab === EditorTabType.Props" class="props-content-container">
+        <Render
+          :render="
+            activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
+              imageAssets: imageAssets
+            })
+          "
+        />
       </div>
+      <!-- 代码 -->
+      <div v-else-if="editorActiveTab === EditorTabType.Code" class="codes-content-container">
+        <div class="controller">
+          <ElForm labelSuffix=":" labelPosition="left">
+            <ElFormItem label="代码类型">
+              <ElSelect :model-value="codeType" @update:model-value="handleUpdateCodeType">
+                <ElOption
+                  v-for="item in ConGenCodeTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></ElOption>
+              </ElSelect>
+            </ElFormItem>
+          </ElForm>
+        </div>
+        <div class="code-list">
+          <Code v-if="editorActiveConCode.html" :code="editorActiveConCode.html" :type="CodeType.Html" />
+          <Code v-if="editorActiveConCode.css" :code="editorActiveConCode.css" :type="CodeType.Css" />
+          <Code v-if="editorActiveConCode.js" :code="editorActiveConCode.js" :type="CodeType.Js" />
+        </div>
+      </div>
+      <!-- 资源列表 -->
+      <div v-else-if="editorActiveTab === EditorTabType.Assets" class="assets-content-container"></div>
     </div>
   </div>
 </template>
@@ -116,24 +130,28 @@
 import { BaseCon } from "./controller";
 import { findConByKey, forEachCon } from "./utils";
 import Render from "@/components/Render/index.vue";
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { ElButton, ElMessageBox, ElEmpty } from "element-plus";
+import { computed, onMounted, onUnmounted, ref, toRef, watch } from "vue";
+import { ElButton, ElMessageBox, ElEmpty, ElForm, ElFormItem, ElSelect, ElOption } from "element-plus";
 import { Delete, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
 import { editorTabs, EditorTabType } from "./index";
 import Tabs from "../../../../../components/Tabs/index.vue";
 import { formatCode } from "../../../../../utils/prettier";
 import { CodeType } from "../../../../../components/Code";
 import Code from "../../../../../components/Code/index.vue";
+import { ConGenCodeType } from "./constants/enum";
+import { ConGenCodeTypeOptions } from "./constants";
 
 const props = defineProps<{
   cons: BaseCon[];
   imageAssets: string[];
   activeNodeTreeConKey: string;
+  codeType: ConGenCodeType;
 }>();
 
 const emit = defineEmits<{
   (e: "update:cons", cons: BaseCon[]): void;
   (e: "update:activeNodeTreeConKey", key: string): void;
+  (e: "update:codeType", key: ConGenCodeType): void;
 }>();
 
 const htmlViewRef = ref<HTMLDivElement>();
@@ -174,14 +192,21 @@ const activeNodeTreeCon = computed(() => {
   return findConByKey(props.cons, props.activeNodeTreeConKey);
 });
 
-watch([editorActiveTab, activeNodeTreeCon], async () => {
-  let { html = "", css = "", js = "" } = activeNodeTreeCon.value?.getCode() || {};
+watch([editorActiveTab, activeNodeTreeCon, toRef(props, "codeType")], async () => {
+  let {
+    html = "",
+    css = "",
+    js = ""
+  } = activeNodeTreeCon.value?.getCode({
+    type: props.codeType
+  }) || {};
 
   try {
     editorActiveConCode.value.loading = true;
-    html = await formatCode(html, "html");
-    css = await formatCode(css, "scss");
-    js = await formatCode(js, "typescript");
+
+    html = (await formatCode(html, "html")).trim();
+    css = (await formatCode(css, "scss")).trim();
+    js = (await formatCode(js, "typescript")).trim();
   } catch (error) {
     console.error("生成con code 错误", error);
   } finally {
@@ -192,6 +217,10 @@ watch([editorActiveTab, activeNodeTreeCon], async () => {
   editorActiveConCode.value.css = css;
   editorActiveConCode.value.js = js;
 });
+
+const handleUpdateCodeType = (value: ConGenCodeType) => {
+  emit("update:codeType", value);
+};
 
 const handleEditNodeList = () => {
   editNodeList.value = !editNodeList.value;

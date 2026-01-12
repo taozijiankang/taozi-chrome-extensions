@@ -1,7 +1,7 @@
 import type { VNode } from "vue";
 import { BaseCon, type BaseConConfig, type GetCodeOptions, type GetCodeReturn, type RenderEditorOptions } from "./_BaseCon";
 import ImageEditor from "../components/ImageEditor/index.vue";
-import { UniappImageModeType } from "../constants/enum";
+import { ConGenCodeType, UniappImageModeType } from "../constants/enum";
 import { kebabToCamelCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 
 export interface ImageConConfig extends BaseConConfig<"img"> {
@@ -53,18 +53,33 @@ export class ImageCon extends BaseCon<ImageConConfig> {
   }
 
   protected getCode_(options?: GetCodeOptions): GetCodeReturn {
+    const { type: codeType = ConGenCodeType.Default } = options || {};
+
     const style = this.style;
     const class_ = this.classNames.join(" ");
 
     const variableName = kebabToCamelCase(toValidVariableName(this.config.name), true);
 
-    let html = `<img class="${class_}" src="${this.config.src}" alt="${this.config.alt}" />`;
+    let html = "";
+
     let css = `
     ${style.selector}{
       ${style.value}
     }
     `;
     let js = "";
+
+    if (codeType === ConGenCodeType.Default) {
+      html = `<img class="${class_}" src="${this.config.src}" alt="${this.config.alt}" />`;
+    } else if (codeType === ConGenCodeType.VuePC) {
+      html = `<img class="${class_}" :src="${variableName}" alt="${this.config.alt}" />`;
+    } else if (codeType === ConGenCodeType.VueUni) {
+      html = `<image class="${class_}" mode="${this.config.uniappConfig.mode}" :src="${variableName}" alt="${this.config.alt}" />`;
+    }
+
+    if (codeType === ConGenCodeType.VuePC || codeType === ConGenCodeType.VueUni) {
+      js = `const ${variableName} = \`${this.config.src}\`;`;
+    }
 
     return {
       html,

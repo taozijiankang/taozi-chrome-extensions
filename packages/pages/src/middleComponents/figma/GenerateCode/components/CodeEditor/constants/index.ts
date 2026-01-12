@@ -1,4 +1,4 @@
-import { UniappImageModeType } from "./enum";
+import { ConGenCodeType, UniappImageModeType } from "./enum";
 
 export const UniappImageModeTypeOptions = [
   {
@@ -56,5 +56,20 @@ export const UniappImageModeTypeOptions = [
   {
     label: "不缩放图片，只显示图片的右下边区域",
     value: UniappImageModeType.BottomRight
+  }
+];
+
+export const ConGenCodeTypeOptions = [
+  {
+    label: "Default",
+    value: ConGenCodeType.Default
+  },
+  {
+    label: "Vue pc",
+    value: ConGenCodeType.VuePC
+  },
+  {
+    label: "Vue uniapp",
+    value: ConGenCodeType.VueUni
   }
 ];

@@ -5,8 +5,10 @@
       :cons="consForEditor"
       :imageAssets="imageAssets"
       :active-node-tree-con-key="activeNodeTreeConKey"
+      :codeType="codeType"
       @update:cons="handleUpdateCons"
       @update:active-node-tree-con-key="handleUpdateActiveNodeTreeConKey"
+      @update:codeType="handleUpdateCodeType"
     />
   </div>
 </template>
@@ -18,6 +20,7 @@ import { byFigmaAssetsGetCons } from "../utils/byFigmaAssetsGetCons";
 import { BaseCon } from "../GenerateCode/components/CodeEditor/controller";
 import CodeEditor from "../GenerateCode/components/CodeEditor/index.vue";
 import { cloneCons, exportConfigs } from "../GenerateCode/components/CodeEditor/utils";
+import { ConGenCodeType } from "../GenerateCode/components/CodeEditor/constants/enum";
 
 const testFigmaAssetsData = ref(testFigmaAssetsData_);
 
@@ -25,6 +28,8 @@ const cons = ref<BaseCon[]>([]);
 const imageAssets = ref<string[]>([]);
 
 const activeNodeTreeConKey = ref("");
+
+const codeType = ref(ConGenCodeType.Default);
 
 const consForEditor = computed(() => cons.value as BaseCon[]);
 
@@ -34,6 +39,10 @@ const handleUpdateCons = (cons_: BaseCon[]) => {
 
 const handleUpdateActiveNodeTreeConKey = (key: string) => {
   activeNodeTreeConKey.value = key;
+};
+
+const handleUpdateCodeType = (value: ConGenCodeType) => {
+  codeType.value = value;
 };
 
 onMounted(async () => {

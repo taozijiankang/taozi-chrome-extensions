@@ -139,7 +139,6 @@
     box-sizing: border-box;
     background-color: white;
     border-radius: 5px;
-    gap: 10px;
     min-width: 0;
 
     .controller-container {
@@ -161,23 +160,33 @@
         --padding: 8px 12px;
       }
     }
-    .content-container {
+    .props-content-container {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: auto;
       min-height: 0;
+      gap: 10px;
+      padding-top: 10px;
+    }
+    .codes-content-container {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 10px;
 
-      .codes {
+      .controller {
+        display: flex;
+        flex-direction: column;
+      }
+      .code-list {
         flex: 1;
         min-height: 0;
         display: flex;
         flex-direction: column;
-        gap: 10px;
-
-        .code {
-          overflow: initial;
-        }
+        overflow: auto;
       }
     }
   }

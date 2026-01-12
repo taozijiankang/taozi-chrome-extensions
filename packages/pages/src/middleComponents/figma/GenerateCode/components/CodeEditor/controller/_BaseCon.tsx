@@ -4,6 +4,7 @@ import CodeNode from "../components/CodeNode/index.vue";
 import ConBaseEditor from "../components/ConBaseEditor/index.vue";
 import ConStyleEditor from "../components/ConStyleEditor/index.vue";
 import { getKey } from "../utils";
+import type { ConGenCodeType } from "../constants/enum";
 
 export interface BaseConConfig<T extends string = string> {
   id: string;
@@ -32,7 +33,9 @@ export interface RenderEditorOptions {
   imageAssets: string[];
 }
 
-export interface GetCodeOptions {}
+export interface GetCodeOptions {
+  type: ConGenCodeType;
+}
 
 export interface GetCodeReturn {
   html: string;

@@ -1,6 +1,7 @@
 import type { VNode } from "vue";
 import { BaseCon, type BaseConConfig, type GetCodeOptions, type GetCodeReturn, type RenderEditorOptions } from "./_BaseCon";
 import TextEditor from "../components/TextEditor/index.vue";
+import { ConGenCodeType } from "../constants/enum";
 
 export interface SpanConConfig extends BaseConConfig<"span"> {
   text: string;
@@ -38,16 +39,29 @@ export class SpanCon extends BaseCon<SpanConConfig> {
   }
 
   protected getCode_(options?: GetCodeOptions): GetCodeReturn {
+    const { type: codeType = ConGenCodeType.Default } = options || {};
+
     const style = this.style;
 
     const class_ = this.classNames.join(" ");
 
-    let html = `<span class="${class_}">${this.config.text}</span>`;
+    let html = "";
+
     let css = `
     ${style.selector}{
       ${style.value}
     }
     `;
+
+    if (codeType === ConGenCodeType.Default || codeType === ConGenCodeType.VuePC) {
+      html = `<span class="${class_}">
+      ${this.config.text}
+    </span>`;
+    } else if (codeType === ConGenCodeType.VueUni) {
+      html = `<text class="${class_}">
+      ${this.config.text}
+    </text>`;
+    }
 
     return {
       html,

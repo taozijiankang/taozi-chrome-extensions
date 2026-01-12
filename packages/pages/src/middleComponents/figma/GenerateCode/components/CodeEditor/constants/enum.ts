@@ -31,3 +31,11 @@ export enum UniappImageModeType {
   /** 不缩放图片，只显示图片的右下边区域 */
   BottomRight = "bottomRight"
 }
+
+export enum ConGenCodeType {
+  Default = "default",
+  /** vue pc 端 */
+  VuePC = "vue-pc",
+  /** vue uniapp 端 */
+  VueUni = "vue-uni"
+}
