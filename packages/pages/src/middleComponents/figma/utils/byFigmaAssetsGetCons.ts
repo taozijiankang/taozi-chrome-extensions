@@ -51,5 +51,11 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
     return con;
   };
 
-  return getCon(htmlAst);
+  const con = getCon(htmlAst);
+
+  // 在根节点上添加图片资产
+  if (con) {
+    con.config.imageAssets = figmaAssetsReq.images.map(item => item.url);
+  }
+  return con;
 }

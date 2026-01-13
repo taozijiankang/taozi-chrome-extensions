@@ -5,7 +5,6 @@
       v-if="activeTab === TestTabType.CodeEditor"
       class="code-editor"
       :cons="consForEditor"
-      :imageAssets="imageAssets"
       :active-node-tree-con-key="activeNodeTreeConKey"
       :codeType="codeType"
       @update:cons="handleUpdateCons"
@@ -33,7 +32,6 @@ const activeTab = ref(TestTabType.CodeEditor);
 const testFigmaAssetsData = ref(testFigmaAssetsData_);
 
 const cons = ref<BaseCon[]>([]);
-const imageAssets = ref<string[]>([]);
 
 const activeNodeTreeConKey = ref("");
 
@@ -55,8 +53,6 @@ const handleUpdateCodeType = (value: ConGenCodeType) => {
 
 onMounted(async () => {
   const con = byFigmaAssetsGetCons(testFigmaAssetsData.value);
-
-  imageAssets.value = testFigmaAssetsData.value.images.map(item => item.url);
 
   if (con) {
     cons.value.push(con);

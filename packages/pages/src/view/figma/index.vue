@@ -51,16 +51,8 @@ onMounted(async () => {
       <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     </div>
     <div class="content-container">
-      <template v-if="activeTab === TabType.CodeGenerate">
-        <ContentCard title="Figma代码生成">
-          <FigmaGenerateCode />
-        </ContentCard>
-      </template>
-      <template v-if="activeTab === TabType.Config">
-        <ContentCard title="配置">
-          <FigmaConfig />
-        </ContentCard>
-      </template>
+      <FigmaGenerateCode v-if="activeTab === TabType.CodeGenerate" class="figma-generate-code" />
+      <FigmaConfig v-else-if="activeTab === TabType.Config" class="figma-config" />
     </div>
   </div>
 </template>

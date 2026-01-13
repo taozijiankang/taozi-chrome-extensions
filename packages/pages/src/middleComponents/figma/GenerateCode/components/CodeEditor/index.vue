@@ -98,14 +98,7 @@
       </div>
       <!-- 属性编辑 -->
       <div v-if="editorActiveTab === EditorTabType.Props" class="content-container props-content-container">
-        <Render
-          :render="
-            () =>
-              activeNodeTreeCon?.renderEditor({
-                imageAssets: imageAssets
-              }) || []
-          "
-        />
+        <Render :render="() => activeNodeTreeCon?.renderEditor() || []" />
       </div>
       <!-- 代码 -->
       <div v-else-if="editorActiveTab === EditorTabType.Code" class="content-container codes-content-container">
@@ -150,7 +143,6 @@ import { ConGenCodeTypeOptions } from "./constants";
 
 const props = defineProps<{
   cons: BaseCon[];
-  imageAssets: string[];
   activeNodeTreeConKey: string;
   codeType: ConGenCodeType;
 }>();

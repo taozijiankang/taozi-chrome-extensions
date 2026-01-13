@@ -15,6 +15,8 @@ export interface BaseConConfig<T extends string = string> {
     value: string;
     disabled?: boolean;
   }[];
+  /** 图片资产 */
+  imageAssets: string[];
   /** 自定义组件名称 */
   customComName: string;
   /** 禁用 */
@@ -29,9 +31,7 @@ export interface RenderNodeTreeOptions {
   click?: (con: BaseCon) => void;
 }
 
-export interface RenderEditorOptions {
-  imageAssets: string[];
-}
+export interface RenderEditorOptions {}
 
 export interface GetCodeOptions {
   type: ConGenCodeType;
@@ -59,7 +59,7 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
   private children_?: BaseCon[];
 
   constructor(config?: Partial<C>) {
-    const { id, tagName, name, styleProps, customComName, disabled, expansionChildrenNodeTree } = config ?? {};
+    const { id, tagName, name, styleProps, imageAssets, customComName, disabled, expansionChildrenNodeTree } = config ?? {};
     if (!tagName) {
       throw new Error("tagName is required");
     }
@@ -71,6 +71,7 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
       tagName,
       name: name ?? "",
       styleProps: styleProps ?? [],
+      imageAssets: imageAssets ?? [],
       customComName: customComName ?? "",
       disabled: disabled ?? false,
       expansionChildrenNodeTree: expansionChildrenNodeTree ?? false

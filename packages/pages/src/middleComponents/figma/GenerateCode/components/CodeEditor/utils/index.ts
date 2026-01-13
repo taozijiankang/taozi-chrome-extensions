@@ -27,6 +27,19 @@ export function findConByKey(cons: BaseCon[], key: string): BaseCon | undefined 
   return undefined;
 }
 
+export function findConById(cons: BaseCon[], id: string): BaseCon | undefined {
+  for (const con of cons) {
+    if (con.config.id === id) {
+      return con;
+    }
+    const found = findConById(con.children, id);
+    if (found) {
+      return found;
+    }
+  }
+  return undefined;
+}
+
 export function filterCons(cons: BaseCon[], filter: (con: BaseCon) => boolean): BaseCon[] {
   const result: BaseCon[] = [];
   for (const con of cons) {

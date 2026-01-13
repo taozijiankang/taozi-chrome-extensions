@@ -43,11 +43,16 @@ export class ImageCon extends BaseCon<ImageConConfig> {
   }
 
   protected getEditor(options?: RenderEditorOptions) {
-    const { imageAssets } = options ?? {};
     const editor = super.getEditor(options);
+    const getImageAssets = (con?: BaseCon): string[] => {
+      if (!con) {
+        return [];
+      }
+      return [...con.config.imageAssets, ...getImageAssets(con.parent?.())];
+    };
     editor.push({
       type: ImageEditorType.image,
-      component: <ImageEditor con={this} imageAssets={imageAssets || []} />
+      component: <ImageEditor con={this} imageAssets={getImageAssets(this)} />
     });
     return editor;
   }
