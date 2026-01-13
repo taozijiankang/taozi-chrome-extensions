@@ -82,7 +82,7 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
   }
 
   get searchKeyword(): string[] {
-    return [this.config.tagName];
+    return [this.config.tagName, this.config.name];
   }
 
   get mainClassName(): string {
