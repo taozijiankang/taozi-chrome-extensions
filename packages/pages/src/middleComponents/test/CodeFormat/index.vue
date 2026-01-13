@@ -1,6 +1,6 @@
 <template>
   <div class="code-format">
-    <Code :code="formattedJsCode" :type="CodeType.Vue" />
+    <Code :code="formattedJsCode" :type="CodeType.Ts" />
     <Code :code="formattedHtmlCode" :type="CodeType.Html" />
     <Code :code="formattedCssCode" :type="CodeType.Css" />
   </div>
@@ -13,6 +13,7 @@ import { onMounted, ref } from "vue";
 import { formatCode } from "../../../utils/prettier";
 
 const jsCode = ref(`
+const a = \`https://com-shuibei-peach-pharmacy.100cbc.com/rp/210304103256552626/26011311342061976120201240.png\`
   const a = 1;
   const b = 2;
   const c = a + b;
@@ -20,6 +21,7 @@ const jsCode = ref(`
 `);
 const htmlCode = ref(`
 <!DOCTYPE html>
+<img src="https://com-shuibei-peach-pharmacy.100cbc.com/rp/210304103256552626/26011311342061976120201240.png" alt="Random Image" />
 <html>
 <head>
 <meta charset="UTF-8">
@@ -28,6 +30,7 @@ const htmlCode = ref(`
 </head>
 <body>
   <div class="container">
+    <img src="https://com-shuibei-peach-pharmacy.100cbc.com/rp/210304103256552626/26011311342061976120201240.png" alt="Random Image" />
               <div class="item">Item 1</div>
               <div class="item">Item 2</div>
               <div class="item">Item 3</div>

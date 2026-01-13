@@ -126,7 +126,7 @@
         <div class="code-list">
           <Code v-if="editorActiveConCode.html" :code="editorActiveConCode.html" :type="CodeType.Html" />
           <Code v-if="editorActiveConCode.css" :code="editorActiveConCode.css" :type="CodeType.Css" />
-          <Code v-if="editorActiveConCode.js" :code="editorActiveConCode.js" :type="CodeType.Js" />
+          <Code v-if="editorActiveConCode.js" :code="editorActiveConCode.js" :type="CodeType.Ts" />
         </div>
       </div>
     </div>
