@@ -1,6 +1,8 @@
 <template>
   <div class="test">
+    <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <CodeEditor
+      v-if="activeTab === TestTabType.CodeEditor"
       class="code-editor"
       :cons="consForEditor"
       :imageAssets="imageAssets"
@@ -10,6 +12,7 @@
       @update:active-node-tree-con-key="handleUpdateActiveNodeTreeConKey"
       @update:codeType="handleUpdateCodeType"
     />
+    <CodeTest v-if="activeTab === TestTabType.CodeTest" />
   </div>
 </template>
 
@@ -21,6 +24,11 @@ import { BaseCon } from "../GenerateCode/components/CodeEditor/controller";
 import CodeEditor from "../GenerateCode/components/CodeEditor/index.vue";
 import { cloneCons, exportConfigs } from "../GenerateCode/components/CodeEditor/utils";
 import { ConGenCodeType } from "../GenerateCode/components/CodeEditor/constants/enum";
+import CodeTest from "./components/CodeTest/index.vue";
+import Tabs from "@/components/Tabs/index.vue";
+import { tabs, TestTabType } from ".";
+
+const activeTab = ref(TestTabType.CodeEditor);
 
 const testFigmaAssetsData = ref(testFigmaAssetsData_);
 
