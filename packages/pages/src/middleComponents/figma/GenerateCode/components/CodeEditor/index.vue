@@ -34,7 +34,7 @@
               ]"
               @click.stop="handleHtmlViewItemClick(con)"
             >
-              <Render :render="con.renderHtml.bind(con)" />
+              <Render :render="() => con.renderHtml()" />
             </div>
             <div v-if="editNodeList" class="controller">
               <!-- 上移 -->
@@ -63,25 +63,33 @@
         <ElEmpty v-else description="请添加节点" />
       </div>
     </div>
-    <div v-if="activeCon" class="code-node-tree-view">
+    <div class="code-node-tree-view">
       <div class="controller-container">
         <div class="select-element-icon-container" @click="handleSelectElement">
           <img v-if="selectElement" class="select-element-icon" src="@/assets/select-active.png" alt="" />
           <img v-else class="select-element-icon" src="@/assets/select.png" alt="" />
         </div>
+        <div class="right">
+          <ElInput v-model="codeNodeTreeSearchInput" clearable />
+        </div>
       </div>
       <div class="content-container">
-        <div class="content">
+        <div v-if="filterActiveCons.length > 0" class="content">
           <Render
             :render="
-              activeCon?.renderNodeTree.bind(activeCon, {
-                indent: 0,
-                activeConKey: activeNodeTreeConKey,
-                click: handleNodeTreeConClick
-              })
+              () => {
+                return filterActiveCons.map(item => {
+                  return item.renderNodeTree({
+                    indent: 0,
+                    activeConKey: activeNodeTreeConKey,
+                    click: handleNodeTreeConClick
+                  });
+                });
+              }
             "
           />
         </div>
+        <ElEmpty v-else />
       </div>
     </div>
     <div v-if="activeNodeTreeCon" class="con-editor-view">
@@ -92,9 +100,10 @@
       <div v-if="editorActiveTab === EditorTabType.Props" class="content-container props-content-container">
         <Render
           :render="
-            activeNodeTreeCon.renderEditor.bind(activeNodeTreeCon, {
-              imageAssets: imageAssets
-            })
+            () =>
+              activeNodeTreeCon?.renderEditor({
+                imageAssets: imageAssets
+              }) || []
           "
         />
       </div>
@@ -120,34 +129,17 @@
           <Code v-if="editorActiveConCode.js" :code="editorActiveConCode.js" :type="CodeType.Js" />
         </div>
       </div>
-      <!-- 资源列表 -->
-      <div v-else-if="editorActiveTab === EditorTabType.Assets" class="content-container assets-content-container">
-        <div v-if="activeConImageCons.length > 0" class="image-assets-list">
-          <div
-            class="image-assets-list-item"
-            :class="{
-              active: imageCon.key === activeNodeTreeConKey
-            }"
-            v-for="imageCon in activeConImageCons"
-            :key="imageCon.key"
-          >
-            <img :src="imageCon.config.src" :alt="imageCon.config.alt" />
-            <ElButton :icon="CopyDocument" circle @click="copyImageAssetSrc(imageCon)"></ElButton>
-          </div>
-        </div>
-        <ElEmpty v-else description="暂无资源" />
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BaseCon, type ImageCon } from "./controller";
-import { filterCons, findConByKey, forEachCon, isImageCon } from "./utils";
+import { BaseCon } from "./controller";
+import { filterCons, findConByKey, forEachCon } from "./utils";
 import Render from "@/components/Render/index.vue";
 import { computed, onMounted, onUnmounted, ref, toRef, watch } from "vue";
-import { ElButton, ElMessageBox, ElEmpty, ElForm, ElFormItem, ElSelect, ElOption, ElMessage } from "element-plus";
-import { Delete, ArrowUp, ArrowDown, CopyDocument } from "@element-plus/icons-vue";
+import { ElButton, ElMessageBox, ElEmpty, ElForm, ElFormItem, ElSelect, ElOption, ElInput } from "element-plus";
+import { Delete, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
 import { editorTabs, EditorTabType } from "./index";
 import Tabs from "../../../../../components/Tabs/index.vue";
 import { formatCode } from "../../../../../utils/prettier";
@@ -182,6 +174,8 @@ const activeConElementOffset = ref<{
 
 const selectElement = ref(false);
 
+const codeNodeTreeSearchInput = ref("");
+
 const editorActiveTab = ref(EditorTabType.Props);
 
 const editorActiveConCode = ref({
@@ -203,12 +197,17 @@ const activeCon = computed(() => {
   return props.cons.find(con => con.key === activeConKey.value);
 });
 
-const activeNodeTreeCon = computed(() => {
-  return findConByKey(props.cons, props.activeNodeTreeConKey);
+const filterActiveCons = computed(() => {
+  if (!codeNodeTreeSearchInput.value) {
+    return [activeCon.value].filter(Boolean) as BaseCon[];
+  }
+  return filterCons([activeCon.value].filter(Boolean) as BaseCon[], item => {
+    return item.searchKeyword.some(item => item.includes(codeNodeTreeSearchInput.value));
+  });
 });
 
-const activeConImageCons = computed(() => {
-  return filterCons([activeNodeTreeCon.value].filter(Boolean) as BaseCon[], con => isImageCon(con)) as ImageCon[];
+const activeNodeTreeCon = computed(() => {
+  return findConByKey(props.cons, props.activeNodeTreeConKey);
 });
 
 watch([editorActiveTab, activeNodeTreeCon, toRef(props, "codeType")], async () => {
@@ -292,23 +291,6 @@ const handleHtmlViewItemClick = (con: BaseCon) => {
 
 const handleNodeTreeConClick = (con: BaseCon) => {
   emit("update:activeNodeTreeConKey", con.key);
-};
-
-const copyImageAssetSrc = (imageCon: ImageCon) => {
-  navigator.clipboard
-    .writeText(imageCon.config.src)
-    .then(() => {
-      ElMessage({
-        message: "复制成功",
-        type: "success"
-      });
-    })
-    .catch(() => {
-      ElMessage({
-        message: "复制失败",
-        type: "error"
-      });
-    });
 };
 
 const findNodeTreeConElement = () => {

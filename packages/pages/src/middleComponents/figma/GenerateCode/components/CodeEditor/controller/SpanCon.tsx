@@ -21,6 +21,10 @@ export class SpanCon extends BaseCon<SpanConConfig> {
     this.config.text = text ?? "";
   }
 
+  get searchKeyword() {
+    return [...super.searchKeyword, this.config.text];
+  }
+
   protected getHtml(): VNode {
     return (
       <span class={this.classNames.join(" ")} style={this.lineStyle} data-key={this.key}>

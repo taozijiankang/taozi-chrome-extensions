@@ -2,8 +2,7 @@ import type { TabItem } from "@/components/Tabs";
 
 export enum EditorTabType {
   Props = "props",
-  Code = "Code",
-  Assets = "assets"
+  Code = "code"
 }
 
 export const editorTabs: TabItem[] = [
@@ -14,9 +13,5 @@ export const editorTabs: TabItem[] = [
   {
     label: "代码",
     value: EditorTabType.Code
-  },
-  {
-    label: "资源",
-    value: EditorTabType.Assets
   }
 ];

@@ -81,6 +81,10 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
     return this._key;
   }
 
+  get searchKeyword(): string[] {
+    return [this.config.tagName];
+  }
+
   get mainClassName(): string {
     /**
      * 将 name 转换为 kebab-case 格式

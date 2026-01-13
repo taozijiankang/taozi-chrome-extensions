@@ -2,7 +2,7 @@
 import { type VNode } from "vue";
 
 const props = defineProps<{
-  render: () => VNode;
+  render: () => VNode | VNode[];
 }>();
 
 const RenderComponent = () => props.render();
