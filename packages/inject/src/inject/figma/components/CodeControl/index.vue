@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ElButton, ElAlert } from "element-plus";
+import { ElButton, ElAlert, ElMessage } from "element-plus";
 import { getBaseCodes } from "../../elController";
 import { figmaAssetsBackgroundForwardingMessage, openPageMessage } from "@taozi-chrome-extensions/common/src/message";
 import { Page } from "@taozi-chrome-extensions/common/src/constant/page";
@@ -48,6 +48,8 @@ const sendNodeInfoToConsole = async () => {
       sendNodeInfoErrorAlert.value = res.msg || "发送到控制台失败";
       return;
     }
+
+    ElMessage.success("发送到控制台成功");
 
     sendNodeInfoErrorAlert.value = null;
   } catch (error) {

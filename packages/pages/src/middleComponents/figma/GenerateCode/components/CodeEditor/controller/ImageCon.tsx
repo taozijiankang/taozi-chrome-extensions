@@ -4,7 +4,11 @@ import ImageEditor from "../components/ImageEditor/index.vue";
 import { ConGenCodeType, UniappImageModeType } from "../constants/enum";
 import { kebabToCamelCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
 
-export interface ImageConConfig extends BaseConConfig<"img"> {
+export enum ImageTagName {
+  img = "img"
+}
+
+export interface ImageConConfig extends BaseConConfig<ImageTagName> {
   src: string;
   alt: string;
   uniappConfig: {
@@ -17,10 +21,8 @@ export enum ImageEditorType {
 }
 
 export class ImageCon extends BaseCon<ImageConConfig> {
-  static tagName = "img" as const;
-
   constructor(config?: Partial<Omit<ImageConConfig, "tagName">>) {
-    super({ ...config, tagName: ImageCon.tagName });
+    super({ ...config, tagName: ImageTagName.img });
 
     const { src, alt, uniappConfig } = config ?? {};
     this.config.src = src ?? "";

@@ -1,5 +1,5 @@
-import type { BaseCon, BaseConConfig } from "../controller";
-import { DivCon, ImageCon, SpanCon } from "../controller";
+import type { BaseCon, BaseConConfig, TextTagName } from "../controller";
+import { DivCon, DivTagName, ImageCon, ImageTagName, TextCon, textTagNameList } from "../controller";
 
 export interface ExportConfig {
   config: BaseConConfig;
@@ -19,12 +19,12 @@ export function importConfigs(configs: ExportConfig[]): BaseCon[] {
   return configs
     .map(config => {
       let con: BaseCon | undefined;
-      if (config.config.tagName === DivCon.tagName) {
+      if (config.config.tagName === DivTagName.div) {
         con = new DivCon(config.config);
-      } else if (config.config.tagName === ImageCon.tagName) {
+      } else if (config.config.tagName === ImageTagName.img) {
         con = new ImageCon(config.config);
-      } else if (config.config.tagName === SpanCon.tagName) {
-        con = new SpanCon(config.config);
+      } else if (textTagNameList.includes(config.config.tagName as TextTagName)) {
+        con = new TextCon(config.config.tagName as TextTagName, config.config);
       } else {
         console.warn(`Unsupported tag name: ${config.config.tagName}`);
         return undefined;

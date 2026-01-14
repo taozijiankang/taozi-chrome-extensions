@@ -49,8 +49,6 @@ export enum EditorType {
 }
 
 export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
-  static tagName = "";
-
   readonly config: C;
 
   private _key: string;

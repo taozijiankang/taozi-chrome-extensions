@@ -9,10 +9,10 @@
 <script setup lang="ts">
 import ContentCard from "@/components/ContentCard/index.vue";
 import { ElInput } from "element-plus";
-import { SpanCon } from "../../controller";
+import { TextCon } from "../../controller";
 
 defineProps<{
-  con: SpanCon;
+  con: TextCon;
 }>();
 </script>
 

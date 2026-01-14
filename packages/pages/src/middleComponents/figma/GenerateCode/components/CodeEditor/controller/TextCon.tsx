@@ -3,7 +3,29 @@ import { BaseCon, type BaseConConfig, type GetCodeOptions, type GetCodeReturn, t
 import TextEditor from "../components/TextEditor/index.vue";
 import { ConGenCodeType } from "../constants/enum";
 
-export interface SpanConConfig extends BaseConConfig<"span"> {
+export enum TextTagName {
+  span = "span",
+  b = "b",
+  h1 = "h1",
+  h2 = "h2",
+  h3 = "h3",
+  h4 = "h4",
+  h5 = "h5",
+  h6 = "h6"
+}
+
+export const textTagNameList = [
+  TextTagName.span,
+  TextTagName.b,
+  TextTagName.h1,
+  TextTagName.h2,
+  TextTagName.h3,
+  TextTagName.h4,
+  TextTagName.h5,
+  TextTagName.h6
+];
+
+export interface TextConConfig extends BaseConConfig<TextTagName> {
   text: string;
 }
 
@@ -11,11 +33,9 @@ export enum SpanEditorType {
   text = "text"
 }
 
-export class SpanCon extends BaseCon<SpanConConfig> {
-  static tagName = "span" as const;
-
-  constructor(config?: Partial<Omit<SpanConConfig, "tagName">>) {
-    super({ ...config, tagName: SpanCon.tagName });
+export class TextCon extends BaseCon<TextConConfig> {
+  constructor(tagName: TextTagName, config?: Partial<Omit<TextConConfig, "tagName">>) {
+    super({ ...config, tagName });
 
     const { text } = config ?? {};
     this.config.text = text ?? "";
@@ -26,10 +46,11 @@ export class SpanCon extends BaseCon<SpanConConfig> {
   }
 
   protected getHtml(): VNode {
+    const Tag = this.config.tagName;
     return (
-      <span class={this.classNames.join(" ")} style={this.lineStyle} data-key={this.key}>
+      <Tag class={this.classNames.join(" ")} style={this.lineStyle} data-key={this.key}>
         {this.config.text}
-      </span>
+      </Tag>
     );
   }
 
@@ -57,10 +78,11 @@ export class SpanCon extends BaseCon<SpanConConfig> {
     }
     `;
 
+    const tagName = this.config.tagName;
     if (codeType === ConGenCodeType.Default || codeType === ConGenCodeType.VuePC) {
-      html = `<span class="${class_}">
+      html = `<${tagName} class="${class_}">
       ${this.config.text}
-    </span>`;
+    </${tagName}>`;
     } else if (codeType === ConGenCodeType.VueUni) {
       html = `<text class="${class_}">
       ${this.config.text}

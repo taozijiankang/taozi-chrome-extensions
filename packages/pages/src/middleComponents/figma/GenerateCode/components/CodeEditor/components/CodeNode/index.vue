@@ -64,7 +64,7 @@
       </div>
     </template>
     <!-- 文字 -->
-    <template v-else-if="isSpanCon(con)">
+    <template v-else-if="isTextCon(con)">
       <div
         class="code-node-tag span-tag"
         :style="{
@@ -122,7 +122,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { BaseCon } from "../../controller";
-import { isDivCon, isImageCon, isSpanCon } from "../../utils";
+import { isDivCon, isImageCon, isTextCon } from "../../utils";
 import Color from "./components/Color/index.vue";
 
 const Retract = 16;

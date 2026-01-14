@@ -1,7 +1,14 @@
 import type { FigmaAssetsExtendReq } from "@taozi-chrome-extensions/common/src/message";
 import { parseHtmlCss } from "./parseHtmlCss";
 import type { DefaultTreeAdapterTypes } from "parse5";
-import { DivCon, ImageCon, SpanCon, type BaseCon } from "../GenerateCode/components/CodeEditor/controller";
+import {
+  DivCon,
+  ImageCon,
+  TextCon,
+  TextTagName,
+  textTagNameList,
+  type BaseCon
+} from "../GenerateCode/components/CodeEditor/controller";
 import { ifElementNode, ifTextNode } from "@/utils/html";
 
 export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): BaseCon | undefined {
@@ -16,7 +23,7 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
     let con: BaseCon | undefined;
 
     if (ifElementNode(htmlAst)) {
-      if (htmlAst.tagName === "div" || htmlAst.tagName === "b") {
+      if (htmlAst.tagName === "div") {
         const childNodes = htmlAst.childNodes.filter(item => {
           // 过滤掉空文本节点
           if (ifTextNode(item)) {
@@ -26,7 +33,7 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
         });
         // 如果只有一个文本节点，则直接返回文本节点
         if (childNodes.length === 1 && ifTextNode(childNodes[0])) {
-          con = new SpanCon({
+          con = new TextCon(TextTagName.span, {
             name: className,
             styleProps: styleDeclarations,
             text: childNodes[0].value
@@ -45,6 +52,24 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
           src: htmlAst.attrs.find(attr => attr.name === "src")?.value || "",
           alt: htmlAst.attrs.find(attr => attr.name === "alt")?.value || ""
         });
+      }
+      // 文本节点
+      else if (textTagNameList.includes(htmlAst.tagName as TextTagName)) {
+        const childNodes = htmlAst.childNodes.filter(item => {
+          // 过滤掉空文本节点
+          if (ifTextNode(item)) {
+            return Boolean(item.value.trim());
+          }
+          return true;
+        });
+        // 如果所有子节点都是文本节点
+        if (childNodes.every(item => ifTextNode(item))) {
+          con = new TextCon(htmlAst.tagName as TextTagName, {
+            name: className,
+            styleProps: styleDeclarations,
+            text: childNodes.map(item => item.value).join("")
+          });
+        }
       }
     }
 

@@ -54,7 +54,7 @@ const newVersion = computed(() => {
   return null;
 });
 
-const handleGetLatestReleaseVersionList = async () => {
+const handleGetLatestReleaseVersionList = async (): Promise<void> => {
   try {
     loading.value = true;
 
