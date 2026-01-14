@@ -13,13 +13,13 @@ export interface ChatMessage {
 }
 
 /**
- * AI 助手本地存储
+ * Agent 本地存储
  */
-export interface AIAssistantLocalStorage {
+export interface AgentLocalStorage {
   /** 聊天记录列表 */
   chatMessages?: ChatMessage[];
 }
 
-export const aiAssistantLocalStorage = useLocalStorage<string, AIAssistantLocalStorage>("ai-assistant-local-storage", {
+export const agentLocalStorage = useLocalStorage<string, AgentLocalStorage>("agent-local-storage", {
   chatMessages: []
 });

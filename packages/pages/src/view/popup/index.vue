@@ -18,10 +18,9 @@ import ContentCard from "../../components/ContentCard/index.vue";
 import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
 import type { TabItem } from "../../components/Tabs/index";
 import OpenAIConfig from "../../middleComponents/OpenAIConfig/index.vue";
-import AIAssistant from "../../middleComponents/AIAssistant/index.vue";
 
 enum TabType {
-  AIAssistant = "AIAssistant",
+  Agent = "Agent",
   GenVarName = "GenVarName",
   MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
@@ -32,11 +31,16 @@ enum TabType {
 
 const messageAlerts = ref<MessageAlertItem[]>([]);
 
+const handleOpenAgentPage = async () => {
+  await openPage(Page.Agent);
+};
+
 const tabs = computed<TabItem[]>(() => {
   return [
     {
-      label: "AI助手",
-      value: TabType.AIAssistant
+      label: "Agent",
+      value: TabType.Agent,
+      click: handleOpenAgentPage
     },
     {
       label: "生成变量名",
@@ -66,7 +70,7 @@ const tabs = computed<TabItem[]>(() => {
     }
   ];
 });
-const activeTab = ref(TabType.AIAssistant);
+const activeTab = ref(TabType.Agent);
 
 watch(activeTab, () => {
   configLocalStorage.edit(v => {
@@ -87,7 +91,9 @@ const handleOpenFigmaPage = async () => {
 
 onMounted(async () => {
   const { popupActiveTab } = (await configLocalStorage.get()) || {};
-  activeTab.value = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
+  const targetTab = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
+  // 如果保存的 tab 是 Agent，则默认显示 GenVarName
+  activeTab.value = targetTab === TabType.Agent ? TabType.GenVarName : targetTab;
 
   getMessageAlerts();
   getMessageAlertsTimer.value = setInterval(getMessageAlerts, 300);
@@ -107,11 +113,6 @@ onUnmounted(() => {
     </div>
     <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <div class="content-container">
-      <template v-if="activeTab === TabType.AIAssistant">
-        <ContentCard>
-          <AIAssistant />
-        </ContentCard>
-      </template>
       <template v-if="activeTab === TabType.GenVarName">
         <ContentCard>
           <GenVarName />

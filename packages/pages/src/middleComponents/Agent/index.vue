@@ -1,9 +1,9 @@
 <template>
-  <div class="ai-assistant">
+  <div class="agent">
     <!-- 聊天消息列表 -->
     <div class="chat-messages" ref="messagesContainerRef">
       <div v-if="chatMessages.length === 0" class="empty-state">
-        <p>开始与 AI 助手对话吧～</p>
+        <p>开始与 Agent 对话吧～</p>
       </div>
       <div v-for="(message, index) in chatMessages" :key="index" class="message-item" :class="message.role">
         <div class="message-avatar">
@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, watch } from "vue";
 import { ElInput, ElButton, ElMessage } from "element-plus";
-import { aiAssistantLocalStorage, type ChatMessage } from "@taozi-chrome-extensions/common/src/local";
+import { agentLocalStorage, type ChatMessage } from "@taozi-chrome-extensions/common/src/local";
 import { requestOpenAIChatCompletionMessage } from "@taozi-chrome-extensions/common/src/message";
 import type { OpenAi } from "@taozi-chrome-extensions/common/src/type/modules/openAi";
 
@@ -85,14 +85,14 @@ const scrollToBottom = async () => {
 
 // 加载聊天记录
 const loadChatMessages = async () => {
-  const data = await aiAssistantLocalStorage.get();
+  const data = await agentLocalStorage.get();
   chatMessages.value = data?.chatMessages || [];
   await scrollToBottom();
 };
 
 // 保存聊天记录
 const saveChatMessages = () => {
-  aiAssistantLocalStorage.edit(v => {
+  agentLocalStorage.edit(v => {
     v.chatMessages = JSON.parse(JSON.stringify(chatMessages.value));
   });
 };

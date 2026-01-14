@@ -60,7 +60,7 @@ export async function requestOpenAIChatCompletion(
  * 简化的聊天接口，直接发送消息并获取回复
  * @param messages 消息列表
  * @param options 可选配置
- * @returns 助手回复的消息内容
+ * @returns Agent 回复的消息内容
  */
 export async function requestOpenAIChat(
   messages: OpenAi.Api.OpenAIMessage[],
