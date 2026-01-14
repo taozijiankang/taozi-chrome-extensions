@@ -16,7 +16,7 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
     let con: BaseCon | undefined;
 
     if (ifElementNode(htmlAst)) {
-      if (htmlAst.tagName === "div") {
+      if (htmlAst.tagName === "div" || htmlAst.tagName === "b") {
         const childNodes = htmlAst.childNodes.filter(item => {
           // 过滤掉空文本节点
           if (ifTextNode(item)) {

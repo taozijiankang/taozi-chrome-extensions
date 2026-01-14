@@ -64,7 +64,7 @@ const figmaAssetsListener: Parameters<typeof figmaAssetsMessage.addListener>[0] 
     if (req) {
       const con = byFigmaAssetsGetCons(req);
       if (con) {
-        cons.value.push(con);
+        cons.value.unshift(con);
       }
     }
     return {

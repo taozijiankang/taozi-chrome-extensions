@@ -2,6 +2,7 @@ import { Page, PageUrlMap } from "@taozi-chrome-extensions/common/src/constant/p
 import { figmaAssetsBackgroundForwardingMessage, figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message";
 import { requestFigmaImages, requestFigmaNodeInfo } from "../api";
 import type { Figma } from "@taozi-chrome-extensions/common/src/type/modules/figma";
+import { requestUploadAsset } from "../api";
 
 export function startFigmaServer() {
   figmaAssetsBackgroundForwardingMessage.addListener(req => {
@@ -25,10 +26,18 @@ export function startFigmaServer() {
             };
           }
           const nodeInfo = await requestFigmaNodeInfo({ fileKey: req.fileKey, nodeId: req.nodeId });
-          const imageIds: string[] = [];
+          const imageNodes: {
+            id: string;
+            width: number;
+            height: number;
+          }[] = [];
           const f = (item: Figma.Api.NodeInfo) => {
             if (item.exportSettings?.some(item => item.format === "PNG") || item.fills.some(item => item.type === "IMAGE")) {
-              imageIds.push(item.id);
+              imageNodes.push({
+                id: item.id,
+                width: item.absoluteRenderBounds.width,
+                height: item.absoluteRenderBounds.height
+              });
               return;
             }
             item.children?.forEach(child => {
@@ -37,10 +46,10 @@ export function startFigmaServer() {
           };
           f(nodeInfo);
           const images: Figma.Api.Images[] = [];
-          if (imageIds.length > 0) {
+          if (imageNodes.length > 0) {
             const imagesData = await requestFigmaImages({
               fileKey: req.fileKey,
-              nodeIds: imageIds,
+              nodeIds: imageNodes.map(item => item.id),
               scale: 4,
               format: "png"
             });
@@ -49,7 +58,20 @@ export function startFigmaServer() {
           const res = await figmaAssetsMessage.sendTabMessage(figmaControlTab.id, {
             ...req,
             nodeInfo,
-            images
+            images: await Promise.all(
+              images.map(async image => {
+                const remoteUrl = await requestUploadAsset({
+                  src: image.url,
+                  isCompressed: false,
+                  width: imageNodes.find(item => item.id === image.key.replace(":", "-"))?.width || 0,
+                  height: imageNodes.find(item => item.id === image.key.replace(":", "-"))?.height || 0
+                });
+                return {
+                  key: image.key,
+                  url: remoteUrl
+                } as Figma.Api.Images;
+              })
+            )
           });
           return res;
         }
