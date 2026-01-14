@@ -17,8 +17,11 @@ import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
 import ContentCard from "../../components/ContentCard/index.vue";
 import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
 import type { TabItem } from "../../components/Tabs/index";
+import OpenAIConfig from "../../middleComponents/OpenAIConfig/index.vue";
+import AIAssistant from "../../middleComponents/AIAssistant/index.vue";
 
 enum TabType {
+  AIAssistant = "AIAssistant",
   GenVarName = "GenVarName",
   MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
@@ -31,6 +34,10 @@ const messageAlerts = ref<MessageAlertItem[]>([]);
 
 const tabs = computed<TabItem[]>(() => {
   return [
+    {
+      label: "AI助手",
+      value: TabType.AIAssistant
+    },
     {
       label: "生成变量名",
       value: TabType.GenVarName
@@ -59,7 +66,7 @@ const tabs = computed<TabItem[]>(() => {
     }
   ];
 });
-const activeTab = ref(TabType.GenVarName);
+const activeTab = ref(TabType.AIAssistant);
 
 watch(activeTab, () => {
   configLocalStorage.edit(v => {
@@ -100,6 +107,11 @@ onUnmounted(() => {
     </div>
     <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
     <div class="content-container">
+      <template v-if="activeTab === TabType.AIAssistant">
+        <ContentCard>
+          <AIAssistant />
+        </ContentCard>
+      </template>
       <template v-if="activeTab === TabType.GenVarName">
         <ContentCard>
           <GenVarName />
@@ -127,6 +139,9 @@ onUnmounted(() => {
       <template v-else-if="activeTab === TabType.Config">
         <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
+        </ContentCard>
+        <ContentCard title="OpenAI API配置">
+          <OpenAIConfig />
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">
