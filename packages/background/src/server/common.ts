@@ -1,5 +1,5 @@
 import { requestReleaseVersionListMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestLatestReleaseVersionList } from "@/api";
+import { requestLatestReleaseVersionList } from "@taozi-chrome-extensions/common/src/api/modules/github";
 
 export function startCommonServer() {
   requestReleaseVersionListMessage.addListener(() => {

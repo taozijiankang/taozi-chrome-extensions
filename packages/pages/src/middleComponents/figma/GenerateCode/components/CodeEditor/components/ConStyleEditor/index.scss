@@ -1,0 +1,16 @@
+.con-style-editor {
+  display: flex;
+  flex-direction: column;
+
+  .con-style-editor-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .con-style-editor-content-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  }
+}

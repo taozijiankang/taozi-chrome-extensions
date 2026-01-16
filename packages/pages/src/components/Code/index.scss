@@ -1,63 +1,270 @@
 .code-component {
-  border-radius: 6px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.04);
-  cursor: text;
-  padding: 6px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 12px;
   box-sizing: border-box;
   width: 100%;
-  gap: 6px;
   display: flex;
   align-items: flex-start;
+  position: relative;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Fira Mono", "Droid Sans Mono", "Source Code Pro", "Consolas",
+    "Menlo", "Liberation Mono", "Courier New", monospace;
+  transition: all 0.2s ease;
 
-  .code-list {
-    line-height: 1.5;
-    font-size: 12px;
+  &:hover {
+    border-color: #dee2e6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .code-list-container {
+    cursor: text;
+    overflow-x: auto;
+    overflow-y: visible;
+    line-height: 1.6;
+    font-size: 13px;
     margin: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
     min-width: 0;
-    .code-container {
-      display: flex;
-      align-items: start;
-      .code-index {
-        display: inline-block;
-        color: #00000080;
-        flex-shrink: 0;
-        margin-right: 6px;
-        user-select: none;
+    padding-right: 12px;
+
+    &::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f3f5;
+      border-radius: 5px;
+      margin: 2px 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #adb5bd;
+      border-radius: 5px;
+      min-height: 20px;
+      cursor: pointer;
+
+      &:hover {
+        background: #868e96;
       }
-      .code-content {
-        white-space: pre-wrap;
-        word-break: break-all;
-        font-family: Consolas;
-        min-height: 0;
-        flex: 1;
+
+      &:active {
+        background: #495057;
+      }
+    }
+
+    // Firefox 滚动条样式
+    scrollbar-width: thin;
+    scrollbar-color: #adb5bd #f1f3f5;
+
+    .code-line {
+      display: flex;
+      align-items: flex-start;
+      width: max-content;
+      min-width: calc(100% - 12px);
+      padding: 2px 0;
+      transition: background-color 0.15s ease;
+      border-radius: 4px;
+      position: relative;
+
+      &.line-hover {
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+
+      .line-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        color: #6c757d;
+        flex-shrink: 0;
+        margin-right: 16px;
+        user-select: none;
+        font-size: 12px;
+        font-weight: 500;
+        padding-right: 8px;
+        border-right: 1px solid #e9ecef;
+        transition: color 0.15s ease;
+        cursor: pointer;
+
         &:hover {
-          background-color: rgba(0, 0, 0, 0.08);
+          color: #495057;
+        }
+      }
+
+      .line-image {
+        position: absolute;
+        left: calc(var(--line-number-width, 40px) + 2px);
+        top: 50%;
+        transform: translateY(-50%);
+        width: calc(1.6em - 4px);
+        height: calc(1.6em - 4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        background: #f8f9fa;
+        z-index: 1;
+        pointer-events: none;
+
+        img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          display: block;
+        }
+      }
+
+      .code-content {
+        white-space: pre;
+        word-break: normal;
+        overflow-wrap: normal;
+        flex: 1;
+        display: inline-block;
+        color: #212529;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        // Token 样式
+        .token {
+          display: inline;
+        }
+
+        .token-keyword {
+          color: #0066cc;
+          font-weight: 600;
+        }
+
+        .token-string {
+          color: #008000;
+        }
+
+        .token-number {
+          color: #098658;
+          font-weight: 500;
+        }
+
+        .token-comment {
+          color: #6a737d;
+          font-style: italic;
+        }
+
+        .token-color {
+          font-weight: 500;
+        }
+
+        .token-property {
+          color: #795e26;
+        }
+
+        .token-function {
+          color: #8250df;
+        }
+
+        .token-variable {
+          color: #953800;
+        }
+
+        .token-operator {
+          color: #212529;
+        }
+
+        .token-text {
+          color: inherit;
+        }
+
+        .token-tag {
+          color: #e23e57;
+          font-weight: 600;
+        }
+
+        .token-attribute {
+          color: #6f42c1;
+          font-weight: 500;
+        }
+
+        .token-operator {
+          color: #586069;
+          font-weight: 500;
         }
       }
     }
   }
-  .con {
+
+  .code-actions {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    .button,
-    .type {
-      line-height: 1;
-      white-space: nowrap;
-      writing-mode: vertical-rl;
-      font-family: emoji;
+    gap: 8px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: white;
+    padding: 4px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    z-index: 10;
+
+    .code-type {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6c757d;
+      text-align: center;
+      padding: 4px 8px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    .button {
-      padding: 3px;
-      background-color: white;
-      border-radius: 3px;
+
+    .copy-button {
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
+      border: 1px solid #dee2e6;
+      background: white;
+      color: #495057;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      min-width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       &:hover {
-        color: #0064ff;
+        background: #0064ff;
+        color: white;
+        border-color: #0064ff;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 100, 255, 0.2);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &.copy-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+
+        &:hover {
+          background: #218838;
+          border-color: #218838;
+        }
       }
     }
   }

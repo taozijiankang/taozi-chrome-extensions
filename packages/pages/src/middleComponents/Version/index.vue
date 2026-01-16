@@ -43,9 +43,9 @@ const onVersion = chrome.runtime.getManifest().version;
 
 const loading = ref(false);
 
-const latestReleaseVersionList = ref<Github.ReleaseVersion[]>([]);
+const latestReleaseVersionList = ref<Github.Api.ReleaseVersion[]>([]);
 
-const newVersionList = ref<Github.ReleaseVersion[]>([]);
+const newVersionList = ref<Github.Api.ReleaseVersion[]>([]);
 
 const newVersion = computed(() => {
   if (newVersionList.value.length > 0) {
@@ -54,7 +54,7 @@ const newVersion = computed(() => {
   return null;
 });
 
-const handleGetLatestReleaseVersionList = async () => {
+const handleGetLatestReleaseVersionList = async (): Promise<void> => {
   try {
     loading.value = true;
 

@@ -1,5 +1,5 @@
 import { wait } from "@taozi-chrome-extensions/common/src/utils/global";
-import type { BaseCode } from "./types";
+import type { Figma } from "@taozi-chrome-extensions/common/src/type/modules/figma";
 
 /**
  * 获取 figma 画布元素
@@ -74,7 +74,7 @@ export async function getBaseCodes() {
   await wait(100);
 
   // 获取内容
-  return codeContainerEls.map<BaseCode>(codeContainerEl => {
+  return codeContainerEls.map<Figma.BaseCode>(codeContainerEl => {
     const title =
       codeContainerEl.querySelector<HTMLHeadElement>('h3[data-testid="devHandoffFocusPanelTitle"]')?.textContent || "";
     const codeEl = codeContainerEl.querySelector<HTMLElement>('code[class*="code_panel--generatedCode--"]');
@@ -82,7 +82,7 @@ export async function getBaseCodes() {
     const lang = codeEl?.dataset?.["lang"] || "";
     return {
       title,
-      lang,
+      lang: lang as "html" | "css",
       content
     };
   });
