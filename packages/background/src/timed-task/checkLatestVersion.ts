@@ -1,4 +1,4 @@
-import { requestLatestReleaseVersionList } from "@/api";
+import { requestLatestReleaseVersionList } from "@taozi-chrome-extensions/common/src/api/modules/github";
 import semver from "semver";
 import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 

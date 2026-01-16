@@ -1,5 +1,5 @@
-import { md5 } from "@taozi-chrome-extensions/common/src/utils/md5";
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
+import { md5 } from "../../utils/md5";
+import { configLocalStorage } from "../../local";
 
 export async function requestBaiduTranslate(str: string): Promise<string> {
   if (!str) {

@@ -1,8 +1,8 @@
 import { Page, PageUrlMap } from "@taozi-chrome-extensions/common/src/constant/page";
 import { figmaAssetsBackgroundForwardingMessage, figmaAssetsMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestFigmaImages, requestFigmaNodeInfo } from "../api";
+import { requestFigmaImages, requestFigmaNodeInfo } from "@taozi-chrome-extensions/common/src/api/modules/figma";
 import type { Figma } from "@taozi-chrome-extensions/common/src/type/modules/figma";
-import { requestUploadAsset } from "../api";
+import { requestUploadAsset } from "@taozi-chrome-extensions/common/src/api/modules/taozi";
 
 export function startFigmaServer() {
   figmaAssetsBackgroundForwardingMessage.addListener(req => {

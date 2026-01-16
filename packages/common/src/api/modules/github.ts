@@ -1,6 +1,6 @@
 import { proxyRequest } from "../proxyRequest";
-import { GithubRepo } from "@taozi-chrome-extensions/common/src/constant";
-import type { Github } from "@taozi-chrome-extensions/common/src/type";
+import { GithubRepo } from "../../constant";
+import type { Github } from "../../type";
 
 /**
  * 获取最近 10 个发布版本

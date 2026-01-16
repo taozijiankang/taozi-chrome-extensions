@@ -1,5 +1,5 @@
-import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
-import type { OpenAi } from "@taozi-chrome-extensions/common/src/type/modules/openAi";
+import { configLocalStorage } from "../../../local";
+import type { OpenAi } from "../../../type/modules/openAi";
 
 /**
  * 调用 OpenAI Chat Completion API
@@ -79,5 +79,5 @@ export async function requestOpenAIChat(
     throw new Error("OpenAI API 返回空响应");
   }
 
-  return response.choices[0].message.content;
+  return response.choices[0]?.message?.content || "";
 }

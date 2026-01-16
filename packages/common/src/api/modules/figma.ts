@@ -1,5 +1,5 @@
-import type { Figma } from "@taozi-chrome-extensions/common/src/type/modules/figma";
-import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local";
+import type { Figma } from "../../type/modules/figma";
+import { figmaLocalStorage } from "../../local";
 
 /**
  * 获取figma节点信息
@@ -23,7 +23,11 @@ export async function requestFigmaNodeInfo(params: Figma.Api.GetFileNode.Req): P
   if (data.err) {
     throw new Error(data.err);
   }
-  return data.nodes?.[nodeId.replace("-", ":")]?.document;
+  const result = data.nodes?.[nodeId.replace("-", ":")]?.document;
+  if (!result) {
+    throw new Error("figma节点信息获取失败");
+  }
+  return result;
 }
 
 /**

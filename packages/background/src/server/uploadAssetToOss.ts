@@ -1,5 +1,5 @@
 import { uploadAssetToOssMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestUploadAsset } from "../api";
+import { requestUploadAsset } from "@taozi-chrome-extensions/common/src/api/modules/taozi";
 
 export function startUploadAssetToOssServer() {
   uploadAssetToOssMessage.addListener(req => {

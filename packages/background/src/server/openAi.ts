@@ -1,5 +1,5 @@
 import { requestOpenAIChatCompletionMessage } from "@taozi-chrome-extensions/common/src/message";
-import { requestOpenAIChatCompletion } from "@/api";
+import { requestOpenAIChatCompletion } from "@taozi-chrome-extensions/common/src/api/modules/openAi";
 
 export function startOpenAiServer() {
   requestOpenAIChatCompletionMessage.addListener(req => {

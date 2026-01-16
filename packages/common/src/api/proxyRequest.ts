@@ -1,4 +1,4 @@
-import { proxyServiceUrl } from "@taozi-chrome-extensions/common/src/constant";
+import { proxyServiceUrl } from "../constant";
 
 export async function proxyRequest(url: string, init: RequestInit = {}) {
   const originUrl = new URL(url);
