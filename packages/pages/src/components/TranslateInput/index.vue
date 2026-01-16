@@ -1,6 +1,6 @@
 <template>
   <div class="input-container">
-    <ElInput v-model="input" @keydown.enter.prevent="handleTranslateComponentName">
+    <ElInput v-model="input" @keydown.enter.prevent="handleTranslateComponentName" clearable>
       <template #append>
         <ElButton @click="handleTranslateComponentName" :loading="translateComponentNameLoading">翻译</ElButton>
       </template>

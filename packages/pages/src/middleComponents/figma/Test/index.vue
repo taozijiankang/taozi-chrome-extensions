@@ -1,0 +1,75 @@
+<template>
+  <div class="test">
+    <Tabs v-model:value="activeTab" :list="tabs" class="tabs" />
+    <CodeEditor
+      v-if="activeTab === TestTabType.CodeEditor"
+      class="code-editor"
+      :cons="consForEditor"
+      :active-node-tree-con-key="activeNodeTreeConKey"
+      :codeType="codeType"
+      @update:cons="handleUpdateCons"
+      @update:active-node-tree-con-key="handleUpdateActiveNodeTreeConKey"
+      @update:codeType="handleUpdateCodeType"
+    />
+    <CodeTest v-if="activeTab === TestTabType.CodeTest" />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref } from "vue";
+import { testFigmaAssetsData as testFigmaAssetsData_ } from "./data/index";
+import { byFigmaAssetsGetCons } from "../utils/byFigmaAssetsGetCons";
+import { BaseCon } from "../GenerateCode/components/CodeEditor/controller";
+import CodeEditor from "../GenerateCode/components/CodeEditor/index.vue";
+import { cloneCons, exportConfigs } from "../GenerateCode/components/CodeEditor/utils";
+import { ConGenCodeType } from "../GenerateCode/components/CodeEditor/constants/enum";
+import CodeTest from "./components/CodeTest/index.vue";
+import Tabs from "@/components/Tabs/index.vue";
+import { tabs, TestTabType } from ".";
+
+const activeTab = ref(TestTabType.CodeEditor);
+
+const testFigmaAssetsData = ref(testFigmaAssetsData_);
+
+const cons = ref<BaseCon[]>([]);
+
+const activeNodeTreeConKey = ref("");
+
+const codeType = ref(ConGenCodeType.Default);
+
+const consForEditor = computed(() => cons.value as BaseCon[]);
+
+const handleUpdateCons = (cons_: BaseCon[]) => {
+  cons.value = cons_;
+};
+
+const handleUpdateActiveNodeTreeConKey = (key: string) => {
+  activeNodeTreeConKey.value = key;
+};
+
+const handleUpdateCodeType = (value: ConGenCodeType) => {
+  codeType.value = value;
+};
+
+onMounted(async () => {
+  const con = byFigmaAssetsGetCons(testFigmaAssetsData.value);
+
+  if (con) {
+    cons.value.push(con);
+  }
+
+  console.log("cons", cons.value);
+  console.log("exportConfigs", exportConfigs([con!]));
+
+  const cons2 = cloneCons([con!]);
+
+  console.log("cons2", cons2);
+  console.log("exportConfigs2", exportConfigs(cons2));
+
+  cons.value.push(...cons2);
+});
+</script>
+
+<style lang="scss" scoped>
+@use "./index";
+</style>

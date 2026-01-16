@@ -7,7 +7,6 @@ import Tabs from "../../components/Tabs/index.vue";
 import { configLocalStorage, messageAlertLocalStorage, type MessageAlertItem } from "@taozi-chrome-extensions/common/src/local";
 import CodesignRecentViewed from "../../middleComponents/codesign/RecentViewed/index.vue";
 import CodesignConfig from "../../middleComponents/codesign/Config/index.vue";
-import ProxyServerConfig from "../../middleComponents/ProxyServerConfig/index.vue";
 import Version from "../../middleComponents/Version/index.vue";
 import MpReleasePlan from "../../middleComponents/MpReleasePlan/index.vue";
 import { openPage } from "@taozi-chrome-extensions/common/src/utils/openPage";
@@ -18,8 +17,10 @@ import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
 import ContentCard from "../../components/ContentCard/index.vue";
 import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
 import type { TabItem } from "../../components/Tabs/index";
+import OpenAIConfig from "../../middleComponents/OpenAIConfig/index.vue";
 
 enum TabType {
+  Agent = "Agent",
   GenVarName = "GenVarName",
   MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
@@ -30,8 +31,17 @@ enum TabType {
 
 const messageAlerts = ref<MessageAlertItem[]>([]);
 
+const handleOpenAgentPage = async () => {
+  await openPage(Page.Agent);
+};
+
 const tabs = computed<TabItem[]>(() => {
   return [
+    {
+      label: "Agent",
+      value: TabType.Agent,
+      click: handleOpenAgentPage
+    },
     {
       label: "生成变量名",
       value: TabType.GenVarName
@@ -60,7 +70,7 @@ const tabs = computed<TabItem[]>(() => {
     }
   ];
 });
-const activeTab = ref(TabType.GenVarName);
+const activeTab = ref(TabType.Agent);
 
 watch(activeTab, () => {
   configLocalStorage.edit(v => {
@@ -81,7 +91,9 @@ const handleOpenFigmaPage = async () => {
 
 onMounted(async () => {
   const { popupActiveTab } = (await configLocalStorage.get()) || {};
-  activeTab.value = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
+  const targetTab = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
+  // 如果保存的 tab 是 Agent，则默认显示 GenVarName
+  activeTab.value = targetTab === TabType.Agent ? TabType.GenVarName : targetTab;
 
   getMessageAlerts();
   getMessageAlertsTimer.value = setInterval(getMessageAlerts, 300);
@@ -129,8 +141,8 @@ onUnmounted(() => {
         <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
         </ContentCard>
-        <ContentCard title="代理服务配置">
-          <ProxyServerConfig />
+        <ContentCard title="OpenAI API配置">
+          <OpenAIConfig />
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">

@@ -3,6 +3,7 @@ import { startFigmaServer } from "./figma";
 import { startPageServer } from "./page";
 import { startUploadAssetToOssServer } from "./uploadAssetToOss";
 import { startCommonServer } from "./common";
+import { startOpenAiServer } from "./openAi";
 
 export function startServer() {
   startPageServer();
@@ -10,4 +11,5 @@ export function startServer() {
   startUploadAssetToOssServer();
   startFigmaServer();
   startCommonServer();
+  startOpenAiServer();
 }

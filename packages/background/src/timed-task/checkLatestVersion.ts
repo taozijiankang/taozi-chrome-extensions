@@ -1,4 +1,4 @@
-import { requestLatestReleaseVersionList } from "@/api";
+import { requestLatestReleaseVersionList } from "@taozi-chrome-extensions/common/src/api/modules/github";
 import semver from "semver";
 import { configLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 
@@ -11,6 +11,10 @@ export async function checkLatestVersion() {
   if (lastReleaseVersion && semver.gt(lastReleaseVersion.tag_name, onVersion)) {
     configLocalStorage.edit(v => {
       v.hasNewVersion = true;
+    });
+  } else {
+    configLocalStorage.edit(v => {
+      v.hasNewVersion = false;
     });
   }
 }

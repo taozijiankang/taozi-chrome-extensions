@@ -1,6 +1,6 @@
 export interface SimpleCssRule {
   selector: string;
-  declarations: Array<{ property: string; value: string }>;
+  declarations: { property: string; value: string }[];
 }
 
 export function parseCssWithRegex(cssText: string): SimpleCssRule[] {
@@ -19,7 +19,7 @@ export function parseCssWithRegex(cssText: string): SimpleCssRule[] {
     const declarationsText = match[2].trim();
 
     // 解析属性声明
-    const declarations: Array<{ property: string; value: string }> = [];
+    const declarations: { property: string; value: string }[] = [];
     const declarationRegex = /([^:]+):([^;]+);?/g;
     let declMatch;
 
