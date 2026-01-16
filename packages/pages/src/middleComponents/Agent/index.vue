@@ -85,6 +85,7 @@ import dayjs from "dayjs";
 import { agentLocalStorage, type ChatMessage, type ChatBox } from "@taozi-chrome-extensions/common/src/local";
 import { requestOpenAIChatCompletionMessage } from "@taozi-chrome-extensions/common/src/message";
 import type { OpenAi } from "@taozi-chrome-extensions/common/src/type/modules/openAi";
+import { AGENT_SYSTEM_PROMPT } from "@taozi-chrome-extensions/common/src/constant/prompt";
 
 // 状态
 const inputMessage = ref("");
@@ -297,12 +298,12 @@ const handleSend = async () => {
   if (!chatBox) return;
 
   // 先添加系统提示词（当前时间）
-  const systemMessage: ChatMessage = {
+  const timeSystemMessage: ChatMessage = {
     role: "system",
     content: `现在是 ${formatFullTime()}`,
     timestamp: Date.now()
   };
-  chatBox.messages.push(systemMessage);
+  chatBox.messages.push(timeSystemMessage);
   chatBox.updatedAt = Date.now();
 
   // 添加用户消息
@@ -310,6 +311,12 @@ const handleSend = async () => {
   inputMessage.value = "";
   // 清空输入并保存
   await saveInputMessage();
+
+  // 系统提示词
+  const systemMessage: OpenAi.Api.OpenAIMessage = {
+    role: "system",
+    content: AGENT_SYSTEM_PROMPT
+  };
 
   // 构建消息列表用于 API 调用（包含系统消息）
   const apiMessages: OpenAi.Api.OpenAIMessage[] = chatBox.messages.map(msg => ({
@@ -320,7 +327,7 @@ const handleSend = async () => {
   loading.value = true;
   try {
     const response = await requestOpenAIChatCompletionMessage.sendMessage({
-      messages: apiMessages,
+      messages: [systemMessage, ...apiMessages],
       model: "gpt-3.5-turbo",
       temperature: 0.7
     });
