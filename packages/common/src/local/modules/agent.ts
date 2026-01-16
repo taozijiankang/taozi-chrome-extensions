@@ -1,13 +1,10 @@
 import { useLocalStorage } from "../useLocalStorage";
+import type { OpenAi } from "../../type/modules/openAi";
 
 /**
  * 聊天消息
  */
-export interface ChatMessage {
-  /** 消息角色 */
-  role: "user" | "assistant" | "system";
-  /** 消息内容 */
-  content: string;
+export interface ChatMessage extends OpenAi.Api.OpenAIMessage {
   /** 消息时间戳 */
   timestamp: number;
 }
