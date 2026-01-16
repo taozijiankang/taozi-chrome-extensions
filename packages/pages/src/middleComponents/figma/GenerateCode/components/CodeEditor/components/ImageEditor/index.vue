@@ -11,6 +11,9 @@
     </ContentCard>
     <ContentCard title="图片" contentBackground="#f7f9fb">
       <ElForm labelSuffix=":" labelPosition="left">
+        <ElFormItem label="图片描述" labelPosition="top">
+          <ElInput v-model="con.config.alt" clearable />
+        </ElFormItem>
         <ElFormItem label="图片地址" labelPosition="top">
           <ElInput v-model="con.config.src" clearable />
         </ElFormItem>

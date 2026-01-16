@@ -15,7 +15,13 @@ export class DivCon extends BaseCon<DivConConfig> {
 
   getPrompt() {
     return `
-    <div class="${this.mainClassName}" data-key="${this.key}" alt="${this.config.description}">
+    <!-- ${this.config.description} -->
+    <div ${[
+      //
+      `class="${this.mainClassName}"`,
+      `style="${this.lineStyle}"`,
+      `data-key="${this.key}"`
+    ].join(" ")} >
       ${this.children.map(child => child.getPrompt()).join("\n")}
     </div>
     `;

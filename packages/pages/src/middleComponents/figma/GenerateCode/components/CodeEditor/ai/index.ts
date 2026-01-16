@@ -8,6 +8,14 @@ export interface OptimizeConComponentNameResult {
   name: string;
 }
 
+export interface OptimizeConComponentStyleResult {
+  key: string;
+  styles: {
+    property: string;
+    value: string;
+  }[];
+}
+
 export async function optimizeConComponentName(con: BaseCon): Promise<OptimizeConComponentNameResult[]> {
   const prompt = con.getPrompt();
   if (!prompt) {
@@ -55,4 +63,52 @@ export async function optimizeConComponentName(con: BaseCon): Promise<OptimizeCo
   });
 
   return JSON.parse(response.data?.choices[0]?.message?.content || "[]") as OptimizeConComponentNameResult[];
+}
+
+export async function optimizeConComponentStyle(con: BaseCon): Promise<OptimizeConComponentStyleResult[]> {
+  const prompt = con.getPrompt();
+  if (!prompt) {
+    throw new Error("获取节点提示词失败");
+  }
+
+  const JSONSystemMessage: OpenAi.Api.OpenAIMessage = {
+    role: "system",
+    content: JSON_OUTPUT_SYSTEM_PROMPT
+  };
+
+  const response = await requestOpenAIChatCompletionMessage.sendMessage({
+    messages: [
+      JSONSystemMessage,
+      {
+        role: "user",
+        content: `
+              按照如下规则优化如下代码的样式:
+              
+              \`\`\`html
+              ${prompt}
+              \`\`\`
+
+              返回结果格式为 {key: string, styles: {property: string, value: string}[]}，其中的key必须是节点在html中的data-key属性值，styles为修改后的样式
+              示例：
+              \`\`\`json
+              [
+                {
+                    "key": "123",
+                    "styles": [
+                        {
+                            "property": "color",
+                            "value": "#000000"
+                        }
+                    ]
+                }
+              ]
+              \`\`\`
+            `
+      }
+    ],
+    model: "gpt-3.5-turbo",
+    temperature: 1
+  });
+
+  return JSON.parse(response.data?.choices[0]?.message?.content || "[]") as OptimizeConComponentStyleResult[];
 }

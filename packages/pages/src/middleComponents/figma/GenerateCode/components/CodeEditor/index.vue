@@ -170,7 +170,7 @@ import Code from "../../../../../components/Code/index.vue";
 import { ConGenCodeType } from "./constants/enum";
 import { ConGenCodeTypeOptions } from "./constants";
 import { camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
-import { optimizeConComponentName } from "./ai";
+import { optimizeConComponentName, optimizeConComponentStyle } from "./ai";
 
 const props = defineProps<{
   cons: BaseCon[];
@@ -348,16 +348,41 @@ const handleSelectElement = () => {
 const handleAiCommand = async (command: AiCommand) => {
   aiLoading.value = true;
   try {
+    if (!activeNodeTreeCon.value) {
+      ElMessage({
+        message: "请选择一个节点",
+        type: "error"
+      });
+      return;
+    }
     if (command === AiCommand.OptimizeComponentName) {
-      if (!activeNodeTreeCon.value) {
-        return;
-      }
       const result = await optimizeConComponentName(activeNodeTreeCon.value);
       forEachCon([activeNodeTreeCon.value].filter(Boolean) as BaseCon[], item => {
         const resultItem = result.find(resultItem => resultItem.key === item.key);
         if (resultItem && resultItem.name) {
           item.config.name = camelToKebabCase(toValidVariableName(resultItem.name));
         }
+      });
+
+      ElMessage({
+        message: "AI 优化组件名称成功",
+        type: "success"
+      });
+    } else if (command === AiCommand.OptimizeStyle) {
+      const result = await optimizeConComponentStyle(activeNodeTreeCon.value);
+      forEachCon([activeNodeTreeCon.value].filter(Boolean) as BaseCon[], item => {
+        const resultItem = result.find(resultItem => resultItem.key === item.key);
+        if (resultItem && resultItem.styles) {
+          item.config.styleProps = resultItem.styles.map(item => ({
+            property: item.property,
+            value: item.value
+          }));
+        }
+      });
+
+      ElMessage({
+        message: "AI 优化样式成功",
+        type: "success"
       });
     }
   } catch (error) {

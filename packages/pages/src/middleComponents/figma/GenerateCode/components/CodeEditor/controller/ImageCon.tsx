@@ -10,6 +10,7 @@ export enum ImageTagName {
 
 export interface ImageConConfig extends BaseConConfig<ImageTagName> {
   src: string;
+  alt: string;
   uniappConfig: {
     mode: UniappImageModeType;
   };
@@ -23,8 +24,10 @@ export class ImageCon extends BaseCon<ImageConConfig> {
   constructor(config?: Partial<Omit<ImageConConfig, "tagName">>) {
     super({ ...config, tagName: ImageTagName.img });
 
-    const { src, uniappConfig } = config ?? {};
+    const { src, alt, uniappConfig } = config ?? {};
+
     this.config.src = src ?? "";
+    this.config.alt = alt ?? "";
     this.config.uniappConfig = uniappConfig ?? {
       mode: UniappImageModeType.ScaleToFill
     };
@@ -32,7 +35,15 @@ export class ImageCon extends BaseCon<ImageConConfig> {
 
   getPrompt() {
     return `
-    <img class="${this.mainClassName}" src="${this.config.src}" alt="${this.config.description}" data-key="${this.key}" />
+    <!-- ${this.config.description} -->
+    <img ${[
+      //
+      `class="${this.mainClassName}"`,
+      `style="${this.lineStyle}"`,
+      `src="${this.config.src}"`,
+      `alt="${this.config.alt}"`,
+      `data-key="${this.key}"`
+    ].join(" ")} />
     `;
   }
 
@@ -42,7 +53,7 @@ export class ImageCon extends BaseCon<ImageConConfig> {
         class={this.classNames.join(" ")}
         style={this.lineStyle}
         src={this.config.src}
-        alt={this.config.description}
+        alt={this.config.alt}
         data-key={this.key}
       />
     );
@@ -81,11 +92,11 @@ export class ImageCon extends BaseCon<ImageConConfig> {
     let js = "";
 
     if (codeType === ConGenCodeType.Default) {
-      html = `<img class="${class_}" src="${this.config.src}" alt="${this.config.description}" />`;
+      html = `<img class="${class_}" src="${this.config.src}" alt="${this.config.alt}" />`;
     } else if (codeType === ConGenCodeType.VuePC) {
-      html = `<img class="${class_}" :src="${variableName}" alt="${this.config.description}" />`;
+      html = `<img class="${class_}" :src="${variableName}" alt="${this.config.alt}" />`;
     } else if (codeType === ConGenCodeType.VueUni) {
-      html = `<image class="${class_}" mode="${this.config.uniappConfig.mode}" :src="${variableName}" alt="${this.config.description}" />`;
+      html = `<image class="${class_}" mode="${this.config.uniappConfig.mode}" :src="${variableName}" alt="${this.config.alt}" />`;
     }
 
     if (codeType === ConGenCodeType.VuePC || codeType === ConGenCodeType.VueUni) {

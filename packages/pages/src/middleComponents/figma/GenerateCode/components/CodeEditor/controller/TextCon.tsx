@@ -47,7 +47,15 @@ export class TextCon extends BaseCon<TextConConfig> {
 
   getPrompt() {
     return `
-    <span class="${this.mainClassName}" data-key="${this.key}" alt="${this.config.description}">${this.config.text}</span>
+    <!-- ${this.config.description} -->
+    <span ${[
+      //
+      `class="${this.mainClassName}"`,
+      `style="${this.lineStyle}"`,
+      `data-key="${this.key}"`
+    ].join(" ")} >
+      ${this.config.text}
+    </span>
     `;
   }
 
