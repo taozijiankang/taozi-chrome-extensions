@@ -29,6 +29,7 @@
       width: 900px;
 
       :deep(.agent-content-agent) {
+        min-height: 0;
         flex: 1;
       }
     }
