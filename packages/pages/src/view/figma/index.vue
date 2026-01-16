@@ -5,7 +5,6 @@ import Tabs from "../../components/Tabs/index.vue";
 import { figmaLocalStorage } from "@taozi-chrome-extensions/common/src/local";
 import FigmaGenerateCode from "../../middleComponents/figma/GenerateCode/index.vue";
 import FigmaConfig from "../../middleComponents/figma/Config/index.vue";
-import ContentCard from "../../components/ContentCard/index.vue";
 
 enum TabType {
   CodeGenerate = "CodeGenerate",

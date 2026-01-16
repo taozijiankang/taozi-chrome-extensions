@@ -21,5 +21,16 @@
     background: #f5f7fa;
     display: flex;
     flex-direction: column;
+    align-items: center;
+
+    .agent-content {
+      flex: 1;
+      min-height: 0;
+      width: 900px;
+
+      :deep(.agent-content-agent) {
+        flex: 1;
+      }
+    }
   }
 }

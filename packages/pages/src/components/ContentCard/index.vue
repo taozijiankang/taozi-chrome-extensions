@@ -6,7 +6,7 @@
         <span>{{ title }}</span>
       </ElBadge>
     </div>
-    <div class="content" :style="{ backgroundColor: contentBackground }">
+    <div class="content" :class="cuContentClass" :style="{ backgroundColor: contentBackground }">
       <slot></slot>
     </div>
   </div>
@@ -20,11 +20,13 @@ withDefaults(
     title?: string;
     alert?: boolean;
     contentBackground?: string;
+    cuContentClass?: string;
   }>(),
   {
     title: "",
     alert: false,
-    contentBackground: "#ffffff"
+    contentBackground: "#ffffff",
+    cuContentClass: ""
   }
 );
 </script>

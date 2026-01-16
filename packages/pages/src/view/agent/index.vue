@@ -12,7 +12,7 @@ import ContentCard from "../../components/ContentCard/index.vue";
       </div>
     </div>
     <div class="content-container">
-      <ContentCard>
+      <ContentCard class="agent-content" cu-content-class="agent-content-agent">
         <Agent />
       </ContentCard>
     </div>
