@@ -13,6 +13,14 @@ export class DivCon extends BaseCon<DivConConfig> {
     super({ ...config, tagName: DivTagName.div });
   }
 
+  getPrompt() {
+    return `
+    <div class="${this.mainClassName}" data-key="${this.key}" alt="${this.config.description}">
+      ${this.children.map(child => child.getPrompt()).join("\n")}
+    </div>
+    `;
+  }
+
   protected getHtml(): VNode {
     return (
       <div class={this.classNames.join(" ")} style={this.lineStyle} data-key={this.key}>

@@ -10,6 +10,7 @@ export interface BaseConConfig<T extends string = string> {
   id: string;
   tagName: T;
   name: string;
+  description: string;
   styleProps: {
     property: string;
     value: string;
@@ -57,7 +58,8 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
   private children_?: BaseCon[];
 
   constructor(config?: Partial<C>) {
-    const { id, tagName, name, styleProps, imageAssets, customComName, disabled, expansionChildrenNodeTree } = config ?? {};
+    const { id, tagName, name, description, styleProps, imageAssets, customComName, disabled, expansionChildrenNodeTree } =
+      config ?? {};
     if (!tagName) {
       throw new Error("tagName is required");
     }
@@ -68,6 +70,7 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
       id: id || `${tagName}-id-${getKey()}`,
       tagName,
       name: name ?? "",
+      description: description ?? "",
       styleProps: styleProps ?? [],
       imageAssets: imageAssets ?? [],
       customComName: customComName ?? "",
@@ -155,6 +158,10 @@ export abstract class BaseCon<C extends BaseConConfig = BaseConConfig<string>> {
 
   getCode(options?: GetCodeOptions): GetCodeReturn {
     return this.getCode_(options);
+  }
+
+  getPrompt(): string {
+    return "";
   }
 
   protected getHtml(): VNode {

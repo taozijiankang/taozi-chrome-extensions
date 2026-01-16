@@ -45,6 +45,12 @@ export class TextCon extends BaseCon<TextConConfig> {
     return [...super.searchKeyword, this.config.text];
   }
 
+  getPrompt() {
+    return `
+    <span class="${this.mainClassName}" data-key="${this.key}" alt="${this.config.description}">${this.config.text}</span>
+    `;
+  }
+
   protected getHtml(): VNode {
     const Tag = this.config.tagName;
     return (

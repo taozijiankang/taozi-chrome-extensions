@@ -50,7 +50,7 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
           name: className,
           styleProps: styleDeclarations,
           src: htmlAst.attrs.find(attr => attr.name === "src")?.value || "",
-          alt: htmlAst.attrs.find(attr => attr.name === "alt")?.value || ""
+          description: htmlAst.attrs.find(attr => attr.name === "alt")?.value || ""
         });
       }
       // 文本节点

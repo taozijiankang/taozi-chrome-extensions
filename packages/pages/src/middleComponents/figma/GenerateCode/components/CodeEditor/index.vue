@@ -70,7 +70,23 @@
           <img v-else class="select-element-icon" src="@/assets/select.png" alt="" />
         </div>
         <div class="right">
-          <ElInput v-model="codeNodeTreeSearchInput" clearable />
+          <ElInput v-model="codeNodeTreeSearchInput" clearable>
+            <template #prefix>
+              <ElIcon class="el-input__icon"><Search /></ElIcon>
+            </template>
+          </ElInput>
+          <div class="ai">
+            <ElDropdown @command="handleAiCommand" trigger="click">
+              <ElButton type="primary" :icon="MagicStick" :loading="aiLoading" circle />
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem v-for="item in aiCommandOptions" :key="item.value" :command="item.value">
+                    {{ item.label }}
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+          </div>
         </div>
       </div>
       <div class="content-container">
@@ -131,15 +147,30 @@ import { BaseCon } from "./controller";
 import { filterCons, findConByKey, forEachCon } from "./utils";
 import Render from "@/components/Render/index.vue";
 import { computed, onMounted, onUnmounted, ref, toRef, watch } from "vue";
-import { ElButton, ElMessageBox, ElEmpty, ElForm, ElFormItem, ElSelect, ElOption, ElInput } from "element-plus";
-import { Delete, ArrowUp, ArrowDown } from "@element-plus/icons-vue";
-import { editorTabs, EditorTabType } from "./index";
+import {
+  ElButton,
+  ElMessageBox,
+  ElEmpty,
+  ElForm,
+  ElFormItem,
+  ElSelect,
+  ElOption,
+  ElInput,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
+  ElMessage
+} from "element-plus";
+import { Delete, ArrowUp, ArrowDown, Search, MagicStick } from "@element-plus/icons-vue";
+import { editorTabs, EditorTabType, AiCommand, aiCommandOptions } from "./index";
 import Tabs from "../../../../../components/Tabs/index.vue";
 import { formatCode } from "../../../../../utils/prettier";
 import { CodeType } from "../../../../../components/Code";
 import Code from "../../../../../components/Code/index.vue";
 import { ConGenCodeType } from "./constants/enum";
 import { ConGenCodeTypeOptions } from "./constants";
+import { camelToKebabCase, toValidVariableName } from "@taozi-chrome-extensions/common/src/utils/global";
+import { optimizeConComponentName } from "./ai";
 
 const props = defineProps<{
   cons: BaseCon[];
@@ -176,6 +207,8 @@ const editorActiveConCode = ref({
   css: "",
   js: ""
 });
+
+const aiLoading = ref(false);
 
 const activeConKey = computed(() => {
   return (
@@ -310,6 +343,32 @@ const findNodeTreeConElement = () => {
 
 const handleSelectElement = () => {
   selectElement.value = !selectElement.value;
+};
+
+const handleAiCommand = async (command: AiCommand) => {
+  aiLoading.value = true;
+  try {
+    if (command === AiCommand.OptimizeComponentName) {
+      if (!activeNodeTreeCon.value) {
+        return;
+      }
+      const result = await optimizeConComponentName(activeNodeTreeCon.value);
+      forEachCon([activeNodeTreeCon.value].filter(Boolean) as BaseCon[], item => {
+        const resultItem = result.find(resultItem => resultItem.key === item.key);
+        if (resultItem && resultItem.name) {
+          item.config.name = camelToKebabCase(toValidVariableName(resultItem.name));
+        }
+      });
+    }
+  } catch (error) {
+    console.error("AI命令执行错误", error);
+    ElMessage({
+      message: "AI命令执行错误",
+      type: "error"
+    });
+  } finally {
+    aiLoading.value = false;
+  }
 };
 
 const handleHtmlViewMouseEnter = () => {

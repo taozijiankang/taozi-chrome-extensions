@@ -15,3 +15,19 @@ export const editorTabs: TabItem[] = [
     value: EditorTabType.Code
   }
 ];
+
+export enum AiCommand {
+  OptimizeComponentName = "optimizeComponentName",
+  OptimizeStyle = "optimizeStyle"
+}
+
+export const aiCommandOptions: { label: string; value: AiCommand }[] = [
+  {
+    label: "AI优化组件名",
+    value: AiCommand.OptimizeComponentName
+  },
+  {
+    label: "AI优化样式",
+    value: AiCommand.OptimizeStyle
+  }
+];

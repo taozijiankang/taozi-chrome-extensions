@@ -15,6 +15,9 @@
         <ElFormItem label="自定义组件名称">
           <ElInput v-model="con.config.customComName" clearable />
         </ElFormItem>
+        <ElFormItem label="元素描述">
+          <ElInput v-model="con.config.description" clearable />
+        </ElFormItem>
       </ElForm>
     </ContentCard>
   </div>
