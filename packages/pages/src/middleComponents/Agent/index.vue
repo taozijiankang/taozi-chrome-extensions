@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick, watch, computed } from "vue";
-import { ElInput, ElButton, ElMessage, ElIcon } from "element-plus";
+import { ElInput, ElButton, ElMessage, ElMessageBox, ElIcon } from "element-plus";
 import { Plus, Close } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { agentLocalStorage, type ChatMessage, type ChatBox } from "@taozi-chrome-extensions/common/src/local";
@@ -235,6 +235,19 @@ const handleDeleteChatBox = async (chatBoxId: string) => {
   const index = chatBoxes.value.findIndex(box => box.id === chatBoxId);
   if (index === -1) return;
 
+  const chatBox = chatBoxes.value[index];
+
+  try {
+    await ElMessageBox.confirm(`确定要删除聊天框"${chatBox.title}"吗？此操作不可恢复。`, "确认删除", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    });
+  } catch {
+    // 用户取消删除
+    return;
+  }
+
   const isDeletingActive = activeChatBoxId.value === chatBoxId;
 
   chatBoxes.value.splice(index, 1);
@@ -354,6 +367,17 @@ const handleClear = async () => {
 
   const chatBox = chatBoxes.value.find(box => box.id === activeChatBoxId.value);
   if (!chatBox) return;
+
+  try {
+    await ElMessageBox.confirm("确定要清空当前聊天记录吗？此操作不可恢复。", "确认清空", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    });
+  } catch {
+    // 用户取消清空
+    return;
+  }
 
   chatBox.messages = [];
   chatBox.title = "新对话";
