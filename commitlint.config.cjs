@@ -9,6 +9,7 @@ module.exports = {
         "fix", // 修复bug
         "docs", // 文档变更
         "style", // 代码格式（不影响代码运行的变动）
+        "optimize", // 优化
         "refactor", // 重构（既不是新增功能，也不是修复bug的代码变动）
         "perf", // 性能优化
         "test", // 增加测试

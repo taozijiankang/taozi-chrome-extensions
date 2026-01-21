@@ -4,6 +4,7 @@ module.exports = {
     { value: "fix", name: "fix: 修复bug" },
     { value: "docs", name: "docs: 文档变更" },
     { value: "style", name: "style: 代码格式（不影响代码运行的变动）" },
+    { value: "optimize", name: "optimize: 优化" },
     {
       value: "refactor",
       name: "refactor: 重构（既不是新增功能，也不是修复bug的代码变动）"
