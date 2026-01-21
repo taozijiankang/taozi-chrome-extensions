@@ -170,15 +170,21 @@ function getNonMergeCommits(fromCommitish) {
  * @returns {string}
  */
 function formatReleaseContent(commits) {
-  const lines = ["## 更新内容\n"];
+  // 过滤出以 feat: 或 fix: 开头的提交
+  const filteredCommits = commits.filter(commit => {
+    const message = commit.message.trim();
+    return message.startsWith("feat:") || message.startsWith("fix:");
+  });
 
-  commits.forEach(commit => {
+  const lines = ["## 更新内容"];
+
+  filteredCommits.forEach(commit => {
     lines.push(`- ${commit.message} (${commit.hash})`);
   });
 
   lines.push("\n---\n");
-  lines.push(`**提交数量**: ${commits.length}\n`);
-  lines.push(`**时间范围**: ${commits[commits.length - 1]?.date || ""} ~ ${commits[0]?.date || ""}\n`);
+  lines.push(`**提交数量**: ${filteredCommits.length}\n`);
+  lines.push(`**时间范围**: ${filteredCommits[filteredCommits.length - 1]?.date || ""} ~ ${filteredCommits[0]?.date || ""}\n`);
 
   return lines.join("\n");
 }
