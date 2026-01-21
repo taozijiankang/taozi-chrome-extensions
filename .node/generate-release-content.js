@@ -177,7 +177,7 @@ function formatReleaseContent(commits) {
   // 过滤出以 feat: 或 fix: 开头的提交
   const filteredCommits = commits.filter(commit => {
     const message = commit.message.trim();
-    return /^[a-z]+\(release-docs\):/.test(message);
+    return /^[a-z]+\(release-content\):/.test(message);
   });
 
   const lines = ["## 更新内容\n"];

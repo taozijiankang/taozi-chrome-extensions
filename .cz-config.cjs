@@ -29,7 +29,7 @@ module.exports = {
     { value: "scripts", name: "scripts: 脚本相关" },
     { value: "shared", name: "shared: 共享模块" },
     { value: "other", name: "other: 其他" },
-    { value: "release-docs", name: "release-docs: 发布文档" }
+    { value: "release-content", name: "release-content: 发布内容" }
   ],
   messages: {
     type: "选择提交类型:",
