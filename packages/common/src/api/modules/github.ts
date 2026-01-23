@@ -14,7 +14,7 @@ export async function requestLatestReleaseVersionList(): Promise<Github.Api.GetR
   const params: Github.Api.GetReleases.Req = {
     owner,
     repo,
-    per_page: 10
+    per_page: 999
   };
   const paramsString = `per_page=${params.per_page}`;
   const url = `https://api.github.com/repos/${owner}/${repo}/releases?${paramsString}`;
