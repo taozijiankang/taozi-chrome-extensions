@@ -123,7 +123,7 @@ async function getLatestReleaseVersionCommitish() {
 /**
  * 获取从指定提交到当前 HEAD 的非合并提交记录
  * @param {string} fromCommitish 起始提交
- * @returns {Array<{hash: string, author: string, date: string, message: string}>}
+ * @returns {Array<{hash: string, author: string, date: string, message: string, body: string}>}
  */
 function getNonMergeCommits(fromCommitish) {
   try {
@@ -131,7 +131,9 @@ function getNonMergeCommits(fromCommitish) {
     // 使用 git log 获取提交记录，排除合并提交
     // --no-merges: 排除合并提交
     // --pretty=format: 自定义输出格式，使用特殊分隔符
-    const gitLogCommand = `git log ${fromCommitish}..HEAD --no-merges --pretty=format:"%h|%an|%ad|%s" --date=short`;
+    // %x00: null 字符作为字段分隔符，%x01: 作为记录分隔符
+    // %h: 短 hash, %an: 作者名, %ad: 日期, %s: subject, %b: body
+    const gitLogCommand = `git log ${fromCommitish}..HEAD --no-merges --pretty=format:"%h%x00%an%x00%ad%x00%s%x00%b%x01" --date=short`;
 
     const output = execSync(gitLogCommand, {
       cwd: repoRoot,
@@ -145,15 +147,17 @@ function getNonMergeCommits(fromCommitish) {
     // 解析提交记录
     const commits = output
       .trim()
-      .split("\n")
-      .filter(line => line.trim())
-      .map(line => {
-        const [hash, author, date, ...messageParts] = line.split("|");
+      .split("\x01")
+      .filter(record => record.trim())
+      .map(record => {
+        const [hash, author, date, message, ...bodyParts] = record.split("\x00");
+        const body = bodyParts.join("\x00").trim();
         return {
           hash: hash || "",
           author: author || "",
           date: date || "",
-          message: messageParts.join("|") || ""
+          message: message || "",
+          body: body || ""
         };
       });
 
@@ -166,19 +170,37 @@ function getNonMergeCommits(fromCommitish) {
 
 /**
  * 格式化发布内容
- * @param {Array<{hash: string, author: string, date: string, message: string}>} commits
+ * @param {Array<{hash: string, author: string, date: string, message: string, body: string}>} commits
  * @returns {string}
  */
 function formatReleaseContent(commits) {
+  // 过滤出以 feat: 或 fix: 开头的提交
+  const filteredCommits = commits.filter(commit => {
+    const message = commit.message.trim();
+    return /^[a-z]+\(release-content\):/.test(message);
+  });
+
   const lines = ["## 更新内容\n"];
 
-  commits.forEach(commit => {
-    lines.push(`- ${commit.message} (${commit.hash})`);
+  filteredCommits.forEach((commit, index) => {
+    let commitLine = `${index + 1}. ${commit.message} (${commit.hash})`;
+    // 如果有 body，添加到提交信息中
+    if (commit.body && commit.body.trim()) {
+      // 将 body 中的换行符转换为空格，或者保持多行格式
+      const bodyLines = commit.body
+        .trim()
+        .split("\n")
+        .map(line => line.trim())
+        .filter(line => line);
+      if (bodyLines.length > 0) {
+        commitLine += "\n  " + bodyLines.join("\n  ");
+      }
+    }
+    lines.push(commitLine);
   });
 
   lines.push("\n---\n");
-  lines.push(`**提交数量**: ${commits.length}\n`);
-  lines.push(`**时间范围**: ${commits[commits.length - 1]?.date || ""} ~ ${commits[0]?.date || ""}\n`);
+  lines.push(`**时间范围**: ${filteredCommits[filteredCommits.length - 1]?.date || ""} ~ ${filteredCommits[0]?.date || ""}\n`);
 
   return lines.join("\n");
 }

@@ -5,7 +5,17 @@
   "type": "module",
   "scripts": {
     "build-package": "turbo run build package",
-    "bp": "turbo run build package"
+    "bp": "turbo run build package",
+    "prepare": "husky",
+    "commit": "cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": ".cz-config.cjs"
+    }
   },
   "keywords": [],
   "author": "",
@@ -18,9 +28,15 @@
   },
   "packageManager": "pnpm@9.11.0",
   "devDependencies": {
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
     "@types/node": "^22.14.0",
     "@types/semver": "^7.7.1",
     "commander": "^14.0.2",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "cz-customizable": "^7.5.1",
+    "husky": "^9.1.7",
     "turbo": "^2.5.0"
   },
   "dependencies": {
