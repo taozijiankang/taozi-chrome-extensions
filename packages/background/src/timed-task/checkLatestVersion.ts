@@ -8,7 +8,7 @@ export async function checkLatestVersion() {
 
   const lastReleaseVersion = latestReleaseVersionList[0];
 
-  if (lastReleaseVersion && semver.gt(lastReleaseVersion.tag_name, onVersion)) {
+  if (lastReleaseVersion && semver.gt(lastReleaseVersion.tag_name.replace(/^v-?/i, ""), onVersion)) {
     configLocalStorage.edit(v => {
       v.hasNewVersion = true;
     });
