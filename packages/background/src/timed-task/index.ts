@@ -7,7 +7,7 @@ export function startTimedTask() {
 
   setInterval(() => {
     messageAlert();
-  }, 300);
+  }, 100);
 
   setInterval(
     () => {
