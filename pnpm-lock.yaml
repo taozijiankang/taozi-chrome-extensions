@@ -230,6 +230,9 @@ importers:
       npm-run-all2:
         specifier: ^7.0.2
         version: 7.0.2
+      sass-embedded:
+        specifier: ^1.86.3
+        version: 1.86.3
       typescript:
         specifier: ~5.8.0
         version: 5.8.3
