@@ -16,9 +16,19 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
   const cssContent = figmaAssetsReq.codes.find(item => item.lang === "css")?.content;
   const { htmlAst, css } = parseHtmlCss(htmlContent || "", cssContent || "");
 
-  const getCon = (htmlAst: DefaultTreeAdapterTypes.Element): BaseCon | undefined => {
-    const className = htmlAst.attrs.find(attr => attr.name === "class")?.value || "";
-    const styleDeclarations = JSON.parse(JSON.stringify(css.find(item => item.selector === `.${className}`)?.declarations || []));
+  const getCon = (htmlAst: DefaultTreeAdapterTypes.ChildNode): BaseCon | undefined => {
+    const getClassName = (el: DefaultTreeAdapterTypes.ChildNode): string => {
+      if (ifElementNode(el)) {
+        return el.attrs.find(attr => attr.name === "class")?.value || "";
+      }
+      return "";
+    };
+    const getStyleDeclarations = (el: DefaultTreeAdapterTypes.ChildNode): { property: string; value: string }[] => {
+      if (ifElementNode(el)) {
+        return css.find(item => item.selector === `.${getClassName(el)}`)?.declarations || [];
+      }
+      return [];
+    };
 
     let con: BaseCon | undefined;
 
@@ -34,21 +44,21 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
         // 如果只有一个文本节点，则直接返回文本节点
         if (childNodes.length === 1 && ifTextNode(childNodes[0])) {
           con = new TextCon(TextTagName.span, {
-            name: className,
-            styleProps: styleDeclarations,
+            name: getClassName(htmlAst),
+            styleProps: getStyleDeclarations(htmlAst),
             text: childNodes[0].value
           });
         } else {
           con = new DivCon({
-            name: className,
-            styleProps: styleDeclarations
+            name: getClassName(htmlAst),
+            styleProps: getStyleDeclarations(htmlAst)
           });
-          con.children = childNodes.map(item => getCon(item as DefaultTreeAdapterTypes.Element)).filter(Boolean) as BaseCon[];
+          con.children = childNodes.map(item => getCon(item)).filter(Boolean) as BaseCon[];
         }
       } else if (htmlAst.tagName === "img") {
         con = new ImageCon({
-          name: className,
-          styleProps: styleDeclarations,
+          name: getClassName(htmlAst),
+          styleProps: getStyleDeclarations(htmlAst),
           src: htmlAst.attrs.find(attr => attr.name === "src")?.value || "",
           alt: htmlAst.attrs.find(attr => attr.name === "alt")?.value || ""
         });
@@ -65,8 +75,8 @@ export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): Base
         // 如果所有子节点都是文本节点
         if (childNodes.every(item => ifTextNode(item))) {
           con = new TextCon(htmlAst.tagName as TextTagName, {
-            name: className,
-            styleProps: styleDeclarations,
+            name: getClassName(htmlAst),
+            styleProps: getStyleDeclarations(htmlAst),
             text: childNodes.map(item => item.value).join("")
           });
         }
