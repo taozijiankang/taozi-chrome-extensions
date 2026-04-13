@@ -32,7 +32,7 @@ export function startFigmaServer() {
             height: number;
           }[] = [];
           const f = (item: Figma.Api.NodeInfo) => {
-            if (item.exportSettings?.some(item => item.format === "PNG") || item.fills.some(item => item.type === "IMAGE")) {
+            if (item.exportSettings?.some(item => item.format === "PNG") || item.fills?.some(item => item.type === "IMAGE")) {
               imageNodes.push({
                 id: item.id,
                 width: item.absoluteRenderBounds.width,

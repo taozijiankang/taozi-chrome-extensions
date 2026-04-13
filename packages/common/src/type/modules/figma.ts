@@ -15,7 +15,7 @@ export namespace Figma {
       exportSettings?: {
         format: "PNG";
       }[];
-      fills: {
+      fills?: {
         type: "IMAGE";
       }[];
       absoluteBoundingBox: {
