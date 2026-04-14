@@ -1,5 +1,7 @@
-import type { BaseCon, BaseConConfig, TextTagName } from "../controller";
-import { DivCon, DivTagName, ImageCon, ImageTagName, TextCon, textTagNameList } from "../controller";
+import type { BaseCon, BaseConConfig } from "../controller";
+import { DivCon, DivTagName, ImageCon, ImageTagName, TextCon } from "../controller";
+import { textTagNameList } from "@/middleComponents/figma/constant/index";
+import type { TextTagName } from "@/middleComponents/figma/constant/enum";
 
 export interface ExportConfig {
   config: BaseConConfig;
