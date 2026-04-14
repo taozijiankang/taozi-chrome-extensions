@@ -2,28 +2,7 @@ import type { VNode } from "vue";
 import { BaseCon, type BaseConConfig, type GetCodeOptions, type GetCodeReturn, type RenderEditorOptions } from "./_BaseCon";
 import TextEditor from "../components/TextEditor/index.vue";
 import { ConGenCodeType } from "../constants/enum";
-
-export enum TextTagName {
-  span = "span",
-  b = "b",
-  h1 = "h1",
-  h2 = "h2",
-  h3 = "h3",
-  h4 = "h4",
-  h5 = "h5",
-  h6 = "h6"
-}
-
-export const textTagNameList = [
-  TextTagName.span,
-  TextTagName.b,
-  TextTagName.h1,
-  TextTagName.h2,
-  TextTagName.h3,
-  TextTagName.h4,
-  TextTagName.h5,
-  TextTagName.h6
-];
+import type { TextTagName } from "@/middleComponents/figma/constant/enum";
 
 export interface TextConConfig extends BaseConConfig<TextTagName> {
   text: string;

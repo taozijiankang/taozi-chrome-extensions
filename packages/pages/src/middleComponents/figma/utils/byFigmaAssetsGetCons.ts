@@ -1,96 +1,137 @@
 import type { FigmaAssetsExtendReq } from "@taozi-chrome-extensions/common/src/message";
-import { parseHtmlCss } from "./parseHtmlCss";
-import type { DefaultTreeAdapterTypes } from "parse5";
-import {
-  DivCon,
-  ImageCon,
-  TextCon,
-  TextTagName,
-  textTagNameList,
-  type BaseCon
-} from "../GenerateCode/components/CodeEditor/controller";
-import { ifElementNode, ifTextNode } from "@/utils/html";
+import { defaultTreeAdapter, parse, type DefaultTreeAdapterTypes } from "parse5";
+import { DivCon, ImageCon, TextCon, type BaseCon } from "../GenerateCode/components/CodeEditor/controller";
+import { parseCssWithRegex } from "@/utils/css";
+import { TextTagName } from "../constant/enum";
+import { textTagNameList } from "../constant";
 
 export function byFigmaAssetsGetCons(figmaAssetsReq: FigmaAssetsExtendReq): BaseCon | undefined {
   const htmlContent = figmaAssetsReq.codes.find(item => item.lang === "html")?.content;
   const cssContent = figmaAssetsReq.codes.find(item => item.lang === "css")?.content;
-  const { htmlAst, css } = parseHtmlCss(htmlContent || "", cssContent || "");
 
-  const getCon = (htmlAst: DefaultTreeAdapterTypes.ChildNode): BaseCon | undefined => {
-    const getClassName = (el: DefaultTreeAdapterTypes.ChildNode): string => {
-      if (ifElementNode(el)) {
-        return el.attrs.find(attr => attr.name === "class")?.value || "";
-      }
-      return "";
-    };
-    const getStyleDeclarations = (el: DefaultTreeAdapterTypes.ChildNode): { property: string; value: string }[] => {
-      if (ifElementNode(el)) {
-        return css.find(item => item.selector === `.${getClassName(el)}`)?.declarations || [];
-      }
-      return [];
-    };
+  const { node: mainNode, cssRules } = parseFigmaAssetsHtmlAndCss(htmlContent || "", cssContent || "");
 
+  const getClassName = (node: DefaultTreeAdapterTypes.Node): string => {
+    if (defaultTreeAdapter.isElementNode(node)) {
+      return node.attrs.find(attr => attr.name === "class")?.value || "";
+    }
+    return "";
+  };
+  const getStyleDeclarations = (node: DefaultTreeAdapterTypes.Node): { property: string; value: string }[] => {
+    if (defaultTreeAdapter.isElementNode(node)) {
+      return cssRules.find(item => item.selector === `.${getClassName(node)}`)?.declarations || [];
+    }
+    return [];
+  };
+
+  const getCon = (node: DefaultTreeAdapterTypes.Node): BaseCon | undefined => {
     let con: BaseCon | undefined;
 
-    if (ifElementNode(htmlAst)) {
-      if (htmlAst.tagName === "div") {
-        const childNodes = htmlAst.childNodes.filter(item => {
-          // 过滤掉空文本节点
-          if (ifTextNode(item)) {
-            return Boolean(item.value.trim());
-          }
-          return true;
+    if (defaultTreeAdapter.isElementNode(node)) {
+      if (node.tagName === "div") {
+        con = new DivCon({
+          name: getClassName(node),
+          styleProps: getStyleDeclarations(node)
         });
-        // 如果只有一个文本节点，则直接返回文本节点
-        if (childNodes.length === 1 && ifTextNode(childNodes[0])) {
-          con = new TextCon(TextTagName.span, {
-            name: getClassName(htmlAst),
-            styleProps: getStyleDeclarations(htmlAst),
-            text: childNodes[0].value
-          });
-        } else {
-          con = new DivCon({
-            name: getClassName(htmlAst),
-            styleProps: getStyleDeclarations(htmlAst)
-          });
-          con.children = childNodes.map(item => getCon(item)).filter(Boolean) as BaseCon[];
-        }
-      } else if (htmlAst.tagName === "img") {
+        con.children = node.childNodes.map(item => getCon(item)).filter(Boolean) as BaseCon[];
+      } else if (node.tagName === "img") {
         con = new ImageCon({
-          name: getClassName(htmlAst),
-          styleProps: getStyleDeclarations(htmlAst),
-          src: htmlAst.attrs.find(attr => attr.name === "src")?.value || "",
-          alt: htmlAst.attrs.find(attr => attr.name === "alt")?.value || ""
+          name: getClassName(node),
+          styleProps: getStyleDeclarations(node),
+          src: node.attrs.find(attr => attr.name === "src")?.value || "",
+          alt: node.attrs.find(attr => attr.name === "alt")?.value || ""
         });
-      }
-      // 文本节点
-      else if (textTagNameList.includes(htmlAst.tagName as TextTagName)) {
-        const childNodes = htmlAst.childNodes.filter(item => {
-          // 过滤掉空文本节点
-          if (ifTextNode(item)) {
-            return Boolean(item.value.trim());
-          }
-          return true;
-        });
-        // 如果所有子节点都是文本节点
-        if (childNodes.every(item => ifTextNode(item))) {
-          con = new TextCon(htmlAst.tagName as TextTagName, {
-            name: getClassName(htmlAst),
-            styleProps: getStyleDeclarations(htmlAst),
-            text: childNodes.map(item => item.value).join("")
+      } else if (textTagNameList.includes(node.tagName as TextTagName)) {
+        const text = node.childNodes
+          .map(item => {
+            if (defaultTreeAdapter.isTextNode(item)) {
+              return item.value;
+            }
+            return "";
+          })
+          .join("")
+          .trim();
+        if (text) {
+          con = new TextCon(node.tagName as TextTagName, {
+            name: getClassName(node),
+            styleProps: getStyleDeclarations(node),
+            text
           });
         }
+      }
+    } else if (defaultTreeAdapter.isTextNode(node)) {
+      const text = node.value.trim();
+      if (text) {
+        con = new TextCon(TextTagName.span, {
+          name: getClassName(node),
+          styleProps: getStyleDeclarations(node),
+          text
+        });
       }
     }
 
     return con;
   };
 
-  const con = getCon(htmlAst);
+  const con = getCon(mainNode);
 
   // 在根节点上添加图片资产
   if (con) {
     con.config.imageAssets = figmaAssetsReq.images.map(item => item.url);
   }
   return con;
+}
+
+export function parseFigmaAssetsHtmlAndCss(html: string, css: string) {
+  const documentNode = parse(html);
+
+  const hasChildNodes = (
+    node: DefaultTreeAdapterTypes.Node
+  ): node is DefaultTreeAdapterTypes.Document | DefaultTreeAdapterTypes.DocumentFragment | DefaultTreeAdapterTypes.Element => {
+    return node.nodeName === "#document" || node.nodeName === "#document-fragment" || defaultTreeAdapter.isElementNode(node);
+  };
+
+  const findBodyNode = (node: DefaultTreeAdapterTypes.Node): DefaultTreeAdapterTypes.Element | undefined => {
+    if (defaultTreeAdapter.isElementNode(node)) {
+      if (node.tagName === "body") {
+        return node;
+      }
+    }
+    if (hasChildNodes(node)) {
+      for (const childNode of node.childNodes) {
+        const bodyNode = findBodyNode(childNode);
+        if (bodyNode) {
+          return bodyNode;
+        }
+      }
+    }
+    return undefined;
+  };
+
+  const bodyNode = findBodyNode(documentNode);
+
+  if (!bodyNode) {
+    throw new Error("Body node not found");
+  }
+
+  /**
+   * figma html-css 插件会把ui内容放到body的第一个div子节点，所以我们需要找到这个div节点
+   */
+  const rootDivNode = bodyNode.childNodes.find(item => defaultTreeAdapter.isElementNode(item) && item.tagName === "div");
+
+  if (!rootDivNode || !defaultTreeAdapter.isElementNode(rootDivNode)) {
+    throw new Error("Root div node not found");
+  }
+
+  /**
+   * 移除和body的连接
+   */
+  rootDivNode.parentNode = null;
+
+  const cssRules = parseCssWithRegex(css);
+
+  return {
+    node: rootDivNode,
+    cssRules
+  };
 }
