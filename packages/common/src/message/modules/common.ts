@@ -1,5 +1,5 @@
 import { Page } from "../../constant/page";
-import type { Github, OpenAi } from "../../type";
+import type { Github, AnthropicChat } from "../../type";
 import { useMessage } from "../useMessage";
 
 export interface OpenPageMessageReq {
@@ -12,7 +12,6 @@ export const requestReleaseVersionListMessage = useMessage<void, Github.Api.GetR
   "request-release-version-list-message"
 );
 
-export const requestOpenAIChatCompletionMessage = useMessage<
-  OpenAi.Api.OpenAIChatCompletionRequest,
-  OpenAi.Api.OpenAIChatCompletionResponse
->("request-openai-chat-completion-message");
+export const requestAnthropicChatMessage = useMessage<AnthropicChat.Req, AnthropicChat.Res>(
+  "request-anthropic-chat-message"
+);

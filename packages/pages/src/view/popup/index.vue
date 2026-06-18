@@ -17,7 +17,7 @@ import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
 import ContentCard from "../../components/ContentCard/index.vue";
 import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
 import type { TabItem } from "../../components/Tabs/index";
-import OpenAIConfig from "../../middleComponents/OpenAIConfig/index.vue";
+import AnthropicConfig from "../../middleComponents/AnthropicConfig/index.vue";
 
 enum TabType {
   GenVarName = "GenVarName",
@@ -129,8 +129,8 @@ onUnmounted(() => {
         <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
         </ContentCard>
-        <ContentCard title="OpenAI API配置">
-          <OpenAIConfig />
+        <ContentCard title="Anthropic API配置">
+          <AnthropicConfig />
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">
