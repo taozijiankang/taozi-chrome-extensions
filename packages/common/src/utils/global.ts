@@ -11,7 +11,7 @@ export function kebabToCamelCase(name: string, capitalCase = false): string {
   }
 
   if (capitalCase) {
-    name = name.replace(/^[a-z]/, (char) => char.toUpperCase());
+    name = name.replace(/^[a-z]/, char => char.toUpperCase());
   }
 
   return name.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
@@ -55,7 +55,7 @@ export function toValidVariableName(str: string): string {
       // 移除数字开头
       .replace(/^[0-9]+/, "")
       // 将首字母转换为小写
-      .replace(/^[A-Z]/, (char) => char.toLowerCase())
+      .replace(/^[A-Z]/, char => char.toLowerCase())
   );
 }
 
@@ -66,7 +66,7 @@ export function toValidVariableName(str: string): string {
  * @returns 防抖后的函数
  */
 export function debounce(fn: Function, delay: number) {
-  let timer: number | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
   return function (this: any, ...args: any[]) {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => fn.apply(this, args), delay);
@@ -79,7 +79,7 @@ export function debounce(fn: Function, delay: number) {
  * @returns 一个 Promise，在指定时间后 resolve
  */
 export function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -96,7 +96,7 @@ export function retry(fn: () => void | Promise<void>, delay: number, count: numb
     }
     Promise.resolve(fn())
       .then(resolve)
-      .catch((error) => {
+      .catch(error => {
         wait(delay).then(() => {
           retry(fn, delay, count - 1, [...errors, error]).then(resolve, reject);
         });

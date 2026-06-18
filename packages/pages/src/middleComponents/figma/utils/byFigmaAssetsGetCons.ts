@@ -115,23 +115,24 @@ export function parseFigmaAssetsHtmlAndCss(html: string, css: string) {
   }
 
   /**
-   * figma html-css 插件会把ui内容放到body的第一个div子节点，所以我们需要找到这个div节点
+   * figma html-css 插件会把 ui 内容作为一个元素放到 body 下面，但不一定是 div，
+   * 可能是 img、文本标签等其他元素，所以这里取 body 下的第一个元素节点作为根节点
    */
-  const rootDivNode = bodyNode.childNodes.find(item => defaultTreeAdapter.isElementNode(item) && item.tagName === "div");
+  const rootNode = bodyNode.childNodes.find(item => defaultTreeAdapter.isElementNode(item));
 
-  if (!rootDivNode || !defaultTreeAdapter.isElementNode(rootDivNode)) {
-    throw new Error("Root div node not found");
+  if (!rootNode || !defaultTreeAdapter.isElementNode(rootNode)) {
+    throw new Error("Root node not found");
   }
 
   /**
    * 移除和body的连接
    */
-  rootDivNode.parentNode = null;
+  rootNode.parentNode = null;
 
   const cssRules = parseCssWithRegex(css);
 
   return {
-    node: rootDivNode,
+    node: rootNode,
     cssRules
   };
 }

@@ -35,8 +35,8 @@ export function startFigmaServer() {
             if (item.exportSettings?.some(item => item.format === "PNG") || item.fills?.some(item => item.type === "IMAGE")) {
               imageNodes.push({
                 id: item.id,
-                width: item.absoluteRenderBounds.width,
-                height: item.absoluteRenderBounds.height
+                width: item.absoluteRenderBounds?.width || item.absoluteBoundingBox?.width || 0,
+                height: item.absoluteRenderBounds?.height || item.absoluteBoundingBox?.height || 0
               });
               return;
             }
@@ -60,16 +60,23 @@ export function startFigmaServer() {
             nodeInfo,
             images: await Promise.all(
               images.map(async image => {
-                const remoteUrl = await requestUploadAsset({
-                  src: image.url,
-                  isCompressed: false,
-                  width: imageNodes.find(item => item.id === image.key.replace(":", "-"))?.width || 0,
-                  height: imageNodes.find(item => item.id === image.key.replace(":", "-"))?.height || 0
-                });
-                return {
-                  key: image.key,
-                  url: remoteUrl
-                } as Figma.Api.Images;
+                try {
+                  const remoteUrl = await requestUploadAsset({
+                    src: image.url,
+                    isCompressed: false,
+                    width: imageNodes.find(item => item.id === image.key.replace(":", "-"))?.width || 0,
+                    height: imageNodes.find(item => item.id === image.key.replace(":", "-"))?.height || 0
+                  });
+                  return {
+                    key: image.key,
+                    url: remoteUrl
+                  } as Figma.Api.Images;
+                } catch {
+                  return {
+                    key: image.key,
+                    url: ""
+                  };
+                }
               })
             )
           });

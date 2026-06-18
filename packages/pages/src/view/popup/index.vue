@@ -17,10 +17,9 @@ import CodeSubmit from "../../middleComponents/CodeSubmit/index.vue";
 import ContentCard from "../../components/ContentCard/index.vue";
 import { MessageAlertType } from "@taozi-chrome-extensions/common/src/constant";
 import type { TabItem } from "../../components/Tabs/index";
-import OpenAIConfig from "../../middleComponents/OpenAIConfig/index.vue";
+import AnthropicConfig from "../../middleComponents/AnthropicConfig/index.vue";
 
 enum TabType {
-  Agent = "Agent",
   GenVarName = "GenVarName",
   MpReleasePlan = "MpReleasePlan",
   Codesign = "Codesign",
@@ -31,17 +30,8 @@ enum TabType {
 
 const messageAlerts = ref<MessageAlertItem[]>([]);
 
-const handleOpenAgentPage = async () => {
-  await openPage(Page.Agent);
-};
-
 const tabs = computed<TabItem[]>(() => {
   return [
-    {
-      label: "Agent",
-      value: TabType.Agent,
-      click: handleOpenAgentPage
-    },
     {
       label: "生成变量名",
       value: TabType.GenVarName
@@ -70,7 +60,7 @@ const tabs = computed<TabItem[]>(() => {
     }
   ];
 });
-const activeTab = ref(TabType.Agent);
+const activeTab = ref(TabType.GenVarName);
 
 watch(activeTab, () => {
   configLocalStorage.edit(v => {
@@ -91,9 +81,7 @@ const handleOpenFigmaPage = async () => {
 
 onMounted(async () => {
   const { popupActiveTab } = (await configLocalStorage.get()) || {};
-  const targetTab = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
-  // 如果保存的 tab 是 Agent，则默认显示 GenVarName
-  activeTab.value = targetTab === TabType.Agent ? TabType.GenVarName : targetTab;
+  activeTab.value = (tabs.value.find(item => item.value === popupActiveTab)?.value as TabType) || TabType.GenVarName;
 
   getMessageAlerts();
   getMessageAlertsTimer.value = setInterval(getMessageAlerts, 300);
@@ -141,8 +129,8 @@ onUnmounted(() => {
         <ContentCard title="百度翻译api配置">
           <BaiDuAppConfig />
         </ContentCard>
-        <ContentCard title="OpenAI API配置">
-          <OpenAIConfig />
+        <ContentCard title="Anthropic API配置">
+          <AnthropicConfig />
         </ContentCard>
       </template>
       <template v-else-if="activeTab === TabType.Version">

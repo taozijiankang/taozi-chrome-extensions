@@ -18,13 +18,13 @@ export namespace Figma {
       fills?: {
         type: "IMAGE";
       }[];
-      absoluteBoundingBox: {
+      absoluteBoundingBox?: {
         x: number;
         y: number;
         width: number;
         height: number;
       };
-      absoluteRenderBounds: {
+      absoluteRenderBounds?: {
         x: number;
         y: number;
         width: number;
@@ -72,7 +72,7 @@ export namespace Figma {
       export interface Res {
         err?: string;
         images: {
-          [key: string]: string;
+          [key: string]: string | null;
         };
       }
     }

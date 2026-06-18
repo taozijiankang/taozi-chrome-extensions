@@ -14,6 +14,7 @@
     "chrome-types": "^0.1.347"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.2",
     "crypto-js": "^4.2.0"
   }
 }
