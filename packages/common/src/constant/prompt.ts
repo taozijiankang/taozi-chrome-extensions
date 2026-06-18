@@ -1,11 +1,4 @@
 /**
- * Agent系统提示词
- */
-export const AGENT_SYSTEM_PROMPT = `
-  你是一个AI助手，擅长回答各种问题。
-`.trim();
-
-/**
  * JSON输出系统提示词
  */
 export const JSON_OUTPUT_SYSTEM_PROMPT = `

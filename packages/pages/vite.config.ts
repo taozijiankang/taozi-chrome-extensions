@@ -16,8 +16,7 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, "index.html"),
         popup: resolve(__dirname, "popup.html"),
-        figma: resolve(__dirname, "figma.html"),
-        agent: resolve(__dirname, "agent.html")
+        figma: resolve(__dirname, "figma.html")
       }
     }
   },
